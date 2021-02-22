@@ -34,29 +34,20 @@ class JanusClient:
         while True:
             response = json.loads(await self.ws.recv())
             if "transaction" in response:
-                self.received_transactions[response["transaction"]] = response
+                async with self.message_received_notifier:
+                    self.received_transactions[response["transaction"]] = response
+                    self.message_received_notifier.notify_all()
             else:
                 self.emit_event(response)
-            async with self.message_received_notifier:
-                self.message_received_notifier.notify_all()
 
     async def send(self, message: dict) -> dict():
         transaction_id = str(random.randint(0, 9999))
         message["transaction"] = transaction_id
         await self.ws.send(json.dumps(message))
-        # await asyncio.sleep(2)
         while True:
             try:
                 response = await asyncio.wait_for(self.get_transaction_reply(transaction_id), 5)
                 return response
-                # if self.is_transaction(response):
-                #     if self.is_transaction_reply(response, transaction_id):
-                #         return response
-                #     else:
-                #         continue
-                # else:
-                #     self.emit_event(response)
-                #     continue
             except TimeoutError as e:
                 print(e)
                 print("Receive timeout")
@@ -66,11 +57,6 @@ class JanusClient:
         async with self.message_received_notifier:
             await self.message_received_notifier.wait_for(lambda: transaction_id in self.received_transactions)
             return self.received_transactions.pop(transaction_id)
-        # while True:
-            # if transaction_id in self.received_transactions:
-            #     return self.received_transactions.pop(transaction_id)
-            # else:
-            #     await asyncio.sleep(1)
 
     def emit_event(self, event_response: dict):
         print(event_response)
