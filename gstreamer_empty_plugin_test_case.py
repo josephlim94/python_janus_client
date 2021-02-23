@@ -1,3 +1,4 @@
+
 import logging
 import timeit
 import traceback
@@ -12,7 +13,7 @@ Gst.init(None)
 
 
 class GstPluginPy(Gst.Element):
-    
+
     __gstmeta__ = ("gstplugin_py",
                    "Gst Plugin Python Implementation",
                    "gst.Element wraps processing model written in Python",
@@ -28,7 +29,7 @@ class GstPluginPy(Gst.Element):
                                         Gst.PadPresence.ALWAYS,
                                         Gst.Caps.from_string("video/x-raw,format=RGB"))
 
-    __gsttemplates__ = (_srctemplate, _sinktemplate) 
+    __gsttemplates__ = (_srctemplate, _sinktemplate)
 
     __gproperties__ = {
         "model": (GObject.TYPE_PYOBJECT,
@@ -38,8 +39,8 @@ class GstPluginPy(Gst.Element):
     }
 
     def __init__(self):
-        Gst.Element.__init__(self)  
-        
+        Gst.Element.__init__(self)
+
         self.sinkpad = Gst.Pad.new_from_template(self._sinktemplate, 'sink')
         self.sinkpad.set_chain_function_full(self.chainfunc, None)
         self.sinkpad.set_event_function_full(self.eventfunc, None)
@@ -51,9 +52,9 @@ class GstPluginPy(Gst.Element):
         self.add_pad(self.srcpad)
 
         self.model = None
-   
+
     def chainfunc(self, pad, parent, buffer):
-        
+
         try:
             if self.model is not None:
                 item = {
@@ -82,20 +83,20 @@ class GstPluginPy(Gst.Element):
 
     def eventfunc(self, pad, parent, event):
         return self.srcpad.push_event(event)
-    
+
     def srcqueryfunc(self, pad, object, query):
         return self.sinkpad.query(query)
 
     def srceventfunc(self, pad, parent, event):
-        return self.sinkpad.push_event(event) 
+        return self.sinkpad.push_event(event)
 
 
 def register(class_info):
 
     def init(plugin, plugin_impl, plugin_name):
         type_to_register = GObject.type_register(plugin_impl)
-        return Gst.Element.register(plugin, plugin_name, 0, type_to_register)       
-  
+        return Gst.Element.register(plugin, plugin_name, 0, type_to_register)
+
     # Parameters explanation
     # https://lazka.github.io/pgi-docs/Gst-1.0/classes/Plugin.html#Gst.Plugin.register_static
     version = '14.1'
@@ -105,13 +106,13 @@ def register(class_info):
     package = class_info.__gstmeta__[0]
     name = class_info.__gstmeta__[0]
     description = class_info.__gstmeta__[2]
-    init_function = lambda plugin : init(plugin, class_info, name)
+    def init_function(plugin): return init(plugin, class_info, name)
 
     if not Gst.Plugin.register_static(Gst.VERSION_MAJOR, Gst.VERSION_MINOR,
                                       name, description,
                                       init_function, version, gstlicense,
                                       source, package, origin):
-        raise ImportError("Plugin {} not registered".format(name)) 
+        raise ImportError("Plugin {} not registered".format(name))
     return True
 
 
