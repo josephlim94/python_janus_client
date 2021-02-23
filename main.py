@@ -66,11 +66,21 @@ async def create_plugin(client, session_id):
     response_plugin = await client.send({
         "janus": "attach",
         "session_id": session_id,
-        "plugin": "janus.plugin.echotest",
+        "plugin": "janus.plugin.videoroom",
     })
     print(response_plugin)
     if response_plugin["janus"] == "success":
         # Plugin attached
+        response_list_participants = await client.send({
+            "janus": "message",
+            "session_id": session_id,
+            "handle_id": response_plugin["data"]["id"],
+            "body": {
+                "request": "listparticipants",
+                "room": 1234,
+            }
+        })
+        print(response_list_participants)
         # Destroy plugin
         response_detach = await client.send({
             "janus": "detach",
@@ -105,7 +115,8 @@ async def main():
         #         "handle_id": response_plugin["data"]["id"],
         #     })
         #     print(response_detach)
-        await asyncio.gather(create_plugin(client, response["data"]["id"]), create_plugin(client, response["data"]["id"]))
+        # await asyncio.gather(create_plugin(client, response["data"]["id"]), create_plugin(client, response["data"]["id"]))
+        await create_plugin(client, response["data"]["id"])
         # Destroy session
         reponse_destroy = await client.send({
             "janus": "destroy",
