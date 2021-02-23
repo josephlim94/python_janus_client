@@ -61,6 +61,40 @@ class JanusClient:
     def emit_event(self, event_response: dict):
         print(event_response)
 
+async def subscribe_feed(client, session_id, handle_id):
+    response_list_participants = await client.send({
+        "janus": "message",
+        "session_id": session_id,
+        "handle_id": handle_id,
+        "body": {
+            "request": "listparticipants",
+            "room": 1234,
+        }
+    })
+    print(response_list_participants)
+    response_publish = await client.send({
+        "janus": "message",
+        "session_id": session_id,
+        "handle_id": handle_id,
+        "body": {
+            "request": "join",
+            "ptype" : "publisher",
+            "room": 1234,
+            "id": 333,
+            "display": "qweasd"
+        }
+    })
+    print(response_publish)
+    response_leave = await client.send({
+        "janus": "message",
+        "session_id": session_id,
+        "handle_id": handle_id,
+        "body": {
+            "request": "leave",
+        }
+    })
+    print(response_leave)
+
 async def create_plugin(client, session_id):
     # Attach plugin
     response_plugin = await client.send({
@@ -71,16 +105,7 @@ async def create_plugin(client, session_id):
     print(response_plugin)
     if response_plugin["janus"] == "success":
         # Plugin attached
-        response_list_participants = await client.send({
-            "janus": "message",
-            "session_id": session_id,
-            "handle_id": response_plugin["data"]["id"],
-            "body": {
-                "request": "listparticipants",
-                "room": 1234,
-            }
-        })
-        print(response_list_participants)
+        await subscribe_feed(client, session_id, response_plugin["data"]["id"])
         # Destroy plugin
         response_detach = await client.send({
             "janus": "detach",
