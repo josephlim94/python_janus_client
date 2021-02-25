@@ -2,6 +2,7 @@
 import ssl
 import asyncio
 import websockets
+import pathlib
 import json
 from concurrent.futures import TimeoutError
 import random
@@ -22,7 +23,9 @@ webrtcbin name=sendrecv bundle-policy=max-bundle
  queue ! application/x-rtp,media=video,encoding-name=VP8,payload=97 ! sendrecv.
 '''
 
-# ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
+ssl_context.load_verify_locations(localhost_pem)
 # ssl_context.check_hostname = False
 # ssl_context.verify_mode = ssl.CERT_NONE
 
@@ -38,7 +41,7 @@ class JanusClient:
     async def connect(self) -> None:
         print("Connecting to: ", self.uri)
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
-        self.ws = await websockets.connect(self.uri, subprotocols=["janus-protocol"])
+        self.ws = await websockets.connect(self.uri, subprotocols=["janus-protocol"], ssl=ssl_context)
         self.receive_message_task = asyncio.create_task(self.receive_message())
         print("Connected")
 
@@ -58,7 +61,7 @@ class JanusClient:
             else:
                 self.emit_event(response)
 
-    async def send(self, message: dict) -> dict():
+    async def send(self, message: dict, ack: bool=False) -> dict():
         transaction_id = str(random.randint(0, 9999))
         message["transaction"] = transaction_id
         print(json.dumps(message))
@@ -66,6 +69,8 @@ class JanusClient:
         while True:
             try:
                 response = await asyncio.wait_for(self.get_transaction_reply(transaction_id), 5)
+                while ack and response["janus"] == "ack":
+                    response = await asyncio.wait_for(self.get_transaction_reply(transaction_id), 5)
                 print(response)
                 return response
             except TimeoutError as e:
@@ -111,7 +116,7 @@ class WebRTCSubscriber:
                 # "offer_data": True,
                 # "ack": True,
             }
-        })
+        }, ack=True)
 
     async def unsubscribe(self):
         await self.client.send({
@@ -121,8 +126,8 @@ class WebRTCSubscriber:
             "body": {
                 "request": "leave",
             }
-        })
-        self.pipe.set_state(Gst.State.NULL)
+        }, ack=True)
+        # self.pipe.set_state(Gst.State.NULL)
 
     async def send_start(self, jsep):
         await self.client.send({
@@ -133,7 +138,7 @@ class WebRTCSubscriber:
                 "request": "start",
             },
             "jsep": jsep
-        })
+        }, ack=True)
 
     def send_sdp_offer(self, offer):
         text = offer.sdp.as_text()
@@ -255,96 +260,22 @@ class WebRTCSubscriber:
         return 0
 
 async def subscribe_feed(client, session_id, handle_id):
-    # response_list_participants = await client.send({
-    #     "janus": "message",
-    #     "session_id": session_id,
-    #     "handle_id": handle_id,
-    #     "body": {
-    #         "request": "listparticipants",
-    #         "room": 1234,
-    #     }
-    # })
-    # if len(response_list_participants["plugindata"]["data"]["participants"]) > 0:
-    #     # Publishers available
-    #     participants_data_1 = response_list_participants["plugindata"]["data"]["participants"][0]
-    #     # print(publisher_data)
-    #     participant_id = participants_data_1["id"]
-    #     subscriber_client = WebRTCSubscriber(client, session_id, handle_id)
-    #     await subscriber_client.subscribe(participant_id)
-    #     # await client.send({
-    #     #     "janus": "message",
-    #     #     "session_id": session_id,
-    #     #     "handle_id": handle_id,
-    #     #     "body": {
-    #     #         "request": "start",
-    #     #     }
-    #     # })
-    #     subscriber_client.start_pipeline()
-    #     await asyncio.sleep(5)
-    #     await subscriber_client.unsubscribe()
-    response_publish = await client.send({
+    response_list_participants = await client.send({
         "janus": "message",
         "session_id": session_id,
         "handle_id": handle_id,
         "body": {
-            "request": "join",
-            "ptype" : "publisher",
+            "request": "listparticipants",
             "room": 1234,
-            "id": 333,
-            "display": "qweasd"
         }
     })
-    if len(response_publish["plugindata"]["data"]["publishers"]) > 0:
+    if len(response_list_participants["plugindata"]["data"]["participants"]) > 0:
         # Publishers available
-        publishers_data_1 = response_publish["plugindata"]["data"]["publishers"][0]
+        participants_data_1 = response_list_participants["plugindata"]["data"]["participants"][0]
         # print(publisher_data)
-        publisher_id = publishers_data_1["id"]
-        # Attach subscriber plugin
-        response_plugin_subscriber = await client.send({
-            "janus": "attach",
-            "session_id": session_id,
-            "plugin": "janus.plugin.videoroom",
-        })
-        if response_plugin_subscriber["janus"] == "success":
-            # Plugin attached
-            subscriber_client = WebRTCSubscriber(client, session_id, response_plugin_subscriber["data"]["id"])
-            response_publish = await client.send({
-                "janus": "message",
-                "session_id": session_id,
-                "handle_id": response_plugin_subscriber["data"]["id"],
-                "body": {
-                    "request": "join",
-                    "ptype" : "subscriber",
-                    "room": 1234,
-                    "feed": publisher_id,
-                    "close_pc": True,
-                    "audio": True,
-                    "video": True,
-                    "data": True,
-                    "offer_audio": True,
-                    "offer_video": True,
-                    "offer_data": True,
-                    "ack": False,
-                }
-            })
-            # await subscriber_client.subscribe(publisher_id)
-            # subscriber_client.start_pipeline()
-            await asyncio.sleep(10)
-            # await subscriber_client.unsubscribe()
-            # Destroy subscriber plugin
-            response_leave = await client.send({
-                "janus": "message",
-                "session_id": session_id,
-                "handle_id": response_plugin_subscriber["data"]["id"],
-                "body": {
-                    "request": "leave",
-                }
-            })
-            response_detach = await client.send({
-                "janus": "detach",
-                "session_id": session_id,
-                "handle_id": response_plugin_subscriber["data"]["id"],
-            })
+        participant_id = participants_data_1["id"]
+        subscriber_client = WebRTCSubscriber(client, session_id, handle_id)
+        await subscriber_client.subscribe(participant_id)
         # await client.send({
         #     "janus": "message",
         #     "session_id": session_id,
@@ -353,14 +284,94 @@ async def subscribe_feed(client, session_id, handle_id):
         #         "request": "start",
         #     }
         # })
-    response_leave = await client.send({
-        "janus": "message",
-        "session_id": session_id,
-        "handle_id": handle_id,
-        "body": {
-            "request": "leave",
-        }
-    })
+        # subscriber_client.start_pipeline()
+        await asyncio.sleep(5)
+        await subscriber_client.unsubscribe()
+    # response_publish = await client.send({
+    #     "janus": "message",
+    #     "session_id": session_id,
+    #     "handle_id": handle_id,
+    #     "body": {
+    #         "request": "join",
+    #         "ptype" : "publisher",
+    #         "room": 1234,
+    #         "id": 333,
+    #         "display": "qweasd"
+    #     }
+    # }, ack=True)
+    # # if response_publish["janus"] == "ack":
+    # #     print("Exiting because received ack from janus")
+    # #     await asyncio.sleep(10)
+    # #     exit(1)
+    # if len(response_publish["plugindata"]["data"]["publishers"]) > 0:
+    #     # Publishers available
+    #     publishers_data_1 = response_publish["plugindata"]["data"]["publishers"][0]
+    #     # print(publisher_data)
+    #     publisher_id = publishers_data_1["id"]
+    #     # Attach subscriber plugin
+    #     response_plugin_subscriber = await client.send({
+    #         "janus": "attach",
+    #         "session_id": session_id,
+    #         "plugin": "janus.plugin.videoroom",
+    #         "opaque_id":"4444",
+    #     })
+    #     if response_plugin_subscriber["janus"] == "success":
+    #         # Plugin attached
+    #         subscriber_client = WebRTCSubscriber(client, session_id, response_plugin_subscriber["data"]["id"])
+    #         response_publish = await client.send({
+    #             "janus": "message",
+    #             "session_id": session_id,
+    #             "handle_id": response_plugin_subscriber["data"]["id"],
+    #             "body": {
+    #                 "request": "join",
+    #                 "ptype" : "subscriber",
+    #                 "room": 1234,
+    #                 "feed": publisher_id,
+    #                 "close_pc": True,
+    #                 "audio": True,
+    #                 "video": True,
+    #                 "data": True,
+    #                 "offer_audio": True,
+    #                 "offer_video": True,
+    #                 "offer_data": True,
+    #                 "ack": False,
+    #             }
+    #         }, ack=True)
+    #         # await subscriber_client.subscribe(publisher_id)
+    #         # subscriber_client.start_pipeline()
+    #         print("Waiting for SDP offer")
+    #         await asyncio.sleep(30)
+    #         # await subscriber_client.unsubscribe()
+    #         # Destroy subscriber plugin
+    #         response_leave = await client.send({
+    #             "janus": "message",
+    #             "session_id": session_id,
+    #             "handle_id": response_plugin_subscriber["data"]["id"],
+    #             "body": {
+    #                 "request": "leave",
+    #             }
+    #         })
+    #         response_detach = await client.send({
+    #             "janus": "detach",
+    #             "session_id": session_id,
+    #             "handle_id": response_plugin_subscriber["data"]["id"],
+    #         })
+    #     # await client.send({
+    #     #     "janus": "message",
+    #     #     "session_id": session_id,
+    #     #     "handle_id": handle_id,
+    #     #     "body": {
+    #     #         "request": "start",
+    #     #     }
+    #     # })
+    # response_leave = await client.send({
+    #     "janus": "message",
+    #     "session_id": session_id,
+    #     "handle_id": handle_id,
+    #     "body": {
+    #         "request": "leave",
+    #     }
+    # })
 
 async def create_plugin(client, session_id):
     # Attach plugin
@@ -380,7 +391,7 @@ async def create_plugin(client, session_id):
         })
 
 async def main():
-    client = JanusClient("ws://lt.limmengkiat.name.my/janusws/")
+    client = JanusClient("wss://lt.limmengkiat.name.my/janusws/")
     await client.connect()
     # Create session
     response = await client.send({
