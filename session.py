@@ -19,7 +19,7 @@ class JanusSession:
         }
         await self.send(message)
 
-    async def create_plugin(self, plugin_type: object):
+    async def create_plugin_handle(self, plugin_type: object):
         response = await self.send({
             "janus": "attach",
             "plugin": plugin_type.name,

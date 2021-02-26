@@ -6,7 +6,7 @@ from concurrent.futures import TimeoutError
 
 from core import JanusClient
 from session import JanusSession
-from plugin import JanusVideoRoomPlugin
+from video_room_plugin import JanusVideoRoomPlugin
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -317,15 +317,42 @@ async def subscribe_feed(client, session_id, handle_id):
     #     }
     # })
 
+async def subscribe_feed_2(plugin_handle):
+    response_list_participants = await plugin_handle.send({
+        "janus": "message",
+        "body": {
+            "request": "listparticipants",
+            "room": 1234,
+        }
+    })
+    if len(response_list_participants["plugindata"]["data"]["participants"]) > 0:
+        # Publishers available
+        participants_data_1 = response_list_participants["plugindata"]["data"]["participants"][0]
+        # print(publisher_data)
+        participant_id = participants_data_1["id"]
+        subscriber_client = WebRTCSubscriber(client, session_id, handle_id)
+        await subscriber_client.subscribe(participant_id)
+        # await client.send({
+        #     "janus": "message",
+        #     "session_id": session_id,
+        #     "handle_id": handle_id,
+        #     "body": {
+        #         "request": "start",
+        #     }
+        # })
+        # subscriber_client.start_pipeline()
+        await asyncio.sleep(5)
+        await subscriber_client.unsubscribe()
+
 async def main():
     client = JanusClient("wss://lt.limmengkiat.name.my/janusws/")
     await client.connect(ssl=ssl_context)
     # Create session
     session = await client.create_session(JanusSession)
-    plugin = await session.create_plugin(JanusVideoRoomPlugin)
+    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
     # await create_plugin(client, session.session_id)
-    await subscribe_feed(client, session.session_id, plugin.plugin_id)
-    await plugin.destroy()
+    # await subscribe_feed_2(plugin_handle)
+    await plugin_handle.destroy()
     await session.destroy()
     # response = await client.send({
     #     "janus": "create",
