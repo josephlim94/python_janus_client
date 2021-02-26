@@ -317,7 +317,10 @@ async def subscribe_feed_bak(client, session_id, handle_id):
     #     }
     # })
 
-async def subscribe_feed(plugin_handle):
+async def subscribe_to_a_feed(session):
+    # Create plugin
+    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
+
     participants = await plugin_handle.list_participants(1234)
     print(participants)
     if len(participants) > 0:
@@ -328,48 +331,24 @@ async def subscribe_feed(plugin_handle):
         await plugin_handle.subscribe(1234, participant_id)
         await asyncio.sleep(5)
         await plugin_handle.unsubscribe()
+    # await plugin_handle.join(1234, 333, "qweqwe")
+    # await asyncio.sleep(5)
+    # await plugin_handle.unsubscribe()
+
+    # Destroy plugin
+    await plugin_handle.destroy()
 
 async def main():
     client = JanusClient("wss://lt.limmengkiat.name.my/janusws/")
     await client.connect(ssl=ssl_context)
     # Create session
     session = await client.create_session(JanusSession)
-    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
-    # await create_plugin(client, session.session_id)
-    await subscribe_feed(plugin_handle)
-    # await plugin_handle.join(1234, 333, "qweqwe")
-    # await asyncio.sleep(5)
-    # await plugin_handle.unsubscribe()
-    await plugin_handle.destroy()
+
+    await subscribe_to_a_feed(session)
+
+    # Destroy session
     await session.destroy()
-    # response = await client.send({
-    #     "janus": "create",
-    # })
-    # if response["janus"] == "success":
-    #     # Session created
-    #     # # Attach plugin
-    #     # response_plugin = await client.send({
-    #     #     "janus": "attach",
-    #     #     "session_id": response["data"]["id"],
-    #     #     "plugin": "janus.plugin.echotest",
-    #     # })
-    #     # print(response_plugin)
-    #     # if response_plugin["janus"] == "success":
-    #     #     # Plugin attached
-    #     #     # Destroy plugin
-    #     #     response_detach = await client.send({
-    #     #         "janus": "detach",
-    #     #         "session_id": response["data"]["id"],
-    #     #         "handle_id": response_plugin["data"]["id"],
-    #     #     })
-    #     #     print(response_detach)
-    #     # await asyncio.gather(create_plugin(client, response["data"]["id"]), create_plugin(client, response["data"]["id"]))
-    #     await create_plugin(client, response["data"]["id"])
-    #     # Destroy session
-    #     reponse_destroy = await client.send({
-    #         "janus": "destroy",
-    #         "session_id": response["data"]["id"],
-    #     })
+    # Destroy connection
     await client.disconnect()
     print("End of main")
 
