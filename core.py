@@ -74,3 +74,9 @@ class JanusClient:
 
     def emit_event(self, event_response: dict):
         print(event_response)
+
+    async def create_session(self, session_type: object):
+        response = await self.send({
+            "janus": "create",
+        })
+        return session_type(client=self, session_id=response["data"]["id"])
