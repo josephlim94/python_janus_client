@@ -3,7 +3,6 @@ import ssl
 import asyncio
 import pathlib
 from concurrent.futures import TimeoutError
-import random
 
 from core import JanusClient
 
@@ -28,9 +27,6 @@ localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
 ssl_context.load_verify_locations(localhost_pem)
 # ssl_context.check_hostname = False
 # ssl_context.verify_mode = ssl.CERT_NONE
-
-random.seed(123)
-
 
 class WebRTCSubscriber:
     def __init__(self, client, session_id, handle_id):
