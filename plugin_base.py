@@ -39,6 +39,11 @@ class JanusPlugin():
         }, complete_condition=complete_condition)
 
     async def subscribe(self, room_id, feed_id):
+        def complete_condition(response):
+            if response["janus"] == "event":
+                return True
+            else:
+                return False
         await self.send({
             "janus": "message",
             "body": {
@@ -54,7 +59,7 @@ class JanusPlugin():
                 # "offer_video": True,
                 # "offer_data": True,
             }
-        })
+        }, complete_condition=complete_condition)
 
     async def unsubscribe(self):
         await self.send({
@@ -63,3 +68,13 @@ class JanusPlugin():
                 "request": "leave",
             }
         })
+
+    async def list_participants(self, room_id) -> list:
+        response = await self.send({
+            "janus": "message",
+            "body": {
+                "request": "listparticipants",
+                "room": room_id,
+            }
+        })
+        return response["plugindata"]["data"]["participants"]

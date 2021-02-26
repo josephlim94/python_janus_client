@@ -203,7 +203,7 @@ class WebRTCSubscriber:
                 await self.handle_sdp(message)
         return 0
 
-async def subscribe_feed(client, session_id, handle_id):
+async def subscribe_feed_bak(client, session_id, handle_id):
     response_list_participants = await client.send({
         "janus": "message",
         "session_id": session_id,
@@ -317,32 +317,17 @@ async def subscribe_feed(client, session_id, handle_id):
     #     }
     # })
 
-async def subscribe_feed_2(plugin_handle):
-    response_list_participants = await plugin_handle.send({
-        "janus": "message",
-        "body": {
-            "request": "listparticipants",
-            "room": 1234,
-        }
-    })
-    if len(response_list_participants["plugindata"]["data"]["participants"]) > 0:
+async def subscribe_feed(plugin_handle):
+    participants = await plugin_handle.list_participants(1234)
+    print(participants)
+    if len(participants) > 0:
         # Publishers available
-        participants_data_1 = response_list_participants["plugindata"]["data"]["participants"][0]
-        # print(publisher_data)
+        participants_data_1 = participants[0]
         participant_id = participants_data_1["id"]
-        subscriber_client = WebRTCSubscriber(client, session_id, handle_id)
-        await subscriber_client.subscribe(participant_id)
-        # await client.send({
-        #     "janus": "message",
-        #     "session_id": session_id,
-        #     "handle_id": handle_id,
-        #     "body": {
-        #         "request": "start",
-        #     }
-        # })
-        # subscriber_client.start_pipeline()
+
+        await plugin_handle.subscribe(1234, participant_id)
         await asyncio.sleep(5)
-        await subscriber_client.unsubscribe()
+        await plugin_handle.unsubscribe()
 
 async def main():
     client = JanusClient("wss://lt.limmengkiat.name.my/janusws/")
@@ -351,10 +336,10 @@ async def main():
     session = await client.create_session(JanusSession)
     plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
     # await create_plugin(client, session.session_id)
-    # await subscribe_feed_2(plugin_handle)
-    await plugin_handle.join(1234, 333, "qweqwe")
-    await asyncio.sleep(5)
-    await plugin_handle.unsubscribe()
+    await subscribe_feed(plugin_handle)
+    # await plugin_handle.join(1234, 333, "qweqwe")
+    # await asyncio.sleep(5)
+    # await plugin_handle.unsubscribe()
     await plugin_handle.destroy()
     await session.destroy()
     # response = await client.send({
