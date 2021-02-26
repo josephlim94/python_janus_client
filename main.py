@@ -352,6 +352,9 @@ async def main():
     plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
     # await create_plugin(client, session.session_id)
     # await subscribe_feed_2(plugin_handle)
+    await plugin_handle.join(1234, 333, "qweqwe")
+    await asyncio.sleep(5)
+    await plugin_handle.unsubscribe()
     await plugin_handle.destroy()
     await session.destroy()
     # response = await client.send({

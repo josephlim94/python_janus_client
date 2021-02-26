@@ -7,11 +7,11 @@ class JanusSession:
         self.client = client
         self.session_id = session_id
 
-    async def send(self, message):
+    async def send(self, message, **kwargs):
         if "session_id" in message:
             raise Exception("Session ID in message must not be manually added")
         message["session_id"] = self.session_id
-        return await self.client.send(message)
+        return await self.client.send(message, **kwargs)
 
     async def destroy(self):
         message = {
