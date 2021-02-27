@@ -7,7 +7,7 @@ from concurrent.futures import TimeoutError
 # from core import JanusClient
 # from session import JanusSession
 from video_room_plugin import JanusVideoRoomPlugin
-from janus_client_py import JanusClient, JanusSession
+from janus_client import JanusClient, JanusSession
 
 import gi
 gi.require_version('GLib', '2.0')
