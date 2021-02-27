@@ -6,6 +6,14 @@ This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client writt
 
 ---
 
+## Installing
+
+```bash
+pip install janus-client
+```
+
+---
+
 ## Description
 
 ### Features
@@ -35,8 +43,15 @@ In [main.py](./main.py), you will be able to find references on how to use the c
 Essence:
 
 ```python
+import asyncio
+import ssl
+import pathlib
 from video_room_plugin import JanusVideoRoomPlugin
-from janus_client_py import JanusClient, JanusSession
+from janus_client import JanusClient, JanusSession
+
+ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
+ssl_context.load_verify_locations(localhost_pem)
 
 async def main():
     # Connect to server
