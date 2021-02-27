@@ -10,16 +10,16 @@ This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client writt
 
 ### Features
 
-:heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))
-:heavy_check_mark: Create/destroy sessions
-:heavy_check_mark: Create/destroy plugins
-:heavy_check_mark: Handle transactions with Janus
+:heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))  
+:heavy_check_mark: Create/destroy sessions  
+:heavy_check_mark: Create/destroy plugins  
+:heavy_check_mark: Handle transactions with Janus  
 
 ### In Progress
 
-:clock3: Emit events to respective session and plugin handlers
-:clock3: Create plugin for videoroom plugin
-:clock3: Distribute as PyPI package
+:clock3: Emit events to respective session and plugin handlers  
+:clock3: Create plugin for videoroom plugin  
+:clock3: Distribute as PyPI package  
 
 ### Dependencies
 
@@ -72,15 +72,15 @@ asyncio.run(main())
 
 ### Installing for development
 
-Installing gstreamer
+Installing gstreamer  
 <https://gstreamer.freedesktop.org/documentation/installing/on-linux.html?gi-language=python>
 
-Installing gst python
+Installing gst python  
 <http://lifestyletransfer.com/how-to-install-gstreamer-python-bindings/>
 
-Installing webrtcbin
-<https://github.com/centricular/gstwebrtc-demos/issues/37>
+Installing webrtcbin  
+<https://github.com/centricular/gstwebrtc-demos/issues/37>  
 (gir1.2-gst-plugins-bad-1.0)
 
-More bad plugins
+More bad plugins  
 frei0r-plugins
