@@ -1,5 +1,7 @@
 # Janus Client for Python
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-PROTOTYPE-orange.svg)
+
 This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client written in Python, to be used with asyncio.
 
 ---
@@ -8,16 +10,16 @@ This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client writt
 
 ### Features
 
-- Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))
-- Create/destroy sessions
-- Create/destroy plugins
-- Handle transactions with Janus
+:heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))
+:heavy_check_mark: Create/destroy sessions
+:heavy_check_mark: Create/destroy plugins
+:heavy_check_mark: Handle transactions with Janus
 
 ### In Progress
 
-- Emit events to respective session and plugin handlers
-- Create plugin for videoroom plugin
-- Distribute as PyPI package
+:clock3: Emit events to respective session and plugin handlers
+:clock3: Create plugin for videoroom plugin
+:clock3: Distribute as PyPI package
 
 ### Dependencies
 
