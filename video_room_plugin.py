@@ -1,5 +1,5 @@
 
-from plugin_base import JanusPlugin
+from janus_client_py import JanusPlugin
 
 import gi
 gi.require_version('GLib', '2.0')

@@ -1,6 +1,6 @@
 
 import asyncio
-from session import JanusSession
+from .session import JanusSession
 
 class JanusPlugin():
     name = "janus.plugin.base.dummy"

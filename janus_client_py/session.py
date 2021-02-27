@@ -1,6 +1,6 @@
 
 import asyncio
-from core import JanusClient
+from .core import JanusClient
 
 class JanusSession:
     def __init__(self, client: JanusClient, session_id: str):
