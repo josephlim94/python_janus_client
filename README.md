@@ -27,7 +27,6 @@ pip install janus-client
 
 :clock3: Emit events to respective session and plugin handlers  
 :clock3: Create plugin for videoroom plugin  
-:clock3: Distribute as PyPI package  
 
 ### Dependencies
 
