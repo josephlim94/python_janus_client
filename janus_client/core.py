@@ -61,7 +61,11 @@ class JanusClient:
     def is_async_response(self, response):
         janus_type = response["janus"]
         return ((janus_type == "event")
-            or (janus_type == "detached"))
+            or (janus_type == "detached")
+            or (janus_type == "webrtcup")
+            or (janus_type == "media")
+            or (janus_type == "slowlink")
+            or (janus_type == "hangup"))
 
     async def receive_message(self):
         assert self.ws
