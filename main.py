@@ -318,6 +318,21 @@ async def subscribe_feed_bak(client, session_id, handle_id):
     #     }
     # })
 
+async def publish_some_video(session):
+    # Create plugin
+    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
+
+    await plugin_handle.join(1234, 333, "qweqwe")
+    await plugin_handle.publish()
+    print("Let it stream for 30 seconds")
+    await asyncio.sleep(30)
+    print("Stop streaming")
+    await plugin_handle.unpublish()
+    print("Stream unpublished")
+
+    # Destroy plugin
+    await plugin_handle.destroy()
+
 async def subscribe_to_a_feed(session):
     # Create plugin
     plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
@@ -345,7 +360,8 @@ async def main():
     # Create session
     session = await client.create_session(JanusSession)
 
-    await subscribe_to_a_feed(session)
+    # await subscribe_to_a_feed(session)
+    await publish_some_video(session)
 
     # Destroy session
     await session.destroy()
