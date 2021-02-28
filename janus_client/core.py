@@ -74,6 +74,11 @@ class JanusClient:
             if self.is_async_response(response):
                 self.handle_async_response(response)
             else:
+                # WARNING: receive_message task will break with printing exception
+                #   when entering here without a transaction in response.
+                #   It happens when the asynchronous event is not recognized in
+                #   self.is_async_response()
+                # TODO: Find out how to print exceptions in created tasks
                 if response["transaction"] in self.transactions:
                     await self.transactions[response["transaction"]].put(response)
 
