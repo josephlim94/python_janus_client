@@ -21,8 +21,8 @@ DO_VP8 = True
 # Set to False to disable RTX (lost packet retransmission)
 DO_RTX = True
 # Choose the video source:
-VIDEO_SRC="videotestsrc pattern=ball"
-# VIDEO_SRC="v4l2src"
+# VIDEO_SRC="videotestsrc pattern=ball"
+VIDEO_SRC="v4l2src"
 
 
 @attr.s
@@ -338,9 +338,9 @@ class WebRTCClient:
         self.webrtc.connect('on-ice-candidate', self.send_ice_candidate_message)
         self.webrtc.connect('pad-added', self.on_incoming_stream)
 
-        # trans = self.webrtc.emit('get-transceiver', 0)
-        # if DO_RTX:
-        #     trans.set_property ('do-nack', True)
+        trans = self.webrtc.emit('get-transceiver', 0)
+        if DO_RTX:
+            trans.set_property ('do-nack', True)
         self.pipe.set_state(Gst.State.PLAYING)
 
     def extract_ice_from_sdp(self, sdp):
