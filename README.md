@@ -1,6 +1,6 @@
 # Janus Client for Python
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-PROTOTYPE-orange.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg)
 
 This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client written in Python, to be used with asyncio.
 
@@ -36,9 +36,12 @@ pip install janus-client
 
 ## Development
 
-Currently only a base class to create Janus plugin handler is inteded to be distributed, so the [video_room_plugin.py](./video_room_plugin.py) is not in janus_client_py. From there, you can get a reference of how a plugin handler class can be created.
+The package hopes to implement a general purpose client that can communicate with a Janus server. Examples like VideoRoom plugin is not part of their core features, so it's not included in the package.  
+But it can still be included as a default example though. It's up for discussion.
 
-In [main.py](./main.py), you will be able to find references on how to use the client in general such as connecting and creating sessions.
+You can refer to [video_room_plugin.py](./video_room_plugin.py) to see how a plugin handle is created.
+
+And in [main.py](./main.py), you will be able to find references on how to use the client in general such as connecting and creating sessions.
 Essence:
 
 ```python
@@ -99,7 +102,7 @@ Installing webrtcbin
 More bad plugins  
 frei0r-plugins
 
-### Quircks
+### Quirks
 
 There is a problem with GstWebRTC on my Raspbian Buster (RPI 2)  
 It's complaining about ssl and then failing DTLS.  
