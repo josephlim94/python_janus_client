@@ -111,7 +111,7 @@ I believe there is a bug in the distributed GStreamer version (v1.14.4) thus I r
 
 Recompiling GStreamer is also a non-trivial task. Since it's Linux, I'm using meson build.  
 I checked out tag 1.18.3, followed steps in GStreamer documentation, and build failed.  
-You can refer to this [issue](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues/839) for the reason.  
+You can refer to [this issue](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues/839) for the reason.  
 Personally I prefer building a tag release, so I patched the build with [this PR](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/merge_requests/875/diffs) and finally build passed.
 
 Installing was then tedious. Actually this should have been done before compiling, but I only did it after realising Python binding for Gst can't be found.  
@@ -134,5 +134,5 @@ apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev libsrt
 
 After all these, then "webrtc/janus/janusvideoroom.py" from [gst-examples repo](https://gitlab.freedesktop.org/gstreamer/gst-examples/) can be run on my RPI 2.
 
-And then another quirk, the example was still unable to setup a peer connection to my janus server at lt.limmengkiat.name.my. In the end I had to enable ice_tcp (ice_tcp=true) in janus.jcfg for it to work. I don't know why yet.
+And then another quirk, the example was still unable to setup a peer connection to my janus server at lt.limmengkiat.name.my. In the end I had to enable ice_tcp (ice_tcp=true) in janus.jcfg for it to work. I don't know why yet.  
 ![Janus Enable ICE TCP](janus_enable_ice_tcp.png "Janus Enable ICE TCP")
