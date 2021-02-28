@@ -113,7 +113,7 @@ class JanusClient:
                 print("Unhandeled response:", response)
         else:
             # This is response for self
-            print(response)
+            print("Async event for Janus client core:", response)
 
     async def create_session(self, session_type: object):
         response = await self.send({

@@ -42,7 +42,7 @@ class JanusSession:
                 print("Unhandeled response:", response)
         else:
             # This is response for self
-            print(response)
+            print("Async event for session:", response)
 
     async def create_plugin_handle(self, plugin_type: object):
         response = await self.send({
