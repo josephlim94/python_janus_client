@@ -24,4 +24,22 @@ class JanusPlugin():
 
     def handle_async_response(self, response: dict):
         # This is response for self
-        print(response)
+        raise NotImplementedError()
+
+    async def trickle(self, sdpMLineIndex, candidate):
+        candidate_payload = dict()
+        if candidate:
+            candidate_payload = {
+                "sdpMLineIndex" : sdpMLineIndex,
+                "candidate" : candidate,
+            }
+        else:
+            # Reference: https://janus.conf.meetecho.com/docs/rest.html
+            # - a null candidate or a completed JSON object to notify the end of the candidates.
+            # TODO: test it
+            candidate_payload = None
+        await self.send({
+            "janus": "trickle",
+            "candidate": candidate_payload
+        })
+        # TODO: Implement sending an array of candidates
