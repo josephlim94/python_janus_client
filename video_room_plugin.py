@@ -1,5 +1,6 @@
 
 from janus_client import JanusPlugin
+import asyncio
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -14,12 +15,23 @@ from gi.repository import GstSdp
 class JanusVideoRoomPlugin(JanusPlugin):
     name = "janus.plugin.videoroom"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.joined_event = asyncio.Event()
+
+    def handle_async_response(self, response):
+        if response["janus"] == "event":
+            if "plugindata" in response:
+                if response["plugindata"]["data"]["videoroom"] == "attached":
+                    self.joined_event.set()
+        else:
+            print("Unimplemented response handle:", response["janus"])
+            print(response)
+        # Handle JSEP
+        if "jsep" in response:
+            print("Got JSEP:", response["jsep"])
+
     async def join(self, room_id, publisher_id, display_name):
-        def complete_condition(response):
-            if response["janus"] == "event":
-                return True
-            else:
-                return False
         await self.send({
             "janus": "message",
             "body": {
@@ -29,14 +41,10 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 "id": publisher_id,
                 "display": display_name,
             }
-        }, complete_condition=complete_condition)
+        })
+        await self.joined_event.wait()
 
     async def subscribe(self, room_id, feed_id):
-        def complete_condition(response):
-            if response["janus"] == "event":
-                return True
-            else:
-                return False
         await self.send({
             "janus": "message",
             "body": {
@@ -52,7 +60,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 # "offer_video": True,
                 # "offer_data": True,
             }
-        }, complete_condition=complete_condition)
+        })
+        await self.joined_event.wait()
 
     async def unsubscribe(self):
         await self.send({
@@ -61,6 +70,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 "request": "leave",
             }
         })
+        self.joined_event.clear()
 
     async def list_participants(self, room_id) -> list:
         response = await self.send({
