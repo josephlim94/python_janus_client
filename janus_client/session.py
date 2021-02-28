@@ -7,12 +7,14 @@ class JanusSession:
         self.client = client
         self.id = session_id
         self.plugin_handles = dict()
+        self.keepalive_task = asyncio.create_task(self.keepalive())
 
     async def destroy(self):
         message = {
             "janus": "destroy",
         }
         await self.send(message)
+        self.keepalive_task.cancel()
         self.client.destroy_session(self)
 
     async def send(self, message, **kwargs):
@@ -20,6 +22,15 @@ class JanusSession:
             raise Exception("Session ID in message must not be manually added")
         message["session_id"] = self.id
         return await self.client.send(message, **kwargs)
+
+    async def keepalive(self):
+        # Reference: https://janus.conf.meetecho.com/docs/rest.html
+        # A Janus session is kept alive as long as there's no inactivity for 60 seconds
+        while True:
+            await asyncio.sleep(30)
+            await self.send({
+                "janus": "keepalive",
+            })
 
     def handle_async_response(self, response: dict):
         if "sender" in response:
