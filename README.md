@@ -19,9 +19,10 @@ pip install janus-client
 ### Features
 
 :heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))  
+:heavy_check_mark: Handle transactions with Janus  
 :heavy_check_mark: Create/destroy sessions  
 :heavy_check_mark: Create/destroy plugins  
-:heavy_check_mark: Handle transactions with Janus  
+:heavy_check_mark: Handle multiple sessions and or multiple plugins at the same time  
 
 ### In Progress
 
@@ -37,9 +38,9 @@ pip install janus-client
 ## Development
 
 The package hopes to implement a general purpose client that can communicate with a Janus server. Examples like VideoRoom plugin is not part of their core features, so it's not included in the package.  
-But it can still be included as a default example though. It's up for discussion.
+But it can still be included as a default example though. It's up for discussion. :D The reason stopping me from doing that is because I'm depending on GStreamer to use WebRTC and media streaming, and it's not trivial to install it. Please refer to [Quirks section](#quirks).
 
-You can refer to [video_room_plugin.py](./video_room_plugin.py) to see how a plugin handle is created.
+You can refer to [video_room_plugin.py](./video_room_plugin.py) to see how a specific plugin handle is implemented.
 
 And in [main.py](./main.py), you will be able to find references on how to use the client in general such as connecting and creating sessions.
 Essence:
@@ -48,8 +49,8 @@ Essence:
 import asyncio
 import ssl
 import pathlib
-from video_room_plugin import JanusVideoRoomPlugin
 from janus_client import JanusClient, JanusSession
+from video_room_plugin import JanusVideoRoomPlugin
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
@@ -72,7 +73,7 @@ async def main():
 
         # Subscribe to publisher, will get jsep (sdp offer)
         await plugin_handle.subscribe(1234, participant_id)
-        # WebRTC streaming not implemented yet
+        # WebRTC streaming not implemented  for subscriber yet
         await asyncio.sleep(5)
         # Unsubscribe from the publisher
         await plugin_handle.unsubscribe()
