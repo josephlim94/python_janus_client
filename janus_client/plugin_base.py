@@ -23,7 +23,6 @@ class JanusPlugin():
         return await self.session.send(message, **kwargs)
 
     def handle_async_response(self, response: dict):
-        # This is response for self
         raise NotImplementedError()
 
     async def trickle(self, sdpMLineIndex, candidate):
