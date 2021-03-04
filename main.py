@@ -9,6 +9,12 @@ from concurrent.futures import TimeoutError
 from video_room_plugin import JanusVideoRoomPlugin
 from janus_client import JanusClient, JanusSession
 
+import gi
+gi.require_version('GLib', '2.0')
+gi.require_version('GObject', '2.0')
+gi.require_version('Gst', '1.0')
+from gi.repository import Gst
+
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
 ssl_context.load_verify_locations(localhost_pem)
@@ -52,7 +58,7 @@ async def subscribe_to_a_feed(session):
     await plugin_handle.destroy()
 
 async def main():
-    client = JanusClient("wss://lt.limmengkiat.name.my/janusws/")
+    client = JanusClient("wss://lt.limmengkiat.name.my:8989/")
     await client.connect(ssl=ssl_context)
     # Create session
     session = await client.create_session(JanusSession)
