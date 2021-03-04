@@ -107,7 +107,9 @@ And then another quirk, the example was still unable to setup a peer connection 
 
 ### Compiling GStreamer
 
-Clone gst-build repo and build it. Warning, I'm in Malaysia and the download speed is very low when cloning projects in meson. One useful practice I learned is to enable VNC server on the RPI, and then use VNC viewer to open desktop and open terminal to start meson build. With this, your build won't stop when you close VNC Viewer so you can let it run overnight. It's better than doing direct SSH, and saves a bit electricity if you have a monitor.
+Clone gst-build repo and build it. Warning, I'm in Malaysia and the download speed is very low when cloning projects in meson. One useful practice I learned is to enable VNC server on the RPI, and then use VNC viewer to open desktop and open terminal to start meson build. With this, your build won't stop when you close VNC Viewer so you can let it run overnight. It's better than doing direct SSH, and saves a bit electricity if you have a monitor.  
+For advanced users, you can manually change the meson build file to pull from github mirror if the gitlab url is slow for you too.  
+[GStreamer mirror](https://github.com/GStreamer)
 
 Below is a summary of commands to build GStreamer, please refer to [Building from source using meson](https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-meson.html?gi-language=python#building-from-source-using-meson) for more info.
 
@@ -127,6 +129,11 @@ ninja -C build_directory/ install
 For reference, here are some extra external libraries I installed for the compilation (far from exhaustive, some might be optional):
 
 ```bash
+# For hotdoc
+apt-get install libxml2-dev libxslt1-dev cmake libyaml-dev libclang-dev llvm-dev libglib2.0-dev libjson-glib-dev
+pip3 install hotdoc
+# GStreamer
+apt-get install libmount-dev flex bison
 apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev libsrtp2-dev
 ```
 
