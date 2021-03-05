@@ -133,8 +133,8 @@ For reference, here are some extra external libraries I installed for the compil
 apt-get install libxml2-dev libxslt1-dev cmake libyaml-dev libclang-dev llvm-dev libglib2.0-dev libjson-glib-dev
 pip3 install hotdoc
 # GStreamer
-apt-get install libmount-dev flex bison
-apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev libsrtp2-dev
+apt-get install libmount-dev flex bison nasm libavfilter-dev gobject-introspection libgirepository1.0-dev libsrtp2-dev libjpeg-dev
+#apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev
 ```
 
 Test your installation by running "webrtc/janus/janusvideoroom.py" from [gst-examples repo](https://gitlab.freedesktop.org/gstreamer/gst-examples/).
