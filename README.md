@@ -120,7 +120,7 @@ cd gst-build
 # Initialise build
 meson build_directory
 # Configure build
-meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled -Dgst-plugins-bad:srtp=enabled build_directory/
+meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled build_directory/
 # Build and install
 ninja -C build_directory/
 ninja -C build_directory/ install
