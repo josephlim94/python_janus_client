@@ -111,6 +111,9 @@ Clone gst-build repo and build it. Warning, I'm in Malaysia and the download spe
 For advanced users, you can manually change the meson build file to pull from github mirror if the gitlab url is slow for you too.  
 [GStreamer mirror](https://github.com/GStreamer)
 
+Since we are recompiling GStreamer, do not install python3-gi and python3-gst-1.0 from distribution. Also do not install pycairo and PyGObject from distribution.  
+This could save yourself from some confusion.
+
 Below is a summary of commands to build GStreamer, please refer to [Building from source using meson](https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-meson.html?gi-language=python#building-from-source-using-meson) for more info.
 
 ```bash
@@ -120,20 +123,23 @@ cd gst-build
 # Initialise build
 meson build_directory
 # Configure build
-meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled build_directory/
+meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled \
+  -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled -Dvpx=enabled build_directory/
 # Build and install
 ninja -C build_directory/
 ninja -C build_directory/ install
+# pycairo and gi is installed at /usr/local/lib/python3.7/site-packages
+# Add the following line to .bashrc as required
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.7/site-packages
+# Install GObject introspection data for GStreamer and plugins
+sudo apt-get install gir1.2-gstreamer-1.0 gir1.2-gst-plugins-bad-1.0 gir1.2-gst-plugins-base-1.0
 ```
 
 For reference, here are some extra external libraries I installed for the compilation (far from exhaustive, some might be optional):
 
 ```bash
-# For hotdoc
-apt-get install libxml2-dev libxslt1-dev cmake libyaml-dev libclang-dev llvm-dev libglib2.0-dev libjson-glib-dev
-pip3 install hotdoc
-# GStreamer
-apt-get install libmount-dev flex bison nasm libavfilter-dev gobject-introspection libgirepository1.0-dev libsrtp2-dev libjpeg-dev
+apt-get install libmount-dev flex bison nasm libavfilter-dev gobject-introspection \
+  libgirepository1.0-dev libsrtp2-dev libjpeg-dev libvpx-dev
 #apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev
 ```
 
