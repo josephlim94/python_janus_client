@@ -7,7 +7,7 @@ from concurrent.futures import TimeoutError
 # from core import JanusClient
 # from session import JanusSession
 from video_room_plugin import JanusVideoRoomPlugin
-from janus_client import JanusClient, JanusSession
+from janus_client import JanusClient, JanusSession, JanusAdminMonitorClient
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -61,10 +61,24 @@ async def subscribe_to_a_feed(session):
 # such as when wrapping Janus requests with another server
 api_secret = "janusrocks"
 async def main():
+    # Start connection
     client = JanusClient("wss://lt.limmengkiat.name.my:8989/",
-    api_secret=api_secret,
-    token="111")
+        api_secret=api_secret,
+        token="111")
     await client.connect(ssl=ssl_context)
+    adminClient = JanusAdminMonitorClient("wss://lt.limmengkiat.name.my:7989/", "janusoverlord")
+    await adminClient.connect(ssl=ssl_context)
+
+    # Authentication
+    token = "ccc"
+    # The following statements are not documented
+    # It's fine to add a token when it already exists
+    # The plugin access scope will be limited to the unified set of existing access scope
+    #   and new access scope when adding the token again. Thus, it is better to be explicit
+    #   for security purposes.
+    await adminClient.add_token(token, ["janus.plugin.videoroom"])
+    client.token = token
+
     # Create session
     session = await client.create_session(JanusSession)
 
@@ -73,8 +87,31 @@ async def main():
 
     # Destroy session
     await session.destroy()
+
+    # Delete token
+    await adminClient.remove_token(client.token)
+    client.token = None
+
     # Destroy connection
+    await adminClient.disconnect()
     await client.disconnect()
+    print("End of main")
+
+async def main2():
+    adminClient = JanusAdminMonitorClient("wss://lt.limmengkiat.name.my:7989/", "janusoverlord")
+    await adminClient.connect(ssl=ssl_context)
+
+    # print(await adminClient.info())
+    # print(await adminClient.ping())
+    print(await adminClient.list_tokens())
+
+    token = "cccs"
+    await adminClient.add_token(token, ['janus.plugin.voicemail', 'janus.plugin.audiobridge'])
+    await adminClient.list_tokens()
+    await adminClient.remove_token(token)
+
+    # Destroy connection
+    await adminClient.disconnect()
     print("End of main")
 
 def check_plugins():
@@ -88,4 +125,4 @@ def check_plugins():
 
 Gst.init(None)
 check_plugins()
-asyncio.run(main())
+asyncio.run(main2())
