@@ -23,6 +23,8 @@ pip install janus-client
 :heavy_check_mark: Create/destroy sessions  
 :heavy_check_mark: Create/destroy plugins  
 :heavy_check_mark: Handle multiple sessions and or multiple plugins at the same time  
+:heavy_check_mark: Support authentication with shared static secret (API key) and/or stored token  
+:heavy_check_mark: Expose Admin/Monitor API client  
 
 ### In Progress
 
