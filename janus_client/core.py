@@ -3,6 +3,7 @@ import asyncio
 import websockets
 import json
 import uuid
+import traceback
 
 '''
 Architecture design to handle Janus transactions and events
@@ -37,6 +38,7 @@ class JanusClient:
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
         self.ws = await websockets.connect(self.uri, subprotocols=["janus-protocol"], **kwargs)
         self.receive_message_task = asyncio.create_task(self.receive_message())
+        self.receive_message_task.add_done_callback(self.receive_message_done_cb)
         print("Connected")
 
     async def disconnect(self):
@@ -65,10 +67,18 @@ class JanusClient:
         janus_type = response["janus"]
         return ((janus_type == "event")
             or (janus_type == "detached")
-            or (janus_type == "webrtcup")
             or (janus_type == "media")
             or (janus_type == "slowlink")
             or (janus_type == "hangup"))
+
+    def receive_message_done_cb(self, task, context=None):
+        try:
+            # Check if any exceptions are raised
+            exception = task.exception()
+            traceback.print_tb(exception.__traceback__)
+            print(f"{type(exception)} : {exception}")
+        except Exception as e:
+            traceback.print_tb(e.__traceback__)
 
     async def receive_message(self):
         assert self.ws
@@ -77,13 +87,8 @@ class JanusClient:
             if self.is_async_response(response):
                 self.handle_async_response(response)
             else:
-                # WARNING: receive_message task will break with printing exception
-                #   when entering here without a transaction in response.
-                #   It happens when the asynchronous event is not recognized in
-                #   self.is_async_response()
-                # TODO: Find out how to print exceptions in created tasks
-                if response["transaction"] in self.transactions:
-                    await self.transactions[response["transaction"]].put(response)
+                transaction_id = response["transaction"]
+                await self.transactions[transaction_id].put(response)
 
     async def send(self, message: dict, **kwargs) -> dict():
         # Create transaction

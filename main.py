@@ -125,4 +125,4 @@ def check_plugins():
 
 Gst.init(None)
 check_plugins()
-asyncio.run(main2())
+asyncio.run(main())
