@@ -18,18 +18,21 @@ DO_VP8 = True
 DO_RTX = True
 # Choose the video source:
 # VIDEO_SRC="videotestsrc pattern=ball"
-VIDEO_SRC="v4l2src"
+VIDEO_SRC = "v4l2src"
 
 if DO_VP8:
-    ( encoder, payloader, rtp_encoding) = ( "vp8enc target-bitrate=100000 overshoot=25 undershoot=100 deadline=33000 keyframe-max-dist=1", "rtpvp8pay picture-id-mode=2", "VP8" )
+    (encoder, payloader, rtp_encoding) = (
+        "vp8enc target-bitrate=100000 overshoot=25 undershoot=100 deadline=33000 keyframe-max-dist=1", "rtpvp8pay picture-id-mode=2", "VP8")
 else:
-    ( encoder, payloader, rtp_encoding) = ( "x264enc", "rtph264pay aggregate-mode=zero-latency", "H264" )
+    (encoder, payloader, rtp_encoding) = ("x264enc",
+                                          "rtph264pay aggregate-mode=zero-latency", "H264")
 
 PIPELINE_DESC = '''
  webrtcbin name=sendrecv stun-server=stun://stun.l.google.com:19302
  {} ! video/x-raw,width=640,height=480 ! videoconvert ! queue !
  {} ! {} !  queue ! application/x-rtp,media=video,encoding-name={},payload=96 ! sendrecv.
 '''.format(VIDEO_SRC, encoder, payloader, rtp_encoding)
+
 
 class JanusVideoRoomPlugin(JanusPlugin):
     name = "janus.plugin.videoroom"
@@ -63,7 +66,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             "janus": "message",
             "body": {
                 "request": "join",
-                "ptype" : "publisher",
+                "ptype": "publisher",
                 "room": room_id,
                 "id": publisher_id,
                 "display": display_name,
@@ -87,7 +90,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         promise.interrupt()
 
         text = offer.sdp.as_text()
-        print ('Sending offer and publishing:\n%s' % text)
+        print('Sending offer and publishing:\n%s' % text)
         await self.send({
             "janus": "message",
             "body": {
@@ -120,7 +123,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             "janus": "message",
             "body": {
                 "request": "join",
-                "ptype" : "subscriber",
+                "ptype": "subscriber",
                 "room": room_id,
                 "feed": feed_id,
                 # "close_pc": True,
@@ -162,12 +165,13 @@ class JanusVideoRoomPlugin(JanusPlugin):
         # icemsg = {'candidate': candidate, 'sdpMLineIndex': mlineindex}
         # print ("Sending ICE", icemsg)
         # loop = asyncio.new_event_loop()
-        future = asyncio.run_coroutine_threadsafe(self.trickle(sdpMLineIndex, candidate), self.loop)
+        future = asyncio.run_coroutine_threadsafe(
+            self.trickle(sdpMLineIndex, candidate), self.loop)
         future.result()
 
     def on_incoming_decodebin_stream(self, _, pad):
         if not pad.has_current_caps():
-            print (pad, 'has no caps, ignoring')
+            print(pad, 'has no caps, ignoring')
             return
 
         caps = pad.get_current_caps()
@@ -211,13 +215,15 @@ class JanusVideoRoomPlugin(JanusPlugin):
     def start_pipeline(self):
         self.pipe = Gst.parse_launch(PIPELINE_DESC)
         self.webrtc = self.pipe.get_by_name('sendrecv')
-        self.webrtc.connect('on-negotiation-needed', self.on_negotiation_needed)
-        self.webrtc.connect('on-ice-candidate', self.send_ice_candidate_message)
+        self.webrtc.connect('on-negotiation-needed',
+                            self.on_negotiation_needed)
+        self.webrtc.connect('on-ice-candidate',
+                            self.send_ice_candidate_message)
         self.webrtc.connect('pad-added', self.on_incoming_stream)
 
         trans = self.webrtc.emit('get-transceiver', 0)
         if DO_RTX:
-            trans.set_property ('do-nack', True)
+            trans.set_property('do-nack', True)
         self.pipe.set_state(Gst.State.PLAYING)
 
     def extract_ice_from_sdp(self, sdp):
@@ -228,28 +234,30 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 if mlineindex < 0:
                     print("Received ice candidate in SDP before any m= line")
                     continue
-                print ('Received remote ice-candidate mlineindex {}: {}'.format(mlineindex, candidate))
+                print(
+                    'Received remote ice-candidate mlineindex {}: {}'.format(mlineindex, candidate))
                 self.webrtc.emit('add-ice-candidate', mlineindex, candidate)
             elif line.startswith("m="):
                 mlineindex += 1
 
     async def handle_sdp(self, msg):
-        print (msg)
+        print(msg)
         if 'sdp' in msg:
             sdp = msg['sdp']
             assert(msg['type'] == 'answer')
-            print ('Received answer:\n%s' % sdp)
+            print('Received answer:\n%s' % sdp)
             res, sdpmsg = GstSdp.SDPMessage.new()
             GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
 
-            answer = GstWebRTC.WebRTCSessionDescription.new(GstWebRTC.WebRTCSDPType.ANSWER, sdpmsg)
+            answer = GstWebRTC.WebRTCSessionDescription.new(
+                GstWebRTC.WebRTCSDPType.ANSWER, sdpmsg)
             promise = Gst.Promise.new()
             self.webrtc.emit('set-remote-description', answer, promise)
             promise.interrupt()
 
             # Extract ICE candidates from the SDP to work around a GStreamer
             # limitation in (at least) 1.16.2 and below
-            self.extract_ice_from_sdp (sdp)
+            self.extract_ice_from_sdp(sdp)
 
         elif 'ice' in msg:
             ice = msg['ice']
