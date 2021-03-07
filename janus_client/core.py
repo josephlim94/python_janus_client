@@ -22,12 +22,13 @@ class JanusSession
 '''
 
 class JanusClient:
-    def __init__(self, uri: str = ""):
+    def __init__(self, uri: str = "", api_secret: str = None):
         self.uri = uri
         self.transactions = dict()
         # self.message_received_notifier = asyncio.Condition()
         self.ws = None
         self.sessions = dict()
+        self.api_secret = api_secret
 
     async def connect(self, **kwargs: object) -> None:
         print("Connecting to: ", self.uri)
@@ -88,6 +89,10 @@ class JanusClient:
         message["transaction"] = transaction_id
         # Transaction ID must be in the dict to receive response
         self.transactions[transaction_id] = asyncio.Queue()
+
+        # Authentication
+        if self.api_secret is not None:
+            message["apisecret"] = self.api_secret
 
         # Send the message
         print(json.dumps(message))

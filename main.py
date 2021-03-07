@@ -58,7 +58,7 @@ async def subscribe_to_a_feed(session):
     await plugin_handle.destroy()
 
 async def main():
-    client = JanusClient("wss://lt.limmengkiat.name.my:8989/")
+    client = JanusClient("wss://lt.limmengkiat.name.my:8989/", api_secret="janusrocks")
     await client.connect(ssl=ssl_context)
     # Create session
     session = await client.create_session(JanusSession)
