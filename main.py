@@ -57,8 +57,13 @@ async def subscribe_to_a_feed(session):
     # Destroy plugin
     await plugin_handle.destroy()
 
+# API secret is used when you're communicating with Janus as a server,
+# such as when wrapping Janus requests with another server
+api_secret = "janusrocks"
 async def main():
-    client = JanusClient("wss://lt.limmengkiat.name.my:8989/", api_secret="janusrocks")
+    client = JanusClient("wss://lt.limmengkiat.name.my:8989/",
+    api_secret=api_secret,
+    token="111")
     await client.connect(ssl=ssl_context)
     # Create session
     session = await client.create_session(JanusSession)
