@@ -43,6 +43,9 @@ class JanusVideoRoomPlugin(JanusPlugin):
         self.gst_webrtc_ready = asyncio.Event()
         self.loop = asyncio.get_running_loop()
 
+        # Create a new pipeline, elements will be added to this.
+        self.pipeline = Gst.Pipeline.new()
+
     def handle_async_response(self, response):
         if response["janus"] == "event":
             print("Event:", response)
@@ -80,13 +83,13 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await self.gst_webrtc_ready.wait()
         # Create offer
         promise = Gst.Promise.new()
-        self.webrtc.emit('create-offer', None, promise)
+        self.webrtcbin.emit('create-offer', None, promise)
         promise.wait()
         reply = promise.get_reply()
         offer = reply.get_value('offer')
         # Set local description
         promise = Gst.Promise.new()
-        self.webrtc.emit('set-local-description', offer, promise)
+        self.webrtcbin.emit('set-local-description', offer, promise)
         promise.interrupt()
 
         text = offer.sdp.as_text()
@@ -108,7 +111,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def unpublish(self):
         print("Set pipeline to null")
-        self.pipe.set_state(Gst.State.NULL)
+        self.pipeline.set_state(Gst.State.NULL)
         print("Set pipeline complete")
         await self.send({
             "janus": "message",
@@ -119,6 +122,18 @@ class JanusVideoRoomPlugin(JanusPlugin):
         self.gst_webrtc_ready.clear()
 
     async def subscribe(self, room_id, feed_id):
+        # Create webrtcbin element named app
+        self.webrtcbin = Gst.ElementFactory.make("webrtcbin", "app")
+        self.webrtcbin.connect('on-negotiation-needed',
+                            self.on_negotiation_needed)
+        self.webrtcbin.connect('on-ice-candidate',
+                            self.send_ice_candidate_message)
+        self.webrtcbin.connect('pad-added', self.on_incoming_stream)
+        self.pipeline.add(self.webrtcbin)
+        # trans = self.webrtcbin.emit('get-transceiver', 0)
+        # if DO_RTX:
+        #     trans.set_property('do-nack', True)
+        self.pipeline.set_state(Gst.State.PLAYING)
         await self.send({
             "janus": "message",
             "body": {
@@ -138,6 +153,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await self.joined_event.wait()
 
     async def unsubscribe(self):
+        self.pipeline.set_state(Gst.State.NULL)
         await self.send({
             "janus": "message",
             "body": {
@@ -145,6 +161,30 @@ class JanusVideoRoomPlugin(JanusPlugin):
             }
         })
         self.joined_event.clear()
+        self.gst_webrtc_ready.clear()
+
+    async def start(self, answer=None):
+        payload = {
+            "janus": "message",
+            "body": {
+                "request": "start"
+            }
+        }
+        if answer:
+            payload["jsep"] = {
+                'sdp': answer,
+                'type': 'answer',
+                'trickle': True,
+            }
+        await self.send(payload)
+
+    async def pause(self):
+        await self.send({
+            "janus": "message",
+            "body": {
+                "request": "pause",
+            }
+        })
 
     async def list_participants(self, room_id) -> list:
         response = await self.send({
@@ -157,19 +197,22 @@ class JanusVideoRoomPlugin(JanusPlugin):
         return response["plugindata"]["data"]["participants"]
 
     def on_negotiation_needed(self, element):
+        print("on_negotiation_needed called")
         self.gst_webrtc_ready.set()
         # promise = Gst.Promise.new_with_change_func(self.on_offer_created, element, None)
         # element.emit('create-offer', None, promise)
 
     def send_ice_candidate_message(self, _, sdpMLineIndex, candidate):
-        # icemsg = {'candidate': candidate, 'sdpMLineIndex': mlineindex}
-        # print ("Sending ICE", icemsg)
+        icemsg = {'candidate': candidate, 'sdpMLineIndex': sdpMLineIndex}
+        print ("Sending ICE", icemsg)
         # loop = asyncio.new_event_loop()
         future = asyncio.run_coroutine_threadsafe(
             self.trickle(sdpMLineIndex, candidate), self.loop)
         future.result()
 
     def on_incoming_decodebin_stream(self, _, pad):
+        # print("on_incoming_decodebin_stream called")
+        # raise NotImplementedError
         if not pad.has_current_caps():
             print(pad, 'has no caps, ignoring')
             return
@@ -180,10 +223,10 @@ class JanusVideoRoomPlugin(JanusPlugin):
             q = Gst.ElementFactory.make('queue')
             conv = Gst.ElementFactory.make('videoconvert')
             sink = Gst.ElementFactory.make('autovideosink')
-            self.pipe.add(q)
-            self.pipe.add(conv)
-            self.pipe.add(sink)
-            self.pipe.sync_children_states()
+            self.pipeline.add(q)
+            self.pipeline.add(conv)
+            self.pipeline.add(sink)
+            self.pipeline.sync_children_states()
             pad.link(q.get_static_pad('sink'))
             q.link(conv)
             conv.link(sink)
@@ -192,11 +235,11 @@ class JanusVideoRoomPlugin(JanusPlugin):
             conv = Gst.ElementFactory.make('audioconvert')
             resample = Gst.ElementFactory.make('audioresample')
             sink = Gst.ElementFactory.make('autoaudiosink')
-            self.pipe.add(q)
-            self.pipe.add(conv)
-            self.pipe.add(resample)
-            self.pipe.add(sink)
-            self.pipe.sync_children_states()
+            self.pipeline.add(q)
+            self.pipeline.add(conv)
+            self.pipeline.add(resample)
+            self.pipeline.add(sink)
+            self.pipeline.sync_children_states()
             pad.link(q.get_static_pad('sink'))
             q.link(conv)
             conv.link(resample)
@@ -208,23 +251,23 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         decodebin = Gst.ElementFactory.make('decodebin')
         decodebin.connect('pad-added', self.on_incoming_decodebin_stream)
-        self.pipe.add(decodebin)
+        self.pipeline.add(decodebin)
         decodebin.sync_state_with_parent()
-        self.webrtc.link(decodebin)
+        self.webrtcbin.link(decodebin)
 
     def start_pipeline(self):
-        self.pipe = Gst.parse_launch(PIPELINE_DESC)
-        self.webrtc = self.pipe.get_by_name('sendrecv')
-        self.webrtc.connect('on-negotiation-needed',
+        self.pipeline = Gst.parse_launch(PIPELINE_DESC)
+        self.webrtcbin = self.pipeline.get_by_name('sendrecv')
+        self.webrtcbin.connect('on-negotiation-needed',
                             self.on_negotiation_needed)
-        self.webrtc.connect('on-ice-candidate',
+        self.webrtcbin.connect('on-ice-candidate',
                             self.send_ice_candidate_message)
-        self.webrtc.connect('pad-added', self.on_incoming_stream)
+        self.webrtcbin.connect('pad-added', self.on_incoming_stream)
 
-        trans = self.webrtc.emit('get-transceiver', 0)
+        trans = self.webrtcbin.emit('get-transceiver', 0)
         if DO_RTX:
             trans.set_property('do-nack', True)
-        self.pipe.set_state(Gst.State.PLAYING)
+        self.pipeline.set_state(Gst.State.PLAYING)
 
     def extract_ice_from_sdp(self, sdp):
         mlineindex = -1
@@ -236,7 +279,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
                     continue
                 print(
                     'Received remote ice-candidate mlineindex {}: {}'.format(mlineindex, candidate))
-                self.webrtc.emit('add-ice-candidate', mlineindex, candidate)
+                self.webrtcbin.emit('add-ice-candidate', mlineindex, candidate)
             elif line.startswith("m="):
                 mlineindex += 1
 
@@ -244,23 +287,71 @@ class JanusVideoRoomPlugin(JanusPlugin):
         print(msg)
         if 'sdp' in msg:
             sdp = msg['sdp']
-            assert(msg['type'] == 'answer')
-            print('Received answer:\n%s' % sdp)
-            res, sdpmsg = GstSdp.SDPMessage.new()
-            GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
+            if msg['type'] == 'answer':
+                print('Received answer:\n%s' % sdp)
+                res, sdpmsg = GstSdp.SDPMessage.new()
+                GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
 
-            answer = GstWebRTC.WebRTCSessionDescription.new(
-                GstWebRTC.WebRTCSDPType.ANSWER, sdpmsg)
-            promise = Gst.Promise.new()
-            self.webrtc.emit('set-remote-description', answer, promise)
-            promise.interrupt()
+                answer = GstWebRTC.WebRTCSessionDescription.new(
+                    GstWebRTC.WebRTCSDPType.ANSWER, sdpmsg)
+                promise = Gst.Promise.new()
+                self.webrtcbin.emit('set-remote-description', answer, promise)
+                promise.interrupt()
 
-            # Extract ICE candidates from the SDP to work around a GStreamer
-            # limitation in (at least) 1.16.2 and below
-            self.extract_ice_from_sdp(sdp)
+                # Extract ICE candidates from the SDP to work around a GStreamer
+                # limitation in (at least) 1.16.2 and below
+                self.extract_ice_from_sdp(sdp)
+            elif msg['type'] == 'offer':
+                print('Received offer:\n%s' % sdp)
+                res, sdpmsg = GstSdp.SDPMessage.new()
+                GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
+
+                offer = GstWebRTC.WebRTCSessionDescription.new(
+                    GstWebRTC.WebRTCSDPType.OFFER, sdpmsg)
+                promise = Gst.Promise.new()
+                self.webrtcbin.emit('set-remote-description', offer, promise)
+                promise.interrupt()
+
+                # Extract ICE candidates from the SDP to work around a GStreamer
+                # limitation in (at least) 1.16.2 and below
+                self.extract_ice_from_sdp(sdp)
+
+                # direction = GstWebRTC.WebRTCRTPTransceiverDirection.RECVONLY
+                # caps = Gst.caps_from_string("application/x-rtp,media=video,encoding-name=VP8/9000,payload=96")
+                # self.webrtcbin.emit('add-transceiver', direction, caps)
+
+                # Create answer
+                promise = Gst.Promise.new()
+                self.webrtcbin.emit('create-answer', None, promise)
+                promise.wait()
+                reply = promise.get_reply()
+                answer = reply.get_value('answer')
+                # Set local description
+                promise = Gst.Promise.new()
+                self.webrtcbin.emit('set-local-description', answer, promise)
+                promise.interrupt()
+
+                answer_text = answer.sdp.as_text()
+                await self.start(answer_text)
+            else:
+                raise Exception("Invalid sdp message")
+            # assert(msg['type'] == 'answer')
+            # print('Received answer:\n%s' % sdp)
+            # res, sdpmsg = GstSdp.SDPMessage.new()
+            # GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
+
+            # answer = GstWebRTC.WebRTCSessionDescription.new(
+            #     GstWebRTC.WebRTCSDPType.ANSWER, sdpmsg)
+            # promise = Gst.Promise.new()
+            # self.webrtcbin.emit('set-remote-description', answer, promise)
+            # promise.interrupt()
+
+            # # Extract ICE candidates from the SDP to work around a GStreamer
+            # # limitation in (at least) 1.16.2 and below
+            # self.extract_ice_from_sdp(sdp)
 
         elif 'ice' in msg:
             ice = msg['ice']
             candidate = ice['candidate']
             sdpmlineindex = ice['sdpMLineIndex']
-            self.webrtc.emit('add-ice-candidate', sdpmlineindex, candidate)
+            self.webrtcbin.emit('add-ice-candidate', sdpmlineindex, candidate)

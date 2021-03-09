@@ -48,7 +48,7 @@ async def subscribe_to_a_feed(session):
         participant_id = participants_data_1["id"]
 
         await plugin_handle.subscribe(1234, participant_id)
-        await asyncio.sleep(5)
+        await asyncio.sleep(30)
         await plugin_handle.unsubscribe()
     # await plugin_handle.join(1234, 333, "qweqwe")
     # await asyncio.sleep(5)
