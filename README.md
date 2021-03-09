@@ -130,11 +130,17 @@ meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-
 # Build and install
 ninja -C build_directory/
 ninja -C build_directory/ install
-# pycairo and gi is installed at /usr/local/lib/python3.7/site-packages
-# Add the following line to .bashrc as required
+```
+
+To make sure that python is able to import gi module and find the repositories, add these variables to your shell environment:
+
+```bash
+# Modify the path to suit your environment
+# For me, pycairo and gi is installed at /usr/local/lib/python3.7/site-packages
+# Solves "ModuleNotFoundError: No module named 'gi'"
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.7/site-packages
-# Install GObject introspection data for GStreamer and plugins
-sudo apt-get install gir1.2-gstreamer-1.0 gir1.2-gst-plugins-bad-1.0 gir1.2-gst-plugins-base-1.0
+# Solves "ValueError: Namespace Gst not available"
+export GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0
 ```
 
 For reference, here are some extra external libraries I installed for the compilation (far from exhaustive, some might be optional):
