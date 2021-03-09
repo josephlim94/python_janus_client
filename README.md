@@ -113,7 +113,7 @@ Clone gst-build repo and build it. Warning, I'm in Malaysia and the download spe
 For advanced users, you can manually change the meson build file to pull from github mirror if the gitlab url is slow for you too.  
 [GStreamer mirror](https://github.com/GStreamer)
 
-Since we are recompiling GStreamer, do not install python3-gi and python3-gst-1.0 from distribution. Also do not install pycairo and PyGObject from distribution.  
+Since we are recompiling GStreamer, do not install python3-gi and python3-gst-1.0 from distribution. Also do not install pycairo and PyGObject from PyPI.  
 This could save yourself from some confusion.
 
 Below is a summary of commands to build GStreamer, please refer to [Building from source using meson](https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-meson.html?gi-language=python#building-from-source-using-meson) for more info.
