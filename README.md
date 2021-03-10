@@ -146,7 +146,7 @@ export GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0
 For reference, here are some extra external libraries I installed for the compilation (far from exhaustive, some might be optional):
 
 ```bash
-apt-get install libmount-dev flex bison nasm libavfilter-dev gobject-introspection \
+apt-get install libmount-dev flex bison nasm libssl-dev libavfilter-dev gobject-introspection \
   libgirepository1.0-dev libsrtp2-dev libjpeg-dev libvpx-dev
 #apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev
 ```
