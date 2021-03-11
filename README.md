@@ -127,6 +127,13 @@ meson build_directory
 # Configure build
 meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled \
   -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled -Dgst-plugins-good:vpx=enabled build_directory/
+# Note: Check that cairo will not be compiled after configuring, as it may break your desktop
+#       Install libcairo2-dev to prevent recompiling it
+# Note 2: Maybe install libghc-gi-gdkx11-dev to prevent recompiling gdk-x11 and gdk-pixbuf
+# Note 3: I think there is a high chance that your OS already has GStreamer installed, and installing
+#         a self compiled GStreamer would most probably cause imcompatibilities at many places.
+#         So I think it might be a good idea to use only "ninja -C build_directory/ devenv".
+#         Should look further into gst-uninstalled.
 # Build and install
 ninja -C build_directory/
 ninja -C build_directory/ install
