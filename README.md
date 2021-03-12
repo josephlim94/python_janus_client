@@ -113,8 +113,7 @@ Clone gst-build repo and build it. Warning, I'm in Malaysia and the download spe
 For advanced users, you can manually change the meson build file to pull from github mirror if the gitlab url is slow for you too.  
 [GStreamer mirror](https://github.com/GStreamer)
 
-Since we are recompiling GStreamer, do not install python3-gi and python3-gst-1.0 from distribution. Also do not install pycairo and PyGObject from PyPI.  
-This could save yourself from some confusion.
+We will be using [gst-build](https://github.com/GStreamer/gst-build) to recompile GStreamer. Later it's up to you to install the build or not, but I recommend using their development environment instead.
 
 Below is a summary of commands to build GStreamer, please refer to [Building from source using meson](https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-meson.html?gi-language=python#building-from-source-using-meson) for more info.
 
@@ -126,35 +125,35 @@ cd gst-build
 meson build_directory
 # Configure build
 meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled \
-  -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled -Dgst-plugins-good:vpx=enabled build_directory/
+  -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled -Dgst-plugins-good:vpx=enabled builddir/
 # Note: Check that cairo will not be compiled after configuring, as it may break your desktop
 #       Install libcairo2-dev to prevent recompiling it
-# Note 2: Maybe install libghc-gi-gdkx11-dev to prevent recompiling gdk-x11 and gdk-pixbuf
-# Note 3: I think there is a high chance that your OS already has GStreamer installed, and installing
-#         a self compiled GStreamer would most probably cause imcompatibilities at many places.
-#         So I think it might be a good idea to use only "ninja -C build_directory/ devenv".
-#         Should look further into gst-uninstalled.
-# Build and install
-ninja -C build_directory/
-ninja -C build_directory/ install
-```
-
-To make sure that python is able to import gi module and find the repositories, add these variables to your shell environment:
-
-```bash
-# Modify the path to suit your environment
-# For me, pycairo and gi is installed at /usr/local/lib/python3.7/site-packages
-# Solves "ModuleNotFoundError: No module named 'gi'"
-export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.7/site-packages
-# Solves "ValueError: Namespace Gst not available"
-export GI_TYPELIB_PATH=/usr/local/lib/x86_64-linux-gnu/girepository-1.0
+# Build
+ninja -C builddir/
+# Install (not recommended)
+#ninja -C builddir/ install
+# Use gst-build provided development environment for GStreamer.
+# Option 1:
+# Opens a new shell, not friendly to Visual Studio Code
+ninja -C builddir/ devenv
+# Option 2:
+# Override environment variables to look for the recompiled GStreamer. Possible to add into .bashrc
+eval $(~/gst-build/gst-env.py --builddir=$HOME/gst-build/builddir --srcdir=$HOME/gst-build --only-environment)
+# Option 2.1:
+# Getting the environment variable from the python script takes significant amount of time on my RPI 2.
+# Since I believe it is static until the next time you recompile it, I save it into a file and load from there instead.
+~/gst-build/gst-env.py --builddir=$HOME/gst-build/builddir --srcdir=$HOME/gst-build --only-environment \
+  > ~/gst-env-static.txt
+# There's a line setting PWD and OLDPWD inside gst-env-static.txt, and that is not static.
+# Let's just comment them out or delete them manually. Then:
+echo "source ~/gst-env-static.txt" >> ~/.bashrc
 ```
 
 For reference, here are some extra external libraries I installed for the compilation (far from exhaustive, some might be optional):
 
 ```bash
 apt-get install libmount-dev flex bison nasm libssl-dev libavfilter-dev gobject-introspection \
-  libgirepository1.0-dev libsrtp2-dev libjpeg-dev libvpx-dev
+  libgirepository1.0-dev libsrtp2-dev libjpeg-dev libvpx-dev libcairo2-dev
 #apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev
 ```
 
