@@ -1,4 +1,4 @@
-# Janus Client for Python
+# Janus Client in Python
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg)
 
