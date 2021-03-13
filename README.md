@@ -95,19 +95,19 @@ asyncio.run(main())
 
 ### Quirks
 
-On my RPI 2 Raspbian Buster, there's a problem with GStreamer installed from distribution repository.
+1. On my RPI 2 Raspbian Buster, there's a problem with GStreamer installed from distribution repository.
 It's complaining about ssl and then failing DTLS.  
 Referring to this PR: [webrtcbin: fix DTLS when receivebin is set to DROP](https://gitlab.freedesktop.org/gstreamer/gst-plugins-bad/-/merge_requests/407)  
 I believe there is a bug in the distributed GStreamer version (v1.14.4) thus I recompiled it on my RPI 2  
 There's also a chance that it's a problem with openssl itself, an incompatibility.
 Refering to this gist: [OpenSSL DTLS problem in Debian buster](https://gist.github.com/feymartynov/fdfa1a9691d77f2ef9bd7468ba9b8710)
 
-Because of these, please recompile GStreamer with version above 1.14.4.
+    Because of these, please recompile GStreamer with version above 1.14.4.
 
-If recompiling GStreamer on RPI, there's this issue: [rpicamsrc 1.18.3 failed](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues/839).  
+2. When recompiling GStreamer on RPI, there's this issue: [rpicamsrc 1.18.3 failed](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/issues/839).  
 You can patch the build with this PR: [rpicamsrc: depend on posix threads and vchiq_arm](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/merge_requests/875/diffs) or build with master branch.
 
-And then another quirk, the example was still unable to setup a peer connection to my janus server at lt.limmengkiat.name.my. I had to enable ice_tcp (ice_tcp=true) in janus.jcfg for it to work. I don't know why yet.  
+3. The example was still unable to setup a peer connection to my janus server at lt.limmengkiat.name.my. I had to enable ice_tcp (ice_tcp=true) in janus.jcfg for it to work. I don't know why yet.  
 ![Janus Enable ICE TCP](https://raw.githubusercontent.com/josephlim94/janus_gst_client_py/master/janus_enable_ice_tcp.png "Janus Enable ICE TCP")
 
 ### Recompiling GStreamer
