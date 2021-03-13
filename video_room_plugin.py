@@ -286,7 +286,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             sdp = jsep['sdp']
             if jsep['type'] == 'answer':
                 print('Received answer:\n%s' % sdp)
-                res, sdpmsg = GstSdp.SDPMessage.new()
+                _, sdpmsg = GstSdp.SDPMessage.new()
                 GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
 
                 answer = GstWebRTC.WebRTCSessionDescription.new(
@@ -301,7 +301,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 # self.extract_ice_from_sdp(sdp)
             elif jsep['type'] == 'offer':
                 print('Received offer:\n%s' % sdp)
-                res, sdpmsg = GstSdp.SDPMessage.new()
+                _, sdpmsg = GstSdp.SDPMessage.new()
                 GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
 
                 offer = GstWebRTC.WebRTCSessionDescription.new(
