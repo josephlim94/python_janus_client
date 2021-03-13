@@ -23,17 +23,30 @@ class JanusSession
 '''
 
 class JanusClient:
-    def __init__(self, uri: str = "", api_secret: str = None,
+    """Janus client instance, connected through websocket"""
+
+    def __init__(self, uri: str, api_secret: str = None,
             token: str = None):
+        """Initialize client instance
+
+        :param uri: Janus server address
+        :param api_secret: (optional) API key for shared static secret authentication
+        :param token: (optional) Token for shared token based authentication
+        """
+
+        self.ws = None
         self.uri = uri
         self.transactions = dict()
-        # self.message_received_notifier = asyncio.Condition()
-        self.ws = None
         self.sessions = dict()
         self.api_secret = api_secret
         self.token = token
 
     async def connect(self, **kwargs: object) -> None:
+        """Connect to server
+
+        All extra keyword arguments will be passed to websockets.connect
+        """
+
         print("Connecting to: ", self.uri)
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
         self.ws = await websockets.connect(self.uri, subprotocols=["janus-protocol"], **kwargs)
@@ -42,26 +55,11 @@ class JanusClient:
         print("Connected")
 
     async def disconnect(self):
+        """Disconnect from server"""
+
         print("Disconnecting")
         self.receive_message_task.cancel()
         await self.ws.close()
-
-    # async def add_transaction_response(self, response: dict) -> None:
-    #     if response["transaction"] in self.transactions:
-    #         await self.transactions[response["transaction"]].put(response)
-    #     # # Only add the response if transaction ID is found
-    #     # if response["transaction"] in self.transactions:
-    #     #     async with self.message_received_notifier:
-    #     #         self.transactions[response["transaction"]].put(response)
-    #     #         self.message_received_notifier.notify_all()
-
-    # async def get_transaction_reply(self, transaction_id):
-    #     return await self.transactions[transaction_id].get()
-    #     # async with self.message_received_notifier:
-    #     #     # Wait until transaction contains message
-    #     #     await self.message_received_notifier.wait_for(lambda: not self.transactions[transaction_id].empty())
-    #     #     # Get and return the message
-    #     #     return await self.transactions[transaction_id].get()
 
     def is_async_response(self, response):
         janus_type = response["janus"]
@@ -95,7 +93,14 @@ class JanusClient:
                 transaction_id = response["transaction"]
                 await self.transactions[transaction_id].put(response)
 
-    async def send(self, message: dict, **kwargs) -> dict():
+    async def send(self, message: dict) -> dict():
+        """Semd message to server
+
+        :param message: JSON serializable dictionary to send
+
+        :returns: Synchronous response from Janus server
+
+        """
         # Create transaction
         transaction_id = uuid.uuid4().hex
         message["transaction"] = transaction_id
@@ -134,7 +139,12 @@ class JanusClient:
             # This is response for self
             print("Async event for Janus client core:", response)
 
-    async def create_session(self, session_type: object):
+    async def create_session(self, session_type: object) -> object:
+        """Create Janus session instance
+
+        :param session_type: Class type of session. Should be JanusSession.
+        """
+
         response = await self.send({
             "janus": "create",
         })

@@ -61,7 +61,7 @@ async def subscribe_to_a_feed(session):
 api_secret = "janusrocks"
 async def main():
     # Start connection
-    client = JanusClient("wss://lt.limmengkiat.name.my:8989/",
+    client = JanusClient(uri="wss://lt.limmengkiat.name.my:8989/",
         api_secret=api_secret,
         token="111")
     await client.connect(ssl=ssl_context)
