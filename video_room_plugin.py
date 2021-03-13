@@ -17,8 +17,8 @@ DO_VP8 = True
 # Set to False to disable RTX (lost packet retransmission)
 DO_RTX = True
 # Choose the video source:
-# VIDEO_SRC="videotestsrc pattern=ball"
-VIDEO_SRC = "v4l2src"
+VIDEO_SRC="videotestsrc pattern=ball"
+# VIDEO_SRC = "v4l2src"
 
 if DO_VP8:
     (encoder, payloader, rtp_encoding) = (
@@ -48,7 +48,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     def handle_async_response(self, response):
         if response["janus"] == "event":
-            print("Event:", response)
+            print("Event response:", response)
             if "plugindata" in response:
                 if response["plugindata"]["data"]["videoroom"] == "attached":
                     # Subscriber attached
@@ -59,10 +59,9 @@ class JanusVideoRoomPlugin(JanusPlugin):
         else:
             print("Unimplemented response handle:", response["janus"])
             print(response)
-        # Handle JSEP
+        # Handle JSEP. Could be answer or offer.
         if "jsep" in response:
-            # print("Got JSEP:", response["jsep"])
-            asyncio.create_task(self.handle_sdp(response["jsep"]))
+            asyncio.create_task(self.handle_jsep(response["jsep"]))
 
     async def join(self, room_id, publisher_id, display_name):
         await self.send({
@@ -211,8 +210,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
         future.result()
 
     def on_incoming_decodebin_stream(self, _, pad):
-        # print("on_incoming_decodebin_stream called")
-        # raise NotImplementedError
         if not pad.has_current_caps():
             print(pad, 'has no caps, ignoring')
             return
@@ -283,11 +280,11 @@ class JanusVideoRoomPlugin(JanusPlugin):
             elif line.startswith("m="):
                 mlineindex += 1
 
-    async def handle_sdp(self, msg):
-        print(msg)
-        if 'sdp' in msg:
-            sdp = msg['sdp']
-            if msg['type'] == 'answer':
+    async def handle_jsep(self, jsep):
+        print(jsep)
+        if 'sdp' in jsep:
+            sdp = jsep['sdp']
+            if jsep['type'] == 'answer':
                 print('Received answer:\n%s' % sdp)
                 res, sdpmsg = GstSdp.SDPMessage.new()
                 GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
@@ -300,8 +297,9 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
                 # Extract ICE candidates from the SDP to work around a GStreamer
                 # limitation in (at least) 1.16.2 and below
-                self.extract_ice_from_sdp(sdp)
-            elif msg['type'] == 'offer':
+                # This is tested to be not needed on 1.19.0.1
+                # self.extract_ice_from_sdp(sdp)
+            elif jsep['type'] == 'offer':
                 print('Received offer:\n%s' % sdp)
                 res, sdpmsg = GstSdp.SDPMessage.new()
                 GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
@@ -334,24 +332,10 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 answer_text = answer.sdp.as_text()
                 await self.start(answer_text)
             else:
-                raise Exception("Invalid sdp message")
-            # assert(msg['type'] == 'answer')
-            # print('Received answer:\n%s' % sdp)
-            # res, sdpmsg = GstSdp.SDPMessage.new()
-            # GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
+                raise Exception("Invalid JSEP")
 
-            # answer = GstWebRTC.WebRTCSessionDescription.new(
-            #     GstWebRTC.WebRTCSDPType.ANSWER, sdpmsg)
-            # promise = Gst.Promise.new()
-            # self.webrtcbin.emit('set-remote-description', answer, promise)
-            # promise.interrupt()
-
-            # # Extract ICE candidates from the SDP to work around a GStreamer
-            # # limitation in (at least) 1.16.2 and below
-            # self.extract_ice_from_sdp(sdp)
-
-        elif 'ice' in msg:
-            ice = msg['ice']
+        elif 'ice' in jsep:
+            ice = jsep['ice']
             candidate = ice['candidate']
-            sdpmlineindex = ice['sdpMLineIndex']
-            self.webrtcbin.emit('add-ice-candidate', sdpmlineindex, candidate)
+            sdpMLineIndex = ice['sdpMLineIndex']
+            self.webrtcbin.emit('add-ice-candidate', sdpMLineIndex, candidate)
