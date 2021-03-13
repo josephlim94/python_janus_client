@@ -16,6 +16,10 @@ pip install janus-client
 
 ## Description
 
+The package is implementing a general purpose client that can communicate with a Janus server.
+
+Examples like VideoRoom plugin are also included in the package, but currently it depends on GStreamer for WebRTC and media streaming, and it will not be automatically installed. The reason for this is because it's not trivial to install/recompile it. Please refer to [Quirks section](#quirks).
+
 ### Features
 
 :heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))  
@@ -37,17 +41,11 @@ pip install janus-client
 
 ---
 
-## Development
+## Usage
 
-The package is implementing a general purpose client that can communicate with a Janus server.
+In [main.py](./main.py), you will be able to find references on how to use the client in general, such as connecting and creating sessions.
 
-Examples like VideoRoom plugin are also included in the package, but currently it depends on GStreamer for WebRTC and media streaming, and it will not be automatically installed. The reason for this is because it's not trivial to install/recompile it. Please refer to [Quirks section](#quirks).
-
-You can refer to [video_room_plugin.py](./video_room_plugin.py) to see how a specific plugin handle is implemented.
-
-And in [main.py](./main.py), you will be able to find references on how to use the client in general, such as connecting and creating sessions.
-
-Essence:
+Example:
 
 ```python
 import asyncio
