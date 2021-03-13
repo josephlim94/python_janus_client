@@ -6,7 +6,7 @@ This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client writt
 
 ---
 
-## Installing
+## Install
 
 ```bash
 pip install janus-client
@@ -34,6 +34,7 @@ Examples like VideoRoom plugin are also included in the package, but currently i
 
 :clock3: Emit events to respective session and plugin handlers  
 :clock3: Create plugin for videoroom plugin  
+:clock3: Documentation  
 
 ### Dependencies
 
@@ -43,7 +44,10 @@ Examples like VideoRoom plugin are also included in the package, but currently i
 
 ## Usage
 
-In [main.py](./main.py), you will be able to find references on how to use the client in general, such as connecting and creating sessions.
+In [main.py](./main.py), you will see an example on how to use the client in general, such as connecting and creating sessions.  
+I use it to develop this package.
+
+For more details, please [Read The Docs](https://janus-client-in-python.readthedocs.io/en/latest/) (In Progress)
 
 Example:
 
