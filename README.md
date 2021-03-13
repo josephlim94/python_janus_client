@@ -108,7 +108,7 @@ If recompiling GStreamer on RPI, there's this issue: [rpicamsrc 1.18.3 failed](h
 You can patch the build with this PR: [rpicamsrc: depend on posix threads and vchiq_arm](https://gitlab.freedesktop.org/gstreamer/gst-plugins-good/-/merge_requests/875/diffs) or build with master branch.
 
 And then another quirk, the example was still unable to setup a peer connection to my janus server at lt.limmengkiat.name.my. I had to enable ice_tcp (ice_tcp=true) in janus.jcfg for it to work. I don't know why yet.  
-![Janus Enable ICE TCP](janus_enable_ice_tcp.png "Janus Enable ICE TCP")
+![Janus Enable ICE TCP](https://github.com/josephlim94/janus_gst_client_py/raw/dd82d664a196eb3a25eea3ef72b7d25a0456035b/janus_enable_ice_tcp.png)
 
 ### Recompiling GStreamer
 
