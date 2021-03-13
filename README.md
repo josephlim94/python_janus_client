@@ -39,20 +39,21 @@ pip install janus-client
 
 ## Development
 
-The package hopes to implement a general purpose client that can communicate with a Janus server. Examples like VideoRoom plugin is not part of their core features, so it's not included in the package.  
-But it can still be included as a default example though. It's up for discussion. :D The reason stopping me from doing that is because I'm depending on GStreamer to use WebRTC and media streaming, and it's not trivial to install it. Please refer to [Quirks section](#quirks).
+The package is implementing a general purpose client that can communicate with a Janus server.
+
+Examples like VideoRoom plugin are also included in the package, but currently it depends on GStreamer for WebRTC and media streaming, and it will not be automatically installed. The reason for this is because it's not trivial to install/recompile it. Please refer to [Quirks section](#quirks).
 
 You can refer to [video_room_plugin.py](./video_room_plugin.py) to see how a specific plugin handle is implemented.
 
-And in [main.py](./main.py), you will be able to find references on how to use the client in general such as connecting and creating sessions.
+And in [main.py](./main.py), you will be able to find references on how to use the client in general, such as connecting and creating sessions.
+
 Essence:
 
 ```python
 import asyncio
 import ssl
 import pathlib
-from janus_client import JanusClient, JanusSession
-from video_room_plugin import JanusVideoRoomPlugin
+from janus_client import JanusClient, JanusSession, JanusVideoRoomPlugin
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
@@ -107,59 +108,6 @@ You can patch the build with this PR: [rpicamsrc: depend on posix threads and vc
 And then another quirk, the example was still unable to setup a peer connection to my janus server at lt.limmengkiat.name.my. I had to enable ice_tcp (ice_tcp=true) in janus.jcfg for it to work. I don't know why yet.  
 ![Janus Enable ICE TCP](janus_enable_ice_tcp.png "Janus Enable ICE TCP")
 
-### Compiling GStreamer
+### Recompiling GStreamer
 
-Clone gst-build repo and build it. Warning, I'm in Malaysia and the download speed is very low when cloning projects in meson. One useful practice I learned is to enable VNC server on the RPI, and then use VNC viewer to open desktop and open terminal to start meson build. With this, your build won't stop when you close VNC Viewer so you can let it run overnight. It's better than doing direct SSH, and saves a bit electricity if you have a monitor.  
-For advanced users, you can manually change the meson build file to pull from github mirror if the gitlab url is slow for you too.  
-[GStreamer mirror](https://github.com/GStreamer)
-
-We will be using [gst-build](https://github.com/GStreamer/gst-build) to recompile GStreamer. Later it's up to you to install the build or not, but I recommend using their development environment instead.
-
-Below is a summary of commands to build GStreamer, please refer to [Building from source using meson](https://gstreamer.freedesktop.org/documentation/installing/building-from-source-using-meson.html?gi-language=python#building-from-source-using-meson) for more info.
-
-```bash
-# Clone build repo from Github mirror
-git clone https://github.com/GStreamer/gst-build.git
-cd gst-build
-# Initialise build
-meson builddir
-# Configure build
-meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled \
-  -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled -Dgst-plugins-good:vpx=enabled builddir/
-# Note: Check that cairo will not be compiled after configuring, as it may break your desktop
-#       Install libcairo2-dev to prevent recompiling it
-# Build
-ninja -C builddir/
-# Install (not recommended)
-#ninja -C builddir/ install
-# Use gst-build provided development environment for GStreamer.
-# Option 1:
-# Opens a new shell, not friendly to Visual Studio Code
-ninja -C builddir/ devenv
-# Option 2:
-# Override environment variables to look for the recompiled GStreamer. Possible to add into .bashrc
-eval $(~/gst-build/gst-env.py --builddir=$HOME/gst-build/builddir --srcdir=$HOME/gst-build --only-environment)
-# Option 2.1:
-# Getting the environment variable from the python script takes significant amount of time on my RPI 2.
-# Since I believe it is static until the next time you recompile it, I save it into a file and load from there instead.
-~/gst-build/gst-env.py --builddir=$HOME/gst-build/builddir --srcdir=$HOME/gst-build --only-environment \
-  > ~/gst-env-static.txt
-# There's a line setting PWD and OLDPWD inside gst-env-static.txt, and that is not static.
-# Let's just comment them out or delete them manually. Then:
-echo "source ~/gst-env-static.txt" >> ~/.bashrc
-```
-
-For reference, here are some extra external libraries I installed for the compilation (far from exhaustive, some might be optional):
-
-```bash
-apt-get install libmount-dev flex bison nasm libssl-dev libavfilter-dev gobject-introspection \
-  libgirepository1.0-dev libsrtp2-dev libjpeg-dev libvpx-dev libcairo2-dev
-```
-
-Test your installation by running "webrtc/janus/janusvideoroom.py" from [gst-examples repo](https://gitlab.freedesktop.org/gstreamer/gst-examples/).
-
-### Raspbian Stretch GStreamer
-
-In case you are wondering about other versions of Raspbian, I've tested with Raspbian Stretch.  
-The Gstreamer version distributed with it is v1.10.1, and webrtcbin is first introduced in v1.13.1, referencing [here](https://github.com/GStreamer/gst-plugins-bad/commit/1894293d6378c69548d974d2965e9decc1527654#diff-ebe724724a159c2186ae82d0adc58e960af844c0e472d37e5361ff9d157811a9).  
-So, still need to recompile GStreamer.
+Please refer to our Wiki page: [Compiling GStreamer](https://github.com/josephlim94/janus_gst_client_py/wiki/Compile-GStreamer)
