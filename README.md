@@ -122,7 +122,7 @@ Below is a summary of commands to build GStreamer, please refer to [Building fro
 git clone https://github.com/GStreamer/gst-build.git
 cd gst-build
 # Initialise build
-meson build_directory
+meson builddir
 # Configure build
 meson configure -Dpython=enabled -Dgst-plugins-bad:webrtc=enabled -Dgst-plugins-base:opus=enabled \
   -Dgst-plugins-bad:srtp=enabled -Ddoc=disabled -Dgst-plugins-good:vpx=enabled builddir/
@@ -154,7 +154,6 @@ For reference, here are some extra external libraries I installed for the compil
 ```bash
 apt-get install libmount-dev flex bison nasm libssl-dev libavfilter-dev gobject-introspection \
   libgirepository1.0-dev libsrtp2-dev libjpeg-dev libvpx-dev libcairo2-dev
-#apt-get install libgtk-3-dev libopus-dev alsa-tools alsa-utils libogg-dev
 ```
 
 Test your installation by running "webrtc/janus/janusvideoroom.py" from [gst-examples repo](https://gitlab.freedesktop.org/gstreamer/gst-examples/).
