@@ -1,5 +1,5 @@
 
-from janus_client import JanusPlugin
+from .plugin_base import JanusPlugin
 import asyncio
 
 import gi
