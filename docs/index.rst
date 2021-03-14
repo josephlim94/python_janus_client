@@ -44,5 +44,5 @@ Base Class
 VideoRoom Plugin
 ----------------
 
-.. autoclass:: janus_client.JanusVideoRoomPlugin
+.. autoclass:: janus_client.plugin_video_room.JanusVideoRoomPlugin
    :members:
