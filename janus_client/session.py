@@ -1,20 +1,20 @@
 
 from __future__ import annotations
 import asyncio
-from typing import TYPE_CHECKING, Type, TypeVar
+from typing import TYPE_CHECKING, Type, TypeVar, Dict
 from .plugin_base import JanusPlugin
 if TYPE_CHECKING:
     from .core import JanusClient
 
-U = TypeVar('U', bound=JanusPlugin)
+PluginBaseType = TypeVar('PluginBaseType', bound=JanusPlugin)
 
 class JanusSession:
     """Janus session instance, created by JanusClient"""
 
-    def __init__(self, client: JanusClient, session_id: str):
+    def __init__(self, client: JanusClient, session_id: int):
         self.client = client
         self.id = session_id
-        self.plugin_handles = dict()
+        self.plugin_handles: Dict[int, JanusPlugin] = dict()
         self.keepalive_task = asyncio.create_task(self.keepalive())
 
     async def destroy(self):
@@ -58,8 +58,10 @@ class JanusSession:
             # This is response for self
             print("Async event for session:", response)
 
-    async def create_plugin_handle(self, plugin_type: Type[U]) -> U:
+    async def create_plugin_handle(self, plugin_type: Type[PluginBaseType]) -> PluginBaseType:
         """Create plugin handle for the given plugin type
+
+        PluginBaseType = TypeVar('PluginBaseType', bound=JanusPlugin)
 
         :param plugin_type: Plugin type with janus_client.JanusPlugin as base class
         """
