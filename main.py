@@ -5,7 +5,8 @@ import asyncio
 import pathlib
 from concurrent.futures import TimeoutError
 
-from janus_client import JanusClient, JanusAdminMonitorClient, JanusVideoRoomPlugin
+from janus_client import JanusClient, JanusAdminMonitorClient
+from janus_client.plugin_video_room import JanusVideoRoomPlugin
 from typing import TYPE_CHECKING, Type
 if TYPE_CHECKING:
     from janus_client import JanusSession

@@ -55,7 +55,8 @@ Example:
 import asyncio
 import ssl
 import pathlib
-from janus_client import JanusClient, JanusSession, JanusVideoRoomPlugin
+from janus_client import JanusClient
+from janus_client.plugin_video_room import JanusVideoRoomPlugin
 
 ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
 localhost_pem = pathlib.Path(__file__).with_name("lt_limmengkiat_name_my.crt")
@@ -66,7 +67,7 @@ async def main():
     client = JanusClient("wss://lt.limmengkiat.name.my/janusws/")
     await client.connect(ssl=ssl_context)
     # Create session
-    session = await client.create_session(JanusSession)
+    session = await client.create_session()
     # Create plugin
     plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
 
