@@ -1,6 +1,10 @@
 
+from __future__ import annotations
 import asyncio
-from .core import JanusClient
+from typing import TYPE_CHECKING, Type
+from .plugin_base import JanusPlugin
+if TYPE_CHECKING:
+    from .core import JanusClient
 
 class JanusSession:
     """Janus session instance, created by JanusClient"""
@@ -25,7 +29,7 @@ class JanusSession:
         self.keepalive_task.cancel()
         self.client.destroy_session(self)
 
-    async def send(self, message: dict) -> dict():
+    async def send(self, message: dict) -> dict:
         if "session_id" in message:
             raise Exception("Session ID in message must not be manually added")
         message["session_id"] = self.id
@@ -52,7 +56,7 @@ class JanusSession:
             # This is response for self
             print("Async event for session:", response)
 
-    async def create_plugin_handle(self, plugin_type: object):
+    async def create_plugin_handle(self, plugin_type: Type[JanusPlugin]):
         """Create plugin handle for the given plugin type
 
         :param plugin_type: Plugin type with janus_client.JanusPlugin as base class

@@ -1,6 +1,9 @@
 
+from __future__ import annotations
 import asyncio
-from .session import JanusSession
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .session import JanusSession
 
 class JanusPlugin():
     """Base class to inherit when implementing a plugin"""
@@ -24,7 +27,7 @@ class JanusPlugin():
         await self.send(message)
         self.session.destroy_plugin_handle(self)
 
-    async def send(self, message: dict) -> dict():
+    async def send(self, message: dict) -> dict:
         """Send raw message to plugin
 
         Will auto attach plugin ID to the message.

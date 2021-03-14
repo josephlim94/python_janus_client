@@ -4,6 +4,8 @@ import websockets
 import json
 import uuid
 import traceback
+from .session import JanusSession
+from typing import Type
 
 '''
 Architecture design to handle Janus transactions and events
@@ -22,11 +24,12 @@ class JanusSession
         pass
 '''
 
+
 class JanusClient:
     """Janus client instance, connected through websocket"""
 
     def __init__(self, uri: str, api_secret: str = None,
-            token: str = None):
+                 token: str = None):
         """Initialize client instance
 
         :param uri: Janus server address
@@ -34,14 +37,14 @@ class JanusClient:
         :param token: (optional) Token for shared token based authentication
         """
 
-        self.ws = None
+        self.ws: websockets.WebSocketClientProtocol = None
         self.uri = uri
         self.transactions = dict()
         self.sessions = dict()
         self.api_secret = api_secret
         self.token = token
 
-    async def connect(self, **kwargs: object) -> None:
+    async def connect(self, **kwargs: dict) -> None:
         """Connect to server
 
         All extra keyword arguments will be passed to websockets.connect
@@ -49,26 +52,30 @@ class JanusClient:
 
         print("Connecting to: ", self.uri)
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
-        self.ws = await websockets.connect(self.uri, subprotocols=["janus-protocol"], **kwargs)
+        self.ws = await websockets.connect(self.uri,
+                                           subprotocols=[
+                                               "janus-admin-protocol"],
+                                           **kwargs)
         self.receive_message_task = asyncio.create_task(self.receive_message())
-        self.receive_message_task.add_done_callback(self.receive_message_done_cb)
+        self.receive_message_task.add_done_callback(
+            self.receive_message_done_cb)
         print("Connected")
 
-    async def disconnect(self):
+    async def disconnect(self) -> None:
         """Disconnect from server"""
 
         print("Disconnecting")
         self.receive_message_task.cancel()
         await self.ws.close()
 
-    def is_async_response(self, response):
+    def is_async_response(self, response: dict):
         janus_type = response["janus"]
         return ((janus_type == "event")
-            or (janus_type == "detached")
-            or (janus_type == "webrtcup")
-            or (janus_type == "media")
-            or (janus_type == "slowlink")
-            or (janus_type == "hangup"))
+                or (janus_type == "detached")
+                or (janus_type == "webrtcup")
+                or (janus_type == "media")
+                or (janus_type == "slowlink")
+                or (janus_type == "hangup"))
 
     def receive_message_done_cb(self, task, context=None):
         try:
@@ -93,7 +100,7 @@ class JanusClient:
                 transaction_id = response["transaction"]
                 await self.transactions[transaction_id].put(response)
 
-    async def send(self, message: dict) -> dict():
+    async def send(self, message: dict) -> dict:
         """Semd message to server
 
         :param message: JSON serializable dictionary to send
@@ -131,18 +138,21 @@ class JanusClient:
         if "session_id" in response:
             # This is response for session or plugin handle
             if response["session_id"] in self.sessions:
-                self.sessions[response["session_id"]].handle_async_response(response)
+                self.sessions[response["session_id"]
+                              ].handle_async_response(response)
             else:
-                print("Got response for session but session not found. Session ID:", response["session_id"])
+                print("Got response for session but session not found. Session ID:",
+                      response["session_id"])
                 print("Unhandeled response:", response)
         else:
             # This is response for self
             print("Async event for Janus client core:", response)
 
-    async def create_session(self, session_type: object) -> object:
+    async def create_session(self, session_type: Type[JanusSession] = JanusSession) -> JanusSession:
         """Create Janus session instance
 
-        :param session_type: Class type of session. Should be JanusSession.
+        :param session_type: Class type of session. Should be JanusSession,
+            no other options yet.
         """
 
         response = await self.send({
@@ -156,6 +166,8 @@ class JanusClient:
     def destroy_session(self, session):
         del self.sessions[session.id]
 
+
+"""
 # Take note to enable admin API with websockets in Janus, for example:
 # admin: {
 #         admin_ws = true                         # Whether to enable the Admin API WebSockets API
@@ -168,17 +180,23 @@ class JanusClient:
 #         #admin_wss_ip = "192.168.0.1"           # Whether we should bind this server to a specific IP address only
 #         #admin_ws_acl = "127.,192.168.0."       # Only allow requests coming from this comma separated list of addresses
 # }
+"""
+
+
 class JanusAdminMonitorClient:
     def __init__(self, uri: str, admin_secret: str):
+        self.ws: websockets.WebSocketClientProtocol = None
         self.uri = uri
         self.admin_secret = admin_secret
         self.transactions = dict()
-        self.ws = None
 
     async def connect(self, **kwargs: object) -> None:
         print("Connecting to: ", self.uri)
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
-        self.ws = await websockets.connect(self.uri, subprotocols=["janus-admin-protocol"], **kwargs)
+        self.ws = await websockets.connect(self.uri,
+                                           subprotocols=[
+                                               "janus-admin-protocol"],
+                                           **kwargs)
         self.receive_message_task = asyncio.create_task(self.receive_message())
         print("Connected")
 
@@ -199,7 +217,7 @@ class JanusAdminMonitorClient:
             if response["transaction"] in self.transactions:
                 await self.transactions[response["transaction"]].put(response)
 
-    async def send(self, message: dict, authenticate: bool = True) -> dict():
+    async def send(self, message: dict, authenticate: bool = True) -> dict:
         # Create transaction
         transaction_id = uuid.uuid4().hex
         message["transaction"] = transaction_id
@@ -239,7 +257,7 @@ class JanusAdminMonitorClient:
         return await self.send(message, authenticate=False)
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
-        payload = {
+        payload: dict = {
             "janus": "add_token",
             "token": token
         }

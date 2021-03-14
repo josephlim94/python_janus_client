@@ -51,7 +51,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         # Create a new pipeline, elements will be added to this.
         self.pipeline = Gst.Pipeline.new()
 
-    def handle_async_response(self, response):
+    def handle_async_response(self, response: dict):
         if response["janus"] == "event":
             print("Event response:", response)
             if "plugindata" in response:
@@ -91,7 +91,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         })
         await self.joined_event.wait()
 
-    async def publish(self):
+    async def publish(self) -> None:
         """Publish some hardcoded video stream to the handle
 
         Should already have joined a room before this. Then this will publish the
@@ -129,7 +129,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         })
         await self.joined_event.wait()
 
-    async def unpublish(self):
+    async def unpublish(self) -> None:
         """Stop publishing"""
 
         print("Set pipeline to null")
@@ -143,7 +143,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         })
         self.gst_webrtc_ready.clear()
 
-    async def subscribe(self, room_id: int, feed_id: int):
+    async def subscribe(self, room_id: int, feed_id: int) -> None:
         """Subscribe to a feed
 
         :param room_id: Room ID containing the feed. The same ID that
@@ -181,7 +181,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         })
         await self.joined_event.wait()
 
-    async def unsubscribe(self):
+    async def unsubscribe(self) -> None:
         """Unsubscribe from the feed"""
 
         self.pipeline.set_state(Gst.State.NULL)
@@ -194,7 +194,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         self.joined_event.clear()
         self.gst_webrtc_ready.clear()
 
-    async def start(self, answer=None):
+    async def start(self, answer=None) -> None:
         """Signal WebRTC start. I guess"""
 
         payload = {
@@ -211,7 +211,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             }
         await self.send(payload)
 
-    async def pause(self):
+    async def pause(self) -> None:
         """Pause media streaming"""
 
         await self.send({
