@@ -4,9 +4,7 @@ import asyncio
 import pathlib
 from concurrent.futures import TimeoutError
 
-# from core import JanusClient
-# from session import JanusSession
-from janus_client import JanusClient, JanusSession, JanusAdminMonitorClient, JanusVideoRoomPlugin
+from janus_client import JanusClient, JanusAdminMonitorClient, JanusVideoRoomPlugin
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -22,7 +20,7 @@ ssl_context.load_verify_locations(localhost_pem)
 
 async def publish_some_video(session):
     # Create plugin
-    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
+    plugin_handle: JanusVideoRoomPlugin = await session.create_plugin_handle(JanusVideoRoomPlugin)
 
     await plugin_handle.join(1234, 333, "qweqwe")
     await plugin_handle.publish()
@@ -37,7 +35,7 @@ async def publish_some_video(session):
 
 async def subscribe_to_a_feed(session):
     # Create plugin
-    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
+    plugin_handle: JanusVideoRoomPlugin = await session.create_plugin_handle(JanusVideoRoomPlugin)
 
     participants = await plugin_handle.list_participants(1234)
     print(participants)
@@ -79,7 +77,7 @@ async def main():
     client.token = token
 
     # Create session
-    session = await client.create_session(JanusSession)
+    session = await client.create_session()
 
     # await subscribe_to_a_feed(session)
     await publish_some_video(session)

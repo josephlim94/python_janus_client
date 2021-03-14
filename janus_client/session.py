@@ -56,7 +56,7 @@ class JanusSession:
             # This is response for self
             print("Async event for session:", response)
 
-    async def create_plugin_handle(self, plugin_type: Type[JanusPlugin]):
+    async def create_plugin_handle(self, plugin_type: Type[JanusPlugin]) -> JanusPlugin:
         """Create plugin handle for the given plugin type
 
         :param plugin_type: Plugin type with janus_client.JanusPlugin as base class

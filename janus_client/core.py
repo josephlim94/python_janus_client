@@ -54,7 +54,7 @@ class JanusClient:
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
         self.ws = await websockets.connect(self.uri,
                                            subprotocols=[
-                                               "janus-admin-protocol"],
+                                               websockets.Subprotocol("janus-protocol")],
                                            **kwargs)
         self.receive_message_task = asyncio.create_task(self.receive_message())
         self.receive_message_task.add_done_callback(
@@ -190,12 +190,12 @@ class JanusAdminMonitorClient:
         self.admin_secret = admin_secret
         self.transactions = dict()
 
-    async def connect(self, **kwargs: object) -> None:
+    async def connect(self, **kwargs: dict) -> None:
         print("Connecting to: ", self.uri)
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
         self.ws = await websockets.connect(self.uri,
                                            subprotocols=[
-                                               "janus-admin-protocol"],
+                                               websockets.Subprotocol("janus-admin-protocol")],
                                            **kwargs)
         self.receive_message_task = asyncio.create_task(self.receive_message())
         print("Connected")
