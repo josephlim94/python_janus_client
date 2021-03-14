@@ -1,6 +1,6 @@
 # Janus Client in Python
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg) [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest)
 
 This is a [Janus](https://github.com/meetecho/janus-gateway) webrtc client written in Python, to be used with asyncio.
 
@@ -47,7 +47,7 @@ Examples like VideoRoom plugin are also included in the package, but currently i
 In [main.py](./main.py), you will see an example on how to use the client in general, such as connecting and creating sessions.  
 I use it to develop this package.
 
-For more details, please [Read The Docs](https://janus-client-in-python.readthedocs.io/en/latest/) (In Progress)
+For more details, please [Read The Docs](https://janus-client-in-python.readthedocs.io/en/latest/)
 
 Example:
 
