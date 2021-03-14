@@ -1,10 +1,14 @@
 
+from __future__ import annotations
 import ssl
 import asyncio
 import pathlib
 from concurrent.futures import TimeoutError
 
 from janus_client import JanusClient, JanusAdminMonitorClient, JanusVideoRoomPlugin
+from typing import TYPE_CHECKING, Type
+if TYPE_CHECKING:
+    from janus_client import JanusSession
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -18,7 +22,7 @@ ssl_context.load_verify_locations(localhost_pem)
 # ssl_context.check_hostname = False
 # ssl_context.verify_mode = ssl.CERT_NONE
 
-async def publish_some_video(session):
+async def publish_some_video(session: JanusSession):
     # Create plugin
     plugin_handle: JanusVideoRoomPlugin = await session.create_plugin_handle(JanusVideoRoomPlugin)
 
@@ -33,7 +37,7 @@ async def publish_some_video(session):
     # Destroy plugin
     await plugin_handle.destroy()
 
-async def subscribe_to_a_feed(session):
+async def subscribe_to_a_feed(session: JanusSession):
     # Create plugin
     plugin_handle: JanusVideoRoomPlugin = await session.create_plugin_handle(JanusVideoRoomPlugin)
 

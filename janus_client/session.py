@@ -1,10 +1,12 @@
 
 from __future__ import annotations
 import asyncio
-from typing import TYPE_CHECKING, Type
+from typing import TYPE_CHECKING, Type, TypeVar
 from .plugin_base import JanusPlugin
 if TYPE_CHECKING:
     from .core import JanusClient
+
+U = TypeVar('U', bound=JanusPlugin)
 
 class JanusSession:
     """Janus session instance, created by JanusClient"""
@@ -56,7 +58,7 @@ class JanusSession:
             # This is response for self
             print("Async event for session:", response)
 
-    async def create_plugin_handle(self, plugin_type: Type[JanusPlugin]) -> JanusPlugin:
+    async def create_plugin_handle(self, plugin_type: Type[U]) -> U:
         """Create plugin handle for the given plugin type
 
         :param plugin_type: Plugin type with janus_client.JanusPlugin as base class
