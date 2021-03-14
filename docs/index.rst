@@ -18,3 +18,10 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+Client
+===============
+
+.. autoclass:: janus_client.JanusClient
+   :members: connect, disconnect, create_session
+   :special-members: __init__
