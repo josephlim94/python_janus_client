@@ -35,7 +35,12 @@ PIPELINE_DESC = '''
 
 
 class JanusVideoRoomPlugin(JanusPlugin):
-    name = "janus.plugin.videoroom"
+    """Janus VideoRoom plugin instance
+
+    Implements API to interact with VideoRoom plugin.
+    """
+
+    name = "janus.plugin.videoroom" #: Plugin name
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

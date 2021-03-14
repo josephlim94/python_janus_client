@@ -14,8 +14,8 @@ class JanusSession:
     async def destroy(self):
         """Release resources
 
-        Should be called when you don't need the session anymore.
-        Plugins from this session should be destroyed before this.
+        | Should be called when you don't need the session anymore.
+        | Plugins from this session should be destroyed before this.
         """
 
         message = {
@@ -25,11 +25,11 @@ class JanusSession:
         self.keepalive_task.cancel()
         self.client.destroy_session(self)
 
-    async def send(self, message, **kwargs):
+    async def send(self, message: dict) -> dict():
         if "session_id" in message:
             raise Exception("Session ID in message must not be manually added")
         message["session_id"] = self.id
-        return await self.client.send(message, **kwargs)
+        return await self.client.send(message)
 
     async def keepalive(self):
         # Reference: https://janus.conf.meetecho.com/docs/rest.html

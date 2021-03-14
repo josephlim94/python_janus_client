@@ -31,3 +31,18 @@ Session
 
 .. autoclass:: janus_client.JanusSession
    :members: create_plugin_handle, destroy
+
+Plugin Handle
+=============
+
+Base Class
+----------
+
+.. autoclass:: janus_client.JanusPlugin
+   :members:
+
+VideoRoom Plugin
+----------------
+
+.. autoclass:: janus_client.JanusVideoRoomPlugin
+   :members:
