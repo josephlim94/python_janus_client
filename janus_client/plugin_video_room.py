@@ -68,7 +68,17 @@ class JanusVideoRoomPlugin(JanusPlugin):
         if "jsep" in response:
             asyncio.create_task(self.handle_jsep(response["jsep"]))
 
-    async def join(self, room_id, publisher_id, display_name):
+    async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
+        """Join a room
+
+        | A handle can join a room and then do nothing, but this should be called before publishing.
+        | There is an API to configure and publish at the same time, but it's not implemented yet.
+
+        :param room_id: Room ID to join. This must be available at the server.
+        :param publisher_id: Your publisher ID to set.
+        :param display_name: Your display name when you join the room.
+        """
+
         await self.send({
             "janus": "message",
             "body": {
@@ -82,6 +92,12 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await self.joined_event.wait()
 
     async def publish(self):
+        """Publish some hardcoded video stream to the handle
+
+        Should already have joined a room before this. Then this will publish the
+        hardcoded video stream to the handle.
+        """
+
         # Initialize Gst WebRTC
         self.start_pipeline()
         await self.gst_webrtc_ready.wait()
@@ -114,6 +130,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await self.joined_event.wait()
 
     async def unpublish(self):
+        """Stop publishing"""
+
         print("Set pipeline to null")
         self.pipeline.set_state(Gst.State.NULL)
         print("Set pipeline complete")
@@ -125,7 +143,14 @@ class JanusVideoRoomPlugin(JanusPlugin):
         })
         self.gst_webrtc_ready.clear()
 
-    async def subscribe(self, room_id, feed_id):
+    async def subscribe(self, room_id: int, feed_id: int):
+        """Subscribe to a feed
+
+        :param room_id: Room ID containing the feed. The same ID that
+            you would use to join the room.
+        :param feed_id: ID of the feed that you want to stream. Should be their publisher ID.
+        """
+
         # Create webrtcbin element named app
         self.webrtcbin = Gst.ElementFactory.make("webrtcbin", "app")
         self.webrtcbin.connect('on-negotiation-needed',
@@ -157,6 +182,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await self.joined_event.wait()
 
     async def unsubscribe(self):
+        """Unsubscribe from the feed"""
+
         self.pipeline.set_state(Gst.State.NULL)
         await self.send({
             "janus": "message",
@@ -168,6 +195,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
         self.gst_webrtc_ready.clear()
 
     async def start(self, answer=None):
+        """Signal WebRTC start. I guess"""
+
         payload = {
             "janus": "message",
             "body": {
@@ -183,6 +212,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await self.send(payload)
 
     async def pause(self):
+        """Pause media streaming"""
+
         await self.send({
             "janus": "message",
             "body": {
@@ -190,7 +221,15 @@ class JanusVideoRoomPlugin(JanusPlugin):
             }
         })
 
-    async def list_participants(self, room_id) -> list:
+    async def list_participants(self, room_id: int) -> list:
+        """Get participant list
+
+        Get a list of publishers in the room, that are currently publishing.
+
+        :param room_id: List participants in this room
+        :return: A list containing the participants. Can be empty.
+        """
+
         response = await self.send({
             "janus": "message",
             "body": {
