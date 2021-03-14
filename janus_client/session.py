@@ -3,6 +3,8 @@ import asyncio
 from .core import JanusClient
 
 class JanusSession:
+    """Janus session instance, created by JanusClient"""
+
     def __init__(self, client: JanusClient, session_id: str):
         self.client = client
         self.id = session_id
@@ -10,6 +12,12 @@ class JanusSession:
         self.keepalive_task = asyncio.create_task(self.keepalive())
 
     async def destroy(self):
+        """Release resources
+
+        Should be called when you don't need the session anymore.
+        Plugins from this session should be destroyed before this.
+        """
+
         message = {
             "janus": "destroy",
         }
@@ -45,6 +53,11 @@ class JanusSession:
             print("Async event for session:", response)
 
     async def create_plugin_handle(self, plugin_type: object):
+        """Create plugin handle for the given plugin type
+
+        :param plugin_type: Plugin type with janus_client.JanusPlugin as base class
+        """
+
         response = await self.send({
             "janus": "attach",
             "plugin": plugin_type.name,

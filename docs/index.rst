@@ -25,3 +25,9 @@ Client
 .. autoclass:: janus_client.JanusClient
    :members: connect, disconnect, create_session
    :special-members: __init__
+
+Session
+=======
+
+.. autoclass:: janus_client.JanusSession
+   :members: create_plugin_handle, destroy
