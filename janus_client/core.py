@@ -5,7 +5,7 @@ import json
 import uuid
 import traceback
 from .session import JanusSession
-from typing import Type
+from typing import Type, Dict, Any
 
 '''
 Architecture design to handle Janus transactions and events
@@ -37,14 +37,14 @@ class JanusClient:
         :param token: (optional) Token for shared token based authentication
         """
 
-        self.ws: websockets.WebSocketClientProtocol = None
+        self.ws: websockets.WebSocketClientProtocol
         self.uri = uri
-        self.transactions = dict()
-        self.sessions = dict()
+        self.transactions: Dict[str, asyncio.Queue] = dict()
+        self.sessions: Dict[int, JanusSession] = dict()
         self.api_secret = api_secret
         self.token = token
 
-    async def connect(self, **kwargs: dict) -> None:
+    async def connect(self, **kwargs: Any) -> None:
         """Connect to server
 
         All extra keyword arguments will be passed to websockets.connect
@@ -185,12 +185,12 @@ class JanusClient:
 
 class JanusAdminMonitorClient:
     def __init__(self, uri: str, admin_secret: str):
-        self.ws: websockets.WebSocketClientProtocol = None
+        self.ws: websockets.WebSocketClientProtocol
         self.uri = uri
         self.admin_secret = admin_secret
-        self.transactions = dict()
+        self.transactions: Dict[str, asyncio.Queue] = dict()
 
-    async def connect(self, **kwargs: dict) -> None:
+    async def connect(self, **kwargs: Any) -> None:
         print("Connecting to: ", self.uri)
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
         self.ws = await websockets.connect(self.uri,
