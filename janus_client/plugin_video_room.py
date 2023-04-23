@@ -1,6 +1,8 @@
 
 from .plugin_base import JanusPlugin
 import asyncio
+import logging
+logger = logging.getLogger(__name__)
 
 import gi
 gi.require_version('GLib', '2.0')
@@ -53,7 +55,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     def handle_async_response(self, response: dict):
         if response["janus"] == "event":
-            print("Event response:", response)
+            logger.info(f"Event response: {response}")
             if "plugindata" in response:
                 if response["plugindata"]["data"]["videoroom"] == "attached":
                     # Subscriber attached
@@ -62,8 +64,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                     # Participant joined (joined as publisher but may not publish)
                     self.joined_event.set()
         else:
-            print("Unimplemented response handle:", response["janus"])
-            print(response)
+            logger.info(f"Unimplemented response handle: {response['janus']}")
+            logger.info(response)
         # Handle JSEP. Could be answer or offer.
         if "jsep" in response:
             asyncio.create_task(self.handle_jsep(response["jsep"]))
@@ -113,7 +115,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         promise.interrupt()
 
         text = offer.sdp.as_text()
-        print('Sending offer and publishing:\n%s' % text)
+        logger.info('Sending offer and publishing:\n%s' % text)
         await self.send({
             "janus": "message",
             "body": {
@@ -132,9 +134,9 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def unpublish(self) -> None:
         """Stop publishing"""
 
-        print("Set pipeline to null")
+        logger.info("Set pipeline to null")
         self.pipeline.set_state(Gst.State.NULL)
-        print("Set pipeline complete")
+        logger.info("Set pipeline complete")
         await self.send({
             "janus": "message",
             "body": {
@@ -240,14 +242,14 @@ class JanusVideoRoomPlugin(JanusPlugin):
         return response["plugindata"]["data"]["participants"]
 
     def on_negotiation_needed(self, element):
-        print("on_negotiation_needed called")
+        logger.info("on_negotiation_needed called")
         self.gst_webrtc_ready.set()
         # promise = Gst.Promise.new_with_change_func(self.on_offer_created, element, None)
         # element.emit('create-offer', None, promise)
 
     def send_ice_candidate_message(self, _, sdpMLineIndex, candidate):
         icemsg = {'candidate': candidate, 'sdpMLineIndex': sdpMLineIndex}
-        print ("Sending ICE", icemsg)
+        logger.info (f"Sending ICE {icemsg}")
         # loop = asyncio.new_event_loop()
         future = asyncio.run_coroutine_threadsafe(
             self.trickle(sdpMLineIndex, candidate), self.loop)
@@ -255,7 +257,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     def on_incoming_decodebin_stream(self, _, pad):
         if not pad.has_current_caps():
-            print(pad, 'has no caps, ignoring')
+            logger.info(pad, 'has no caps, ignoring')
             return
 
         caps = pad.get_current_caps()
@@ -316,20 +318,20 @@ class JanusVideoRoomPlugin(JanusPlugin):
             if line.startswith("a=candidate"):
                 candidate = line[2:]
                 if mlineindex < 0:
-                    print("Received ice candidate in SDP before any m= line")
+                    logger.info("Received ice candidate in SDP before any m= line")
                     continue
-                print(
+                logger.info(
                     'Received remote ice-candidate mlineindex {}: {}'.format(mlineindex, candidate))
                 self.webrtcbin.emit('add-ice-candidate', mlineindex, candidate)
             elif line.startswith("m="):
                 mlineindex += 1
 
     async def handle_jsep(self, jsep):
-        print(jsep)
+        logger.info(jsep)
         if 'sdp' in jsep:
             sdp = jsep['sdp']
             if jsep['type'] == 'answer':
-                print('Received answer:\n%s' % sdp)
+                logger.info('Received answer:\n%s' % sdp)
                 _, sdpmsg = GstSdp.SDPMessage.new()
                 GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
 
@@ -344,7 +346,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 # This is tested to be not needed on 1.19.0.1
                 # self.extract_ice_from_sdp(sdp)
             elif jsep['type'] == 'offer':
-                print('Received offer:\n%s' % sdp)
+                logger.info('Received offer:\n%s' % sdp)
                 _, sdpmsg = GstSdp.SDPMessage.new()
                 GstSdp.sdp_message_parse_buffer(bytes(sdp.encode()), sdpmsg)
 
