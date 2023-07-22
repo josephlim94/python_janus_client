@@ -86,9 +86,9 @@ class JanusClient:
             exception = task.exception()
             traceback.print_tb(exception.__traceback__)
             logger.info(f"{type(exception)} : {exception}")
-        except asyncio.CancelledError as e:
+        except asyncio.CancelledError:
             logger.info("Receive message task ended")
-        except asyncio.InvalidStateError as e:
+        except asyncio.InvalidStateError:
             logger.info("receive_message_done_cb called with invalid state")
         except Exception as e:
             traceback.logger.info_tb(e.__traceback__)
