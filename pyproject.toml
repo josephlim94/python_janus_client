@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "janus-gst-client-py"
+version = "0.2.2"
+description = "Janus webrtc client in async Python."
+authors = ["Joseph Lim <josephlim_94@hotmail.co.uk>"]
+license = "MIT License"
+readme = "README.md"
+packages = [{include = "janus_gst_client_py"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+websockets = "^11.0.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
