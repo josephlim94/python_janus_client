@@ -1,0 +1,24 @@
+[flake8]
+# Recommend matching the black line length (default 88),
+# rather than using the flake8 default of 79:
+max-line-length = 88
+extend-ignore =
+    # See https://github.com/PyCQA/pycodestyle/issues/373
+    E203,
+ignore = E501, E203, W503
+per-file-ignores =
+    __init__.py:F401, F403
+exclude =
+    .git
+    __pycache__
+    .venv
+    .env
+    .vscode
+    .github
+    .dev
+    poetry.lock
+    pyproject.toml
+    Dockerfile
+    .dev
+    migrations
+    settings
