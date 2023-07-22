@@ -1,4 +1,3 @@
-
 import asyncio
 import websockets
 import json
@@ -8,10 +7,11 @@ from .session import JanusSession
 from typing import Type, Dict, Any
 
 import logging
+
 logger = logging.getLogger(__name__)
 
 
-'''
+"""
 Architecture design to handle Janus transactions and events
 Assumption 1: All transaction ids are unique, and they will always get
     at least one reply when there are no network errors
@@ -26,14 +26,13 @@ E.g.
 class JanusSession
     def handle_async_response(self, response):
         pass
-'''
+"""
 
 
 class JanusClient:
     """Janus client instance, connected through websocket"""
 
-    def __init__(self, uri: str, api_secret: str = None,
-                 token: str = None):
+    def __init__(self, uri: str, api_secret: str = None, token: str = None):
         """Initialize client instance
 
         :param uri: Janus server address
@@ -56,13 +55,11 @@ class JanusClient:
 
         logger.info(f"Connecting to: {self.uri}")
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
-        self.ws = await websockets.connect(self.uri,
-                                           subprotocols=[
-                                               websockets.Subprotocol("janus-protocol")],
-                                           **kwargs)
+        self.ws = await websockets.connect(
+            self.uri, subprotocols=[websockets.Subprotocol("janus-protocol")], **kwargs
+        )
         self.receive_message_task = asyncio.create_task(self.receive_message())
-        self.receive_message_task.add_done_callback(
-            self.receive_message_done_cb)
+        self.receive_message_task.add_done_callback(self.receive_message_done_cb)
         logger.info("Connected")
 
     async def disconnect(self) -> None:
@@ -74,12 +71,14 @@ class JanusClient:
 
     def is_async_response(self, response: dict):
         janus_type = response["janus"]
-        return ((janus_type == "event")
-                or (janus_type == "detached")
-                or (janus_type == "webrtcup")
-                or (janus_type == "media")
-                or (janus_type == "slowlink")
-                or (janus_type == "hangup"))
+        return (
+            (janus_type == "event")
+            or (janus_type == "detached")
+            or (janus_type == "webrtcup")
+            or (janus_type == "media")
+            or (janus_type == "slowlink")
+            or (janus_type == "hangup")
+        )
 
     def receive_message_done_cb(self, task, context=None):
         try:
@@ -142,25 +141,30 @@ class JanusClient:
         if "session_id" in response:
             # This is response for session or plugin handle
             if response["session_id"] in self.sessions:
-                self.sessions[response["session_id"]
-                              ].handle_async_response(response)
+                self.sessions[response["session_id"]].handle_async_response(response)
             else:
-                logger.info(f"Got response for session but session not found. Session ID: {response['session_id']}")
+                logger.info(
+                    f"Got response for session but session not found. Session ID: {response['session_id']}"
+                )
                 logger.info(f"Unhandeled response: {response}")
         else:
             # This is response for self
             logger.info(f"Async event for Janus client core: {response}")
 
-    async def create_session(self, session_type: Type[JanusSession] = JanusSession) -> JanusSession:
+    async def create_session(
+        self, session_type: Type[JanusSession] = JanusSession
+    ) -> JanusSession:
         """Create Janus session instance
 
         :param session_type: Class type of session. Should be JanusSession,
             no other options yet.
         """
 
-        response = await self.send({
-            "janus": "create",
-        })
+        response = await self.send(
+            {
+                "janus": "create",
+            }
+        )
         session = session_type(client=self, session_id=response["data"]["id"])
         self.sessions[session.id] = session
         return session
@@ -196,10 +200,11 @@ class JanusAdminMonitorClient:
     async def connect(self, **kwargs: Any) -> None:
         logger.info(f"Connecting to: {self.uri}")
         # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
-        self.ws = await websockets.connect(self.uri,
-                                           subprotocols=[
-                                               websockets.Subprotocol("janus-admin-protocol")],
-                                           **kwargs)
+        self.ws = await websockets.connect(
+            self.uri,
+            subprotocols=[websockets.Subprotocol("janus-admin-protocol")],
+            **kwargs,
+        )
         self.receive_message_task = asyncio.create_task(self.receive_message())
         logger.info("Connected")
 
@@ -247,23 +252,16 @@ class JanusAdminMonitorClient:
 
     async def info(self):
         # Doesn't require admin secret
-        message = {
-            "janus": "info"
-        }
+        message = {"janus": "info"}
         return await self.send(message, authenticate=False)
 
     async def ping(self):
         # Doesn't require admin secret
-        message = {
-            "janus": "ping"
-        }
+        message = {"janus": "ping"}
         return await self.send(message, authenticate=False)
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
-        payload: dict = {
-            "janus": "add_token",
-            "token": token
-        }
+        payload: dict = {"janus": "add_token", "token": token}
         if plugins:
             payload["plugins"] = plugins
         return await self.send(payload)
@@ -289,9 +287,7 @@ class JanusAdminMonitorClient:
         return await self.send(payload)
 
     async def list_tokens(self):
-        payload = {
-            "janus": "list_tokens"
-        }
+        payload = {"janus": "list_tokens"}
         result = await self.send(payload)
         return result["data"]["tokens"]
 

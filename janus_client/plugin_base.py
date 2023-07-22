@@ -1,11 +1,11 @@
-
 from __future__ import annotations
-import asyncio
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from .session import JanusSession
 
-class JanusPlugin():
+
+class JanusPlugin:
     """Base class to inherit when implementing a plugin"""
 
     name = "janus.plugin.base.dummy"
@@ -61,16 +61,13 @@ class JanusPlugin():
         candidate_payload = dict()
         if candidate:
             candidate_payload = {
-                "sdpMLineIndex" : sdpMLineIndex,
-                "candidate" : candidate,
+                "sdpMLineIndex": sdpMLineIndex,
+                "candidate": candidate,
             }
         else:
             # Reference: https://janus.conf.meetecho.com/docs/rest.html
             # - a null candidate or a completed JSON object to notify the end of the candidates.
             # TODO: test it
             candidate_payload = None
-        await self.send({
-            "janus": "trickle",
-            "candidate": candidate_payload
-        })
+        await self.send({"janus": "trickle", "candidate": candidate_payload})
         # TODO: Implement sending an array of candidates

@@ -1,16 +1,16 @@
-
 from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Type, TypeVar, Dict
 from .plugin_base import JanusPlugin
+
 if TYPE_CHECKING:
     from .core import JanusClient
 
 import logging
+
 logger = logging.getLogger(__name__)
+PluginBaseType = TypeVar("PluginBaseType", bound=JanusPlugin)
 
-
-PluginBaseType = TypeVar('PluginBaseType', bound=JanusPlugin)
 
 class JanusSession:
     """Janus session instance, created by JanusClient"""
@@ -46,9 +46,11 @@ class JanusSession:
         # A Janus session is kept alive as long as there's no inactivity for 60 seconds
         while True:
             await asyncio.sleep(30)
-            await self.send({
-                "janus": "keepalive",
-            })
+            await self.send(
+                {
+                    "janus": "keepalive",
+                }
+            )
 
     def handle_async_response(self, response: dict):
         if "sender" in response:
@@ -56,13 +58,17 @@ class JanusSession:
             if response["sender"] in self.plugin_handles:
                 self.plugin_handles[response["sender"]].handle_async_response(response)
             else:
-                logger.info(f"Got response for plugin handle but handle not found. Handle ID: {response['sender']}")
+                logger.info(
+                    f"Got response for plugin handle but handle not found. Handle ID: {response['sender']}"
+                )
                 logger.info(f"Unhandeled response: {response}")
         else:
             # This is response for self
             logger.info(f"Async event for session: {response}")
 
-    async def create_plugin_handle(self, plugin_type: Type[PluginBaseType]) -> PluginBaseType:
+    async def create_plugin_handle(
+        self, plugin_type: Type[PluginBaseType]
+    ) -> PluginBaseType:
         """Create plugin handle for the given plugin type
 
         PluginBaseType = TypeVar('PluginBaseType', bound=JanusPlugin)
@@ -70,10 +76,12 @@ class JanusSession:
         :param plugin_type: Plugin type with janus_client.JanusPlugin as base class
         """
 
-        response = await self.send({
-            "janus": "attach",
-            "plugin": plugin_type.name,
-        })
+        response = await self.send(
+            {
+                "janus": "attach",
+                "plugin": plugin_type.name,
+            }
+        )
         plugin_handle = plugin_type(self, response["data"]["id"])
         self.plugin_handles[plugin_handle.id] = plugin_handle
         return plugin_handle
