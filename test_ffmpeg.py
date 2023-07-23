@@ -3,6 +3,7 @@ import asyncio
 from janus_client import JanusClient, JanusSession
 from janus_client.plugin_video_room_ffmpeg import JanusVideoRoomPlugin
 from janus_client.media import MediaPlayer
+import ffmpeg
 
 pcs = set()
 
@@ -54,19 +55,35 @@ async def run(player, room_id):
     await plugin_handle.destroy()
 
 
+width = 640
+height = 480
+
+
 if __name__ == "__main__":
+    # Specify the input part of ffmpeg
+    ffmpeg_input = ffmpeg.input(
+        "desktop",
+        format="gdigrab",
+        framerate=30,
+        offset_x=20,
+        offset_y=30,
+        # s=f"{width}x{height}",
+        video_size=[
+            width,
+            height,
+        ],  # Using this video_size=[] or s="" is the same
+        show_region=1,
+    )
 
     # create media source
     player = MediaPlayer(
-        "C:\\Users\\Joseph\\Downloads\\De Kandar Demo.mp4",
-        # format="h264",
-        # options={"format_probesize": "32", "read_timeout": "1"},
+        ffmpeg_input,
+        width,
+        height,
     )
 
     loop = asyncio.get_event_loop()
     try:
-        loop.run_until_complete(
-            run(player=player, room_id=1234)
-        )
+        loop.run_until_complete(run(player=player, room_id=1234))
     except KeyboardInterrupt:
         pass

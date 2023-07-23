@@ -1,12 +1,9 @@
 import asyncio
-import errno
 import logging
 import threading
 import time
 from typing import Optional, Set, Union
 
-import ffmpeg
-import av
 from av import VideoFrame
 from av.frame import Frame
 from av.packet import Packet
@@ -83,68 +80,8 @@ class MediaBlackhole:
         self.__tracks = {}
 
 
-width = 640
-height = 480
-
-
 # format = "%(asctime)s: %(message)s"
 # logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
-
-
-def player_worker_decode(
-    loop,
-    # video_process,
-    video_track,
-    quit_event,
-):
-    logging.info("Thread 1: starting")
-    pts = 0
-    video_process = (
-        ffmpeg.input(
-            "desktop",
-            format="gdigrab",
-            framerate=30,
-            offset_x=20,
-            offset_y=30,
-            # s=f"{width}x{height}",
-            video_size=[width, height],  # Using this video_size=[] or s="" is the same
-            show_region=1,
-        )
-        # .output("pipe:", format="h264", pix_fmt="yuv444p")
-        .output("pipe:", format="rawvideo", pix_fmt="rgb24")
-        .run_async(pipe_stdout=True)
-    )
-
-    while not quit_event.is_set():
-        try:
-            in_bytes = video_process.stdout.read(
-                width * height * 3
-            )
-            if not in_bytes:
-                break
-
-            in_frame = np.frombuffer(in_bytes, np.uint8).reshape(
-                [height, width, 3]
-            )
-            frame = VideoFrame.from_ndarray(in_frame, format="rgb24")
-        except Exception as exc:
-            if isinstance(exc, av.FFmpegError) and exc.errno == errno.EAGAIN:
-                time.sleep(0.01)
-                continue
-            if video_track:
-                asyncio.run_coroutine_threadsafe(video_track._queue.put(None), loop)
-            break
-
-        frame.pts = pts
-        pts += 1
-        frame.time_base = fractions.Fraction(1, 48000)
-
-        # logging.info(frame)
-        asyncio.run_coroutine_threadsafe(video_track._queue.put(frame), loop)
-
-    video_process.wait()
-
-    logging.info("Thread 1: finishing")
 
 
 class PlayerStreamTrack(MediaStreamTrack):
@@ -226,10 +163,17 @@ class MediaPlayer:
     """
 
     def __init__(
-        self, file, format=None, options={}, timeout=None, loop=False, decode=True
+        self,
+        ffmpeg_input,
+        width: int,
+        height: int,
     ):
         self.__thread: Optional[threading.Thread] = None
         self.__thread_quit: Optional[threading.Event] = None
+
+        self.__ffmpeg_input = ffmpeg_input
+        self.__width = width
+        self.__height = height
 
         # examine streams
         self.__started: Set[PlayerStreamTrack] = set()
@@ -254,6 +198,39 @@ class MediaPlayer:
         """
         return self.__video
 
+    def player_worker_decode(
+        self,
+        loop,
+        video_track,
+        quit_event,
+    ):
+        logging.info("Thread 1: starting")
+        pts = 0
+        video_process = self.__ffmpeg_input.output(
+            "pipe:", format="rawvideo", pix_fmt="rgb24"
+        ).run_async(pipe_stdout=True)
+
+        while not quit_event.is_set():
+            in_bytes = video_process.stdout.read(self.__width * self.__height * 3)
+            if not in_bytes:
+                break
+
+            in_frame = np.frombuffer(in_bytes, np.uint8).reshape(
+                [self.__height, self.__width, 3]
+            )
+            frame = VideoFrame.from_ndarray(in_frame, format="rgb24")
+
+            frame.pts = pts
+            pts += 1
+            frame.time_base = fractions.Fraction(1, 48000)
+
+            # logging.info(frame)
+            asyncio.run_coroutine_threadsafe(video_track._queue.put(frame), loop)
+
+        video_process.wait()
+
+        logging.info("Thread 1: finishing")
+
     def _start(self, track: PlayerStreamTrack) -> None:
         self.__started.add(track)
         if self.__thread is None:
@@ -261,10 +238,9 @@ class MediaPlayer:
             self.__thread_quit = threading.Event()
             self.__thread = threading.Thread(
                 name="media-player",
-                target=player_worker_decode,
+                target=self.player_worker_decode,
                 args=(
                     asyncio.get_event_loop(),
-                    # self.video_process,
                     self.__video,
                     self.__thread_quit,
                 ),
