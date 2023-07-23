@@ -1,11 +1,12 @@
 [tool.poetry]
-name = "janus-gst-client-py"
-version = "0.2.2"
+name = "janus-client"
+version = "0.2.4"
 description = "Janus webrtc client in async Python."
 authors = ["Joseph Lim <josephlim_94@hotmail.co.uk>"]
-license = "MIT License"
+license = "MIT"
 readme = "README.md"
-packages = [{include = "janus_gst_client_py"}]
+packages = [{include = "janus_client"}]
+repository = "https://github.com/josephlim94/janus_gst_client_py"
 
 [tool.poetry.dependencies]
 python = "^3.10"
