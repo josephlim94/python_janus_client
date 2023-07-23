@@ -20,6 +20,26 @@ The package is implementing a general purpose client that can communicate with a
 
 Examples like VideoRoom plugin are also included in the package, but currently it depends on GStreamer for WebRTC and media streaming, and it will not be automatically installed. The reason for this is because it's not trivial to install/recompile it. Please refer to [Quirks section](#quirks).
 
+The VideoRoom plugin implemented in [plugin_video_room_ffmpeg.py](./janus_client/plugin_video_room_ffmpeg.py) uses FFmpeg instead. It depends on the ffmpeg-cli, but that is required to be installed separately.
+
+### FFmpeg Stream To WebRTC (**WARNING !!!**)
+
+This FFmpeg stream to WebRTC solution is a hacked solution. The fact is that FFmpeg doesn't support WebRTC and aiortc is implemented using PyAV. PyAV has much less features than a full fledged installed FFmpeg, so to support more features and keep things simple, I hacked about a solution without the use of WHIP server or UDP of RTMP.
+
+First the ffmpeg input part should be constructed by the user, before passing it to `janus_client.media.MediaPlayer`. When the media player needs to stream the video, the following happens:
+
+- a thread will be created
+- a ffmpeg process will be created. Output of ffmpeg is hardcode to be `rawvideo rgb24`
+- thread reads output of ffmpeg process
+- coverts the output data to numpy array
+- use PyAV to convert the numpy array to `av.VideoFrame` frame
+- hack the `pts` and `time_base` parameter of the frame. I don't know what it is and just found a value that works.
+- put the frame into video track queue as that is what is required by `aiortc.mediastreams.MediaStreamTrack`.
+
+Next the `MediaPlayer` is used as required by `aiortc`. An example of that can be found [here](https://github.com/aiortc/aiortc/tree/main/examples/janus).
+
+A fork of FFmpeg that supports WebRTC can be found [here](https://github.com/ossrs/ffmpeg-webrtc/pull/1).
+
 ### Features
 
 :heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))  
@@ -33,18 +53,22 @@ Examples like VideoRoom plugin are also included in the package, but currently i
 ### In Progress
 
 :clock3: Emit events to respective session and plugin handlers  
-:clock3: Create plugin for videoroom plugin  
+:clock3: Create plugin for videoroom plugin using GStreamer  
 :clock3: Documentation  
 
 ### Dependencies
 
 - [websockets](https://github.com/aaugustin/websockets)
+- [aiortc](https://github.com/aiortc/aiortc)
+- [ffmpeg-python](https://github.com/kkroening/ffmpeg-python)
+- [numpy](https://numpy.org/)
+- [av](https://github.com/PyAV-Org/PyAV)
 
 ---
 
 ## Usage
 
-In [main.py](./main.py), you will see an example on how to use the client in general, such as connecting and creating sessions.  
+In [test_gst_videoroom.py](./test_gst_videoroom.py), you will see an example on how to use the client in general, such as connecting and creating sessions.  
 I use it to develop this package.
 
 For more details, please [Read The Docs](https://janus-client-in-python.readthedocs.io/en/latest/)
