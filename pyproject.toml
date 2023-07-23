@@ -1,12 +1,20 @@
 [tool.poetry]
 name = "janus-client"
-version = "0.2.4"
+version = "0.2.5"
 description = "Janus webrtc client in async Python."
 authors = ["Joseph Lim <josephlim_94@hotmail.co.uk>"]
 license = "MIT"
 readme = "README.md"
 packages = [{include = "janus_client"}]
 repository = "https://github.com/josephlim94/janus_gst_client_py"
+classifiers = [
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent"
+]
 
 [tool.poetry.dependencies]
 python = "^3.10"
