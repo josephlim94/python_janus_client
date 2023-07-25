@@ -24,17 +24,17 @@ The VideoRoom plugin implemented in [plugin_video_room_ffmpeg.py](./janus_client
 
 ### FFmpeg Stream To WebRTC (**WARNING !!!**)
 
-This FFmpeg stream to WebRTC solution is a hacked solution. The fact is that FFmpeg doesn't support WebRTC and aiortc is implemented using PyAV. PyAV has much less features than a full fledged installed FFmpeg, so to support more features and keep things simple, I hacked about a solution without the use of WHIP server or UDP of RTMP.
+This FFmpeg stream to WebRTC solution is a hacked solution. The fact is that FFmpeg doesn't support WebRTC and aiortc is implemented using PyAV. PyAV has much less features than a full fledged installed FFmpeg, so to support more features and keep things simple, I hacked about a solution without the use of WHIP server or UDP or RTMP.
 
 First the ffmpeg input part should be constructed by the user, before passing it to `janus_client.media.MediaPlayer`. When the media player needs to stream the video, the following happens:
 
-- a thread will be created
-- a ffmpeg process will be created. Output of ffmpeg is hardcode to be `rawvideo rgb24`
-- thread reads output of ffmpeg process
-- coverts the output data to numpy array
-- use PyAV to convert the numpy array to `av.VideoFrame` frame
-- hack the `pts` and `time_base` parameter of the frame. I don't know what it is and just found a value that works.
-- put the frame into video track queue as that is what is required by `aiortc.mediastreams.MediaStreamTrack`.
+1. A thread will be created.
+2. A ffmpeg process will be created. Output of ffmpeg is hardcoded to be `rawvideo rgb24`.
+3. Thread reads output of ffmpeg process.
+4. Coverts the output data to numpy array.
+5. Use PyAV to convert the numpy array to `av.VideoFrame` frame.
+6. Hack the `pts` and `time_base` parameter of the frame. I don't know what it is and just found a value that works.
+7. Put the frame into video track queue as that is what is required by `aiortc.mediastreams.MediaStreamTrack`.
 
 Next the `MediaPlayer` is used as required by `aiortc`. An example of that can be found [here](https://github.com/aiortc/aiortc/tree/main/examples/janus).
 
