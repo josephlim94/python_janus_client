@@ -99,23 +99,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
             }
         )
 
-        # text = offer.sdp.as_text()
-        # logger.info("Sending offer and publishing:\n%s" % text)
-        # await self.send(
-        #     {
-        #         "janus": "message",
-        #         "body": {
-        #             "request": "publish",
-        #             "audio": True,
-        #             "video": True,
-        #         },
-        #         "jsep": {
-        #             "sdp": text,
-        #             "type": "offer",
-        #             "trickle": True,
-        #         },
-        #     }
-        # )
         await self.joined_event.wait()
 
     async def unpublish(self) -> None:
@@ -214,38 +197,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
             }
         )
         return response["plugindata"]["data"]["participants"]
-
-    def on_negotiation_needed(self, element):
-        logger.info("on_negotiation_needed called")
-        self.gst_webrtc_ready.set()
-        # promise = Gst.Promise.new_with_change_func(self.on_offer_created, element, None)
-        # element.emit('create-offer', None, promise)
-
-    def send_ice_candidate_message(self, _, sdpMLineIndex, candidate):
-        icemsg = {"candidate": candidate, "sdpMLineIndex": sdpMLineIndex}
-        logger.info(f"Sending ICE {icemsg}")
-        # loop = asyncio.new_event_loop()
-        future = asyncio.run_coroutine_threadsafe(
-            self.trickle(sdpMLineIndex, candidate), self.loop
-        )
-        future.result()
-
-    def extract_ice_from_sdp(self, sdp):
-        mlineindex = -1
-        for line in sdp.splitlines():
-            if line.startswith("a=candidate"):
-                candidate = line[2:]
-                if mlineindex < 0:
-                    logger.info("Received ice candidate in SDP before any m= line")
-                    continue
-                logger.info(
-                    "Received remote ice-candidate mlineindex {}: {}".format(
-                        mlineindex, candidate
-                    )
-                )
-                self.webrtcbin.emit("add-ice-candidate", mlineindex, candidate)
-            elif line.startswith("m="):
-                mlineindex += 1
 
     async def handle_jsep(self, jsep):
         logger.info(jsep)
