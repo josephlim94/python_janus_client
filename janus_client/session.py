@@ -1,6 +1,5 @@
-from __future__ import annotations
 import asyncio
-from typing import Type, TypeVar, Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING
 import logging
 
 from .core import JanusConnection, JanusMessage
@@ -10,7 +9,6 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
-PluginBaseType = TypeVar("PluginBaseType", bound=JanusPlugin)
 
 
 class SessionMessage(JanusMessage):
@@ -21,8 +19,9 @@ class SessionMessage(JanusMessage):
 class JanusSession:
     """Janus session instance"""
 
-    id: int
+    __id: int = None
     connection: JanusConnection
+    created: bool = False
 
     def __init__(
         self,
@@ -32,7 +31,6 @@ class JanusSession:
         token: str = None,
     ):
         self.plugin_handles: Dict[int, JanusPlugin] = dict()
-        self.keepalive_task = asyncio.create_task(self.keepalive())
 
         if connection:
             self.connection = connection
@@ -44,13 +42,18 @@ class JanusSession:
             )
 
     async def __connect(self):
-        if self.connection.connected:
-            return
+        if not self.connection.connected:
+            await self.connection.connect()
 
-        await self.connection.connect()
-        response = await self.connection.send(JanusMessage(janus="create"))
-        self.id = int(response["data"]["id"])
-        self.connection.attach_session(self)
+        if not self.__id:
+            self.__id = await self.connection.create_session(self)
+
+        self.keepalive_task = asyncio.create_task(self.keepalive())
+        self.created = True
+
+    @property
+    def id(self) -> int:
+        return self.__id
 
     async def destroy(self):
         """Release resources
@@ -62,14 +65,17 @@ class JanusSession:
         await self.send(SessionMessage(janus="destroy"))
         self.keepalive_task.cancel()
         self.connection.destroy_session(self)
+        self.__id = None
+        self.created = False
 
     async def send(self, message: SessionMessage) -> dict:
         if message.session_id:
             raise Exception("Session ID in message must not be manually added")
 
-        await self.__connect()
+        if not self.created:
+            await self.__connect()
 
-        message.session_id = self.id
+        message.session_id = self.__id
         return await self.connection.send(message)
 
     async def keepalive(self):
@@ -93,22 +99,21 @@ class JanusSession:
             # This is response for self
             logger.info(f"Async event for session: {response}")
 
-    async def create_plugin_handle(
-        self, plugin_type: Type[PluginBaseType]
-    ) -> PluginBaseType:
+    async def attach_plugin(self, plugin: "JanusPlugin") -> int:
         """Create plugin handle for the given plugin type
 
-        PluginBaseType = TypeVar('PluginBaseType', bound=JanusPlugin)
-
-        :param plugin_type: Plugin type with janus_client.JanusPlugin as base class
+        :param plugin: Plugin instance with janus_client.JanusPlugin as base class
         """
 
-        response = await self.send(
-            SessionMessage(janus="attach", plugin=plugin_type.name)
-        )
-        plugin_handle = plugin_type(self, response["data"]["id"])
-        self.plugin_handles[plugin_handle.id] = plugin_handle
-        return plugin_handle
+        response = await self.send(SessionMessage(janus="attach", plugin=plugin.name))
 
-    def destroy_plugin_handle(self, plugin_handle):
+        # Extract plugin handle id
+        handle_id = int(response["data"]["id"])
+
+        # Register plugin
+        self.plugin_handles[handle_id] = plugin
+
+        return handle_id
+
+    def detach_plugin(self, plugin_handle: "JanusPlugin"):
         del self.plugin_handles[plugin_handle.id]

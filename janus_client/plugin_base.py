@@ -13,17 +13,25 @@ class JanusPlugin:
 
     Must override to match plugin name in Janus server.
     """
-    id: str
+    __id: str = None
+    session: JanusSession
 
-    def __init__(self, session: JanusSession, handle_id: int):
+    @property
+    def id(self) -> int:
+        return self.__id
+
+    async def attach(self, session: JanusSession):
+        if self.__id:
+            raise Exception(f"Plugin already attached to session ({self.session.id})")
+
         self.session = session
-        self.id = handle_id
+        self.__id = await session.attach_plugin(self)
 
     async def destroy(self):
         """Destroy plugin handle"""
 
         await self.send(PluginMessage(janus="detach"))
-        self.session.destroy_plugin_handle(self)
+        self.session.detach_plugin(self)
 
     async def send(self, message: PluginMessage) -> dict:
         """Send raw message to plugin
@@ -37,7 +45,7 @@ class JanusPlugin:
         if message.handle_id:
             raise Exception("Plugin handle ID must not be manually added")
 
-        message.handle_id = self.id
+        message.handle_id = self.__id
         return await self.session.send(message)
 
     def handle_async_response(self, response: dict):

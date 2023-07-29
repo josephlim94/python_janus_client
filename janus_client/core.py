@@ -1,7 +1,6 @@
 import asyncio
 import json
 import uuid
-import traceback
 from typing import TYPE_CHECKING, Dict, Any, Optional
 
 import websockets
@@ -67,12 +66,13 @@ class JanusConnection:
         """
 
         logger.info(f"Connecting to: {self.uri}")
-        # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
+
         self.ws = await websockets.connect(
             self.uri, subprotocols=[websockets.Subprotocol("janus-protocol")], **kwargs
         )
         self.receive_message_task = asyncio.create_task(self.receive_message())
         self.receive_message_task.add_done_callback(self.receive_message_done_cb)
+
         self.connected = True
         logger.info("Connected")
 
@@ -84,7 +84,7 @@ class JanusConnection:
         await self.ws.close()
         self.connected = False
 
-    def is_async_response(self, response: dict):
+    def is_async_response(self, response: dict) -> bool:
         janus_type = response["janus"]
         return (
             (janus_type == "event")
@@ -95,24 +95,27 @@ class JanusConnection:
             or (janus_type == "hangup")
         )
 
-    def receive_message_done_cb(self, task, context=None):
+    def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
             # Check if any exceptions are raised
-            exception = task.exception()
-            traceback.print_tb(exception.__traceback__)
-            logger.info(f"{type(exception)} : {exception}")
+            task.exception()
+            # traceback.print_tb(exception.__traceback__)
+            # logger.info(f"{type(exception)} : {exception}")
         except asyncio.CancelledError:
             logger.info("Receive message task ended")
         except asyncio.InvalidStateError:
             logger.info("receive_message_done_cb called with invalid state")
-        except Exception as e:
-            traceback.logger.info_tb(e.__traceback__)
+        # except Exception as e:
+        #     traceback.logger.info_tb(e.__traceback__)
 
-    async def receive_message(self):
-        assert self.ws
+    async def receive_message(self) -> None:
+        if not self.ws:
+            raise Exception("Not connected to server.")
+
         async for message_raw in self.ws:
             response = json.loads(message_raw)
             logger.info(f"Receive: {response}")
+
             if self.is_async_response(response):
                 self.handle_async_response(response)
             else:
@@ -155,25 +158,35 @@ class JanusConnection:
         del self.transactions[message.transaction]
         return response
 
-    def handle_async_response(self, response: dict):
+    def handle_async_response(self, response: dict) -> None:
         if "session_id" in response:
             # This is response for session or plugin handle
             if response["session_id"] in self.sessions:
                 self.sessions[response["session_id"]].handle_async_response(response)
             else:
-                logger.info(
+                logger.warning(
                     f"Got response for session but session not found. Session ID: {response['session_id']}"
+                    f"Unhandeled response: {response}"
                 )
-                logger.info(f"Unhandeled response: {response}")
         else:
             # This is response for self
             logger.info(f"Async event for Janus client core: {response}")
 
-    def attach_session(self, session: "JanusSession"):
-        self.sessions[session.id] = session
+    async def create_session(self, session: "JanusSession") -> int:
+        """Create Janus Session"""
+
+        response = await self.send(JanusMessage(janus="create"))
+
+        # Extract session ID
+        session_id = int(response["data"]["id"])
+
+        # Register session
+        self.sessions[session_id] = session
+
+        return session_id
 
     # Don't call this from client object, call destroy from session instead
-    def destroy_session(self, session: "JanusSession"):
+    def destroy_session(self, session: "JanusSession") -> None:
         del self.sessions[session.id]
 
 

@@ -21,8 +21,13 @@ async def run(player, room_id):
     )
 
     # Create plugin
-    # Attach message is sent, attaching this plugin to janus.
-    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
+    plugin_handle = JanusVideoRoomPlugin()
+
+    # Attach to Janus session
+    await plugin_handle.attach(session=session)
+
+    # # Attach message is sent, attaching this plugin to janus.
+    # plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
     logger.info("plugin created")
 
     await plugin_handle.join(room_id, 333, "qweqwe")
@@ -48,6 +53,7 @@ height = 480
 # asd = {"qwe": 123}
 # msg = JanusMessage(janus="ccc", **asd)
 # logger.info(msg)
+# logger.info(msg.model_dump())
 # logger.info(msg.model_dump(exclude_none=True))
 # logger.info(msg.model_dump_json(exclude_none=True))
 # exit()
