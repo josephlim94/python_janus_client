@@ -1,4 +1,4 @@
-from janus_client import JanusPlugin
+from .plugin_base import JanusPlugin, PluginMessage
 import asyncio
 import logging
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
@@ -51,17 +51,20 @@ class JanusVideoRoomPlugin(JanusPlugin):
         :param display_name: Your display name when you join the room.
         """
 
+        class JoinMessage(PluginMessage):
+            body: dict
+
         await self.send(
-            {
-                "janus": "message",
-                "body": {
+            JoinMessage(
+                janus="message",
+                body={
                     "request": "join",
                     "ptype": "publisher",
                     "room": room_id,
                     "id": publisher_id,
                     "display": display_name,
                 },
-            }
+            )
         )
         await self.joined_event.wait()
 
@@ -85,31 +88,41 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         # send offer
         await self.pc.setLocalDescription(await self.pc.createOffer())
+
         request = {"request": "configure"}
         request.update(media)
+
+        class PublishMessage(PluginMessage):
+            body: dict
+            jsep: dict
+
         await self.send(
-            {
-                "janus": "message",
-                "body": request,
-                "jsep": {
+            PublishMessage(
+                janus="message",
+                body=request,
+                jsep={
                     "sdp": self.pc.localDescription.sdp,
                     "trickle": False,
                     "type": self.pc.localDescription.type,
                 },
-            }
+            )
         )
 
         await self.joined_event.wait()
 
     async def unpublish(self) -> None:
         """Stop publishing"""
+
+        class UnpublishMessage(PluginMessage):
+            body: dict
+
         await self.send(
-            {
-                "janus": "message",
-                "body": {
+            UnpublishMessage(
+                janus="message",
+                body={
                     "request": "unpublish",
                 },
-            }
+            )
         )
         await self.pc.close()
 

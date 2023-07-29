@@ -1,9 +1,11 @@
 import asyncio
-import websockets
 import json
 import uuid
 import traceback
-from typing import TYPE_CHECKING, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any, Optional
+
+import websockets
+from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from .session import JanusSession
@@ -11,6 +13,13 @@ if TYPE_CHECKING:
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class JanusMessage(BaseModel):
+    transaction: str = uuid.uuid4().hex
+    apisecret: Optional[str] = None
+    token: Optional[str] = None
+    janus: str
 
 
 """
@@ -103,13 +112,14 @@ class JanusConnection:
         assert self.ws
         async for message_raw in self.ws:
             response = json.loads(message_raw)
+            logger.info(f"Receive: {response}")
             if self.is_async_response(response):
                 self.handle_async_response(response)
             else:
                 transaction_id = response["transaction"]
                 await self.transactions[transaction_id].put(response)
 
-    async def send(self, message: dict) -> dict:
+    async def send(self, message: JanusMessage) -> dict:
         """Send message to server
 
         :param message: JSON serializable dictionary to send
@@ -117,30 +127,32 @@ class JanusConnection:
         :returns: Synchronous response from Janus server
 
         """
-        # Create transaction
-        transaction_id = uuid.uuid4().hex
-        message["transaction"] = transaction_id
+        # # Create transaction
+        # transaction_id = uuid.uuid4().hex
+        # message["transaction"] = transaction_id
+
         # Transaction ID must be in the dict to receive response
-        self.transactions[transaction_id] = asyncio.Queue()
+        self.transactions[message.transaction] = asyncio.Queue()
 
         # Authentication
         if self.api_secret is not None:
-            message["apisecret"] = self.api_secret
+            message.apisecret = self.api_secret
         if self.token is not None:
-            message["token"] = self.token
+            message.token = self.token
 
         # Send the message
-        logger.info(json.dumps(message))
-        await self.ws.send(json.dumps(message))
+        message_json = message.model_dump_json(exclude_none=True)
+        logger.info(f"Send: {message_json}")
+        await self.ws.send(message_json)
 
         # Wait for response
         # Assumption: there will be one and only one synchronous reply for a transaction.
         #   Other replies with the same transaction ID are asynchronous.
-        response = await self.transactions[transaction_id].get()
+        response = await self.transactions[message.transaction].get()
         logger.info(f"Transaction reply: {response}")
 
         # Transaction complete, delete it
-        del self.transactions[transaction_id]
+        del self.transactions[message.transaction]
         return response
 
     def handle_async_response(self, response: dict):
@@ -157,11 +169,11 @@ class JanusConnection:
             # This is response for self
             logger.info(f"Async event for Janus client core: {response}")
 
-    def attach_session(self, session: 'JanusSession'):
+    def attach_session(self, session: "JanusSession"):
         self.sessions[session.id] = session
 
     # Don't call this from client object, call destroy from session instead
-    def destroy_session(self, session: 'JanusSession'):
+    def destroy_session(self, session: "JanusSession"):
         del self.sessions[session.id]
 
 

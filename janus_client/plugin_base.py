@@ -1,18 +1,19 @@
-from __future__ import annotations
-from typing import TYPE_CHECKING
+from .session import JanusSession, SessionMessage
 
-if TYPE_CHECKING:
-    from .session import JanusSession
+
+class PluginMessage(SessionMessage):
+    handle_id: int = None
 
 
 class JanusPlugin:
     """Base class to inherit when implementing a plugin"""
 
-    name = "janus.plugin.base.dummy"
+    name: str = "janus.plugin.base.dummy"
     """Plugin name
 
     Must override to match plugin name in Janus server.
     """
+    id: str
 
     def __init__(self, session: JanusSession, handle_id: int):
         self.session = session
@@ -21,13 +22,10 @@ class JanusPlugin:
     async def destroy(self):
         """Destroy plugin handle"""
 
-        message = {
-            "janus": "detach",
-        }
-        await self.send(message)
+        await self.send(PluginMessage(janus="detach"))
         self.session.destroy_plugin_handle(self)
 
-    async def send(self, message: dict) -> dict:
+    async def send(self, message: PluginMessage) -> dict:
         """Send raw message to plugin
 
         Will auto attach plugin ID to the message.
@@ -36,9 +34,10 @@ class JanusPlugin:
         :return: Synchronous reply from server
         """
 
-        if "handle_id" in message:
-            raise Exception("Handle ID in message must not be manually added")
-        message["handle_id"] = self.id
+        if message.handle_id:
+            raise Exception("Plugin handle ID must not be manually added")
+
+        message.handle_id = self.id
         return await self.session.send(message)
 
     def handle_async_response(self, response: dict):
@@ -58,6 +57,9 @@ class JanusPlugin:
         :param candidate: Candidate payload. (I got it from WebRTC instance callback)
         """
 
+        class TrickleMessage(PluginMessage):
+            candidate: dict
+
         candidate_payload = dict()
         if candidate:
             candidate_payload = {
@@ -69,5 +71,7 @@ class JanusPlugin:
             # - a null candidate or a completed JSON object to notify the end of the candidates.
             # TODO: test it
             candidate_payload = None
-        await self.send({"janus": "trickle", "candidate": candidate_payload})
+
+        # await self.send({"janus": "trickle", "candidate": candidate_payload})
+        await self.sent(TrickleMessage(janus="trickle", candidate=candidate_payload))
         # TODO: Implement sending an array of candidates
