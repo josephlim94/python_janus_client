@@ -4,7 +4,7 @@ import uuid
 from typing import TYPE_CHECKING, Dict, Any, Optional
 
 import websockets
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from .session import JanusSession
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class JanusMessage(BaseModel):
-    transaction: str = uuid.uuid4().hex
+    transaction: str = Field(default_factory=lambda: uuid.uuid4().hex)
     apisecret: Optional[str] = None
     token: Optional[str] = None
     janus: str
@@ -41,7 +41,7 @@ class JanusSession
 
 class JanusConnection:
     """Janus connection instance, connected through websocket
-    
+
     Manage Sessions and Transactions
     """
 
@@ -155,7 +155,6 @@ class JanusConnection:
         # Assumption: there will be one and only one synchronous reply for a transaction.
         #   Other replies with the same transaction ID are asynchronous.
         response = await self.transactions[message.transaction].get()
-        logger.info(f"Transaction reply: {response}")
 
         # Transaction complete, delete it
         del self.transactions[message.transaction]
