@@ -1,8 +1,8 @@
 import asyncio
 import logging
 import threading
-import time
 from typing import Optional, Set, Union
+import subprocess
 
 from av import VideoFrame
 from av.frame import Frame
@@ -80,10 +80,6 @@ class MediaBlackhole:
         self.__tracks = {}
 
 
-# format = "%(asctime)s: %(message)s"
-# logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
-
-
 class PlayerStreamTrack(MediaStreamTrack):
     def __init__(self, player, kind):
         super().__init__()
@@ -101,19 +97,19 @@ class PlayerStreamTrack(MediaStreamTrack):
         if data is None:
             self.stop()
             raise MediaStreamError
-        data_time = None
+        # data_time = None
 
-        # control playback rate
-        if (
-            self._player is not None
-            and self._player._throttle_playback
-            and data_time is not None
-        ):
-            if self._start is None:
-                self._start = time.time() - data_time
-            else:
-                wait = self._start + data_time - time.time()
-                await asyncio.sleep(wait)
+        # # control playback rate
+        # if (
+        #     self._player is not None
+        #     and self._player._throttle_playback
+        #     and data_time is not None
+        # ):
+        #     if self._start is None:
+        #         self._start = time.time() - data_time
+        #     else:
+        #         wait = self._start + data_time - time.time()
+        #         await asyncio.sleep(wait)
 
         return data
 
@@ -150,7 +146,7 @@ class MediaPlayer:
             'video_size': '640x480'
         })
 
-        # Open webcam on Windows.
+        # Open webcam on Windows.
         player = MediaPlayer('video=Integrated Camera', format='dshow', options={
             'video_size': '640x480'
         })
@@ -176,8 +172,7 @@ class MediaPlayer:
         self.__height = height
 
         # examine streams
-        self.__started: Set[PlayerStreamTrack] = set()
-        self.__streams = []
+        self.__started: Set[MediaStreamTrack] = set()
         self.__audio: Optional[PlayerStreamTrack] = None
         self.__video = PlayerStreamTrack(self, kind="video")
 
@@ -206,9 +201,9 @@ class MediaPlayer:
     ):
         logging.info("Thread 1: starting")
         pts = 0
-        video_process = self.__ffmpeg_input.output(
+        video_process: subprocess.Popen = self.__ffmpeg_input.output(
             "pipe:", format="rawvideo", pix_fmt="rgb24"
-        ).run_async(pipe_stdout=True)
+        ).run_async(pipe_stdout=True, pipe_stdin=True)
 
         while not quit_event.is_set():
             in_bytes = video_process.stdout.read(self.__width * self.__height * 3)
@@ -227,6 +222,7 @@ class MediaPlayer:
             # logging.info(frame)
             asyncio.run_coroutine_threadsafe(video_track._queue.put(frame), loop)
 
+        video_process.communicate(b"q", timeout=1)
         video_process.wait()
 
         logging.info("Thread 1: finishing")
