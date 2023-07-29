@@ -68,6 +68,19 @@ A fork of FFmpeg that supports WebRTC can be found [here](https://github.com/oss
 
 ## Usage
 
+Use [test_ffmpeg.py](./test_ffmpeg.py) to try streaming a portion of monitor display to Janus videoroom demo.
+
+Result:
+
+Delay of 0.175s
+
+![image](https://github.com/josephlim94/janus_gst_client_py/assets/5723232/739ba55a-71b9-445a-b823-a09a72ae9fb5)
+
+Server ping:
+
+![image](https://github.com/josephlim94/janus_gst_client_py/assets/5723232/e08c3f2d-d12e-4aa3-8c81-3539be4b0304)
+
+
 In [test_gst_videoroom.py](./test_gst_videoroom.py), you will see an example on how to use the client in general, such as connecting and creating sessions.  
 I use it to develop this package.
 
