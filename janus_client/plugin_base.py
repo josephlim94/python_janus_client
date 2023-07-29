@@ -73,5 +73,5 @@ class JanusPlugin:
             candidate_payload = None
 
         # await self.send({"janus": "trickle", "candidate": candidate_payload})
-        await self.sent(TrickleMessage(janus="trickle", candidate=candidate_payload))
+        await self.send(TrickleMessage(janus="trickle", candidate=candidate_payload))
         # TODO: Implement sending an array of candidates

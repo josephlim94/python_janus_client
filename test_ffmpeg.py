@@ -64,8 +64,9 @@ height = 480
 
 # from janus_client.core import JanusMessage
 
+
 # asd = {"qwe": 123}
-# msg = JanusMessage(**asd)
+# msg = JanusMessage(janus="ccc", **asd)
 # logger.info(msg)
 # logger.info(msg.model_dump(exclude_none=True))
 # logger.info(msg.model_dump_json(exclude_none=True))
