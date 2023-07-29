@@ -3,6 +3,7 @@ import logging
 import threading
 from typing import Optional, Set, Union
 import subprocess
+import time
 
 from av import VideoFrame
 from av.frame import Frame
@@ -205,10 +206,16 @@ class MediaPlayer:
             "pipe:", format="rawvideo", pix_fmt="rgb24"
         ).run_async(pipe_stdout=True, pipe_stdin=True)
 
+        count = 0
+        total_time = 0
+        total_cpu_time = 0
         while not quit_event.is_set():
             in_bytes = video_process.stdout.read(self.__width * self.__height * 3)
             if not in_bytes:
                 break
+
+            start_time = time.time()
+            start_cpu_time = time.process_time()
 
             in_frame = np.frombuffer(in_bytes, np.uint8).reshape(
                 [self.__height, self.__width, 3]
@@ -219,6 +226,10 @@ class MediaPlayer:
             pts += 1
             frame.time_base = fractions.Fraction(1, 48000)
 
+            total_time += time.time() - start_time
+            total_cpu_time += time.process_time() - start_cpu_time
+            count += 1
+
             # logging.info(frame)
             asyncio.run_coroutine_threadsafe(video_track._queue.put(frame), loop)
 
@@ -226,6 +237,9 @@ class MediaPlayer:
         video_process.wait()
 
         logging.info("Thread 1: finishing")
+        logger.info(
+            f"time: {total_time * 1000 / count}ms | cpu time: {total_cpu_time * 1000 / count}ms"
+        )
 
     def _start(self, track: PlayerStreamTrack) -> None:
         self.__started.add(track)
