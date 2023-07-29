@@ -1,11 +1,8 @@
 import asyncio
 import logging
 
-
 from janus_client import JanusSession, JanusVideoRoomPlugin
 import ffmpeg
-
-pcs = set()
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
