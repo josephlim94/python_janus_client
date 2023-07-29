@@ -17,10 +17,10 @@ logger = logging.getLogger(__name__)
 Architecture design to handle Janus transactions and events
 Assumption 1: All transaction ids are unique, and they will always get
     at least one reply when there are no network errors
-So to handle transactions, it will be tracked in JanusClient only.
+So to handle transactions, it will be tracked in JanusConnection only.
 To handle events, it will be passed top down to all matching session id
     and plugin handle id.
-Each node down the tree with JanusClient as root, including JanusClient itself,
+Each node down the tree with JanusConnection as root, including JanusConnection itself,
 shall have:
 1. handle_async_response method
 
@@ -31,13 +31,13 @@ class JanusSession
 """
 
 
-class JanusClient:
-    """Janus client instance, connected through websocket"""
+class JanusConnection:
+    """Janus connection instance, connected through websocket"""
 
     connected: bool = False
 
     def __init__(self, uri: str, api_secret: str = None, token: str = None):
-        """Initialize client instance
+        """Create connection instance
 
         :param uri: Janus server address
         :param api_secret: (optional) API key for shared static secret authentication
@@ -110,7 +110,7 @@ class JanusClient:
                 await self.transactions[transaction_id].put(response)
 
     async def send(self, message: dict) -> dict:
-        """Semd message to server
+        """Send message to server
 
         :param message: JSON serializable dictionary to send
 

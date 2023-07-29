@@ -3,7 +3,7 @@ import asyncio
 from typing import Type, TypeVar, Dict
 from .plugin_base import JanusPlugin
 
-from .core import JanusClient
+from .core import JanusConnection
 
 import logging
 
@@ -12,14 +12,14 @@ PluginBaseType = TypeVar("PluginBaseType", bound=JanusPlugin)
 
 
 class JanusSession:
-    """Janus session instance, created by JanusClient"""
+    """Janus session instance"""
 
     id: str
-    connection: JanusClient
+    connection: JanusConnection
 
     def __init__(
         self,
-        connection: JanusClient = None,
+        connection: JanusConnection = None,
         uri: str = "",
         api_secret: str = None,
         token: str = None,
@@ -30,7 +30,7 @@ class JanusSession:
         if (connection):
             self.connection = connection
         else:
-            self.connection = JanusClient(
+            self.connection = JanusConnection(
                 uri=uri,
                 api_secret=api_secret,
                 token=token,

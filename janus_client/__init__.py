@@ -1,5 +1,5 @@
 
-from .core import JanusClient, JanusAdminMonitorClient
+from .core import JanusConnection, JanusAdminMonitorClient
 from .session import JanusSession
 from .plugin_base import JanusPlugin
 
