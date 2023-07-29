@@ -1,6 +1,6 @@
 from __future__ import annotations
 import asyncio
-from typing import Dict, TYPE_CHECKING
+from typing import Type, TypeVar, Dict, TYPE_CHECKING
 import logging
 
 from .core import JanusConnection, JanusMessage
@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 logger = logging.getLogger(__name__)
-# PluginBaseType = TypeVar("PluginBaseType", bound=JanusPlugin)
+PluginBaseType = TypeVar("PluginBaseType", bound=JanusPlugin)
 
 
 class SessionMessage(JanusMessage):
@@ -94,8 +94,8 @@ class JanusSession:
             logger.info(f"Async event for session: {response}")
 
     async def create_plugin_handle(
-        self, plugin_type: JanusPlugin
-    ) -> JanusPlugin:
+        self, plugin_type: Type[PluginBaseType]
+    ) -> PluginBaseType:
         """Create plugin handle for the given plugin type
 
         PluginBaseType = TypeVar('PluginBaseType', bound=JanusPlugin)

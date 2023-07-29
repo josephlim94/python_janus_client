@@ -14,24 +14,6 @@ logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
 
 
-async def publish_some_video(session: JanusSession):
-    # Create plugin
-    plugin_handle: JanusVideoRoomPlugin = await session.create_plugin_handle(
-        JanusVideoRoomPlugin
-    )
-
-    await plugin_handle.join(1234, 333, "qweqwe")
-    await plugin_handle.publish()
-    print("Let it stream for 60 seconds")
-    await asyncio.sleep(60)
-    print("Stop streaming")
-    await plugin_handle.unpublish()
-    print("Stream unpublished")
-
-    # Destroy plugin
-    await plugin_handle.destroy()
-
-
 async def run(player, room_id):
     # Create session
     session = JanusSession(
@@ -40,9 +22,7 @@ async def run(player, room_id):
 
     # Create plugin
     # Attach message is sent, attaching this plugin to janus.
-    plugin_handle: JanusVideoRoomPlugin = await session.create_plugin_handle(
-        JanusVideoRoomPlugin
-    )
+    plugin_handle = await session.create_plugin_handle(JanusVideoRoomPlugin)
     logger.info("plugin created")
 
     await plugin_handle.join(room_id, 333, "qweqwe")
