@@ -2,8 +2,7 @@ import asyncio
 import logging
 
 
-from janus_client import JanusSession
-from janus_client.plugin_video_room_ffmpeg import JanusVideoRoomPlugin
+from janus_client import JanusSession, JanusVideoRoomPlugin
 import ffmpeg
 
 pcs = set()
