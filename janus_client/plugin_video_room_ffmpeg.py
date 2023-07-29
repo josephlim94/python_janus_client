@@ -1,6 +1,7 @@
-from .plugin_base import JanusPlugin, PluginMessage
 import asyncio
 import logging
+
+from .plugin_base import JanusPlugin, PluginMessage
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
 from .media import MediaPlayer
 
@@ -11,6 +12,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
     """Janus VideoRoom plugin instance
 
     Implements API to interact with VideoRoom plugin.
+
+    Each plugin instance is expected to have only 1 PeerConnection
     """
 
     name = "janus.plugin.videoroom"  #: Plugin name
@@ -19,7 +22,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.joined_event = asyncio.Event()
-        self.gst_webrtc_ready = asyncio.Event()
         self.loop = asyncio.get_running_loop()
 
     def handle_async_response(self, response: dict):
@@ -54,7 +56,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         class JoinMessage(PluginMessage):
             body: dict
 
-        await self.send(
+        response = await self.send(
             JoinMessage(
                 janus="message",
                 body={
@@ -66,14 +68,38 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             )
         )
+        logger.info(f"Room join response: {response}")
         await self.joined_event.wait()
 
-    async def publish(self, player: MediaPlayer) -> None:
+    async def leave(self):
+        class LeaveMessage(PluginMessage):
+            body: dict
+
+        response = await self.send(
+            LeaveMessage(
+                janus="message",
+                body={
+                    "request": "leave",
+                },
+            )
+        )
+        logger.info(f"Room leave response: {response}")
+
+    async def publish(self, ffmpeg_input, width: int, height: int) -> None:
         """Publish video stream to the room
 
         Should already have joined a room before this. Then this will publish the
         video stream to the handle.
         """
+
+        # create media source
+        player = MediaPlayer(
+            ffmpeg_input,
+            width,
+            height,
+        )
+        # Just save the media player. Not used
+        self.player = player
 
         # configure media
         media = {"audio": False, "video": True}

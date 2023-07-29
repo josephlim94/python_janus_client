@@ -40,7 +40,10 @@ class JanusSession
 
 
 class JanusConnection:
-    """Janus connection instance, connected through websocket"""
+    """Janus connection instance, connected through websocket
+    
+    Manage Sessions and Transactions
+    """
 
     connected: bool = False
 
