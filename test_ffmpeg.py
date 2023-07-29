@@ -1,6 +1,6 @@
 import asyncio
 
-from janus_client import JanusClient, JanusSession
+from janus_client import JanusSession
 from janus_client.plugin_video_room_ffmpeg import JanusVideoRoomPlugin
 from janus_client.media import MediaPlayer
 import ffmpeg
@@ -27,14 +27,10 @@ async def publish_some_video(session: JanusSession):
 
 
 async def run(player, room_id):
-    # Start connection
-    client = JanusClient(
-        uri="wss://janus.josephgetmyip.com/janusbasews/janus",
-    )
-    await client.connect()
-
     # Create session
-    session = await client.create_session()
+    session = JanusSession(
+        uri="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+    )
 
     # Create plugin
     # Attach message is sent, attaching this plugin to janus.

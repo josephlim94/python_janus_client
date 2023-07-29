@@ -3,8 +3,10 @@ import websockets
 import json
 import uuid
 import traceback
-from .session import JanusSession
-from typing import Type, Dict, Any
+from typing import TYPE_CHECKING, Dict, Any
+
+if TYPE_CHECKING:
+    from .session import JanusSession
 
 import logging
 
@@ -31,6 +33,8 @@ class JanusSession
 
 class JanusClient:
     """Janus client instance, connected through websocket"""
+
+    connected: bool = False
 
     def __init__(self, uri: str, api_secret: str = None, token: str = None):
         """Initialize client instance
@@ -60,6 +64,7 @@ class JanusClient:
         )
         self.receive_message_task = asyncio.create_task(self.receive_message())
         self.receive_message_task.add_done_callback(self.receive_message_done_cb)
+        self.connected = True
         logger.info("Connected")
 
     async def disconnect(self) -> None:
@@ -68,6 +73,7 @@ class JanusClient:
         logger.info("Disconnecting")
         self.receive_message_task.cancel()
         await self.ws.close()
+        self.connected = False
 
     def is_async_response(self, response: dict):
         janus_type = response["janus"]
@@ -151,26 +157,11 @@ class JanusClient:
             # This is response for self
             logger.info(f"Async event for Janus client core: {response}")
 
-    async def create_session(
-        self, session_type: Type[JanusSession] = JanusSession
-    ) -> JanusSession:
-        """Create Janus session instance
-
-        :param session_type: Class type of session. Should be JanusSession,
-            no other options yet.
-        """
-
-        response = await self.send(
-            {
-                "janus": "create",
-            }
-        )
-        session = session_type(client=self, session_id=response["data"]["id"])
+    def attach_session(self, session: 'JanusSession'):
         self.sessions[session.id] = session
-        return session
 
     # Don't call this from client object, call destroy from session instead
-    def destroy_session(self, session):
+    def destroy_session(self, session: 'JanusSession'):
         del self.sessions[session.id]
 
 

@@ -1,10 +1,9 @@
 from __future__ import annotations
 import asyncio
-from typing import TYPE_CHECKING, Type, TypeVar, Dict
+from typing import Type, TypeVar, Dict
 from .plugin_base import JanusPlugin
 
-if TYPE_CHECKING:
-    from .core import JanusClient
+from .core import JanusClient
 
 import logging
 
@@ -15,11 +14,40 @@ PluginBaseType = TypeVar("PluginBaseType", bound=JanusPlugin)
 class JanusSession:
     """Janus session instance, created by JanusClient"""
 
-    def __init__(self, client: JanusClient, session_id: int):
-        self.client = client
-        self.id = session_id
+    id: str
+    connection: JanusClient
+
+    def __init__(
+        self,
+        connection: JanusClient = None,
+        uri: str = "",
+        api_secret: str = None,
+        token: str = None,
+    ):
         self.plugin_handles: Dict[int, JanusPlugin] = dict()
         self.keepalive_task = asyncio.create_task(self.keepalive())
+
+        if (connection):
+            self.connection = connection
+        else:
+            self.connection = JanusClient(
+                uri=uri,
+                api_secret=api_secret,
+                token=token,
+            )
+
+    async def __connect(self):
+        if self.connection.connected:
+            return
+
+        await self.connection.connect()
+        response = await self.connection.send(
+            {
+                "janus": "create",
+            }
+        )
+        self.id = response["data"]["id"]
+        self.connection.attach_session(self)
 
     async def destroy(self):
         """Release resources
@@ -33,13 +61,16 @@ class JanusSession:
         }
         await self.send(message)
         self.keepalive_task.cancel()
-        self.client.destroy_session(self)
+        self.connection.destroy_session(self)
 
     async def send(self, message: dict) -> dict:
         if "session_id" in message:
             raise Exception("Session ID in message must not be manually added")
+
+        await self.__connect()
+
         message["session_id"] = self.id
-        return await self.client.send(message)
+        return await self.connection.send(message)
 
     async def keepalive(self):
         # Reference: https://janus.conf.meetecho.com/docs/rest.html
