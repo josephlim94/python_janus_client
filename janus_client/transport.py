@@ -86,16 +86,14 @@ class JanusTransportHTTP:
     async def info(self) -> dict:
         async with aiohttp.ClientSession() as session:
             async with session.get(f"{self.uri}/info") as response:
-                print("Status:", response.status)
-                print("Content-type:", response.headers["content-type"])
-
-                html = await response.text()
-                print("Body:", html[:15], "...")
-
                 return await response.json()
 
     async def send(
-        self, message: dict, session_id: int = None, handle_id: int = None
+        self,
+        message: dict,
+        session_id: int = None,
+        handle_id: int = None,
+        response_handler=lambda response: response,
     ) -> dict:
         """Send message to server
 
@@ -122,23 +120,31 @@ class JanusTransportHTTP:
         message_json = json.dumps(message)
         logger.info(f"Send: {message_json}")
         async with aiohttp.ClientSession() as session:
-            async with session.get(
-                self.__build_uri(session_id=session_id, handle_id=handle_id)
+            async with session.post(
+                url=self.__build_uri(session_id=session_id, handle_id=handle_id),
+                json=message,
             ) as response:
                 print("Status:", response.status)
                 print("Content-type:", response.headers["content-type"])
 
-                html = await response.text()
-                print("Body:", html[:15], "...")
+                response.raise_for_status()
 
-        # Wait for response
-        # Assumption: there will be one and only one synchronous reply for a transaction.
-        #   Other replies with the same transaction ID are asynchronous.
-        response = await self.transactions[message.transaction].get()
-        logger.info(f"Transaction response: {response}")
+                response = await response.json()
+
+                if "error" in response:
+                    raise Exception(response)
+
+                # There must be a transaction ID
+                response_transaction_id = response["transaction"]
+                await self.transactions[response_transaction_id].put(response)
+
+        # Whenever we send a message with transaction, there must be a reply
+        response = response_handler(await self.transactions[transaction_id].get())
+        while not response:
+            response = response_handler(await self.transactions[transaction_id].get())
 
         # Transaction complete, delete it
-        del self.transactions[message.transaction]
+        del self.transactions[transaction_id]
         return response
 
     async def receive(self):

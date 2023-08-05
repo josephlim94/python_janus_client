@@ -13,12 +13,15 @@ async def main():
         uri="https://janusmy.josephgetmyip.com/janusbase/janus"
     )
 
-    # response = await transport.send({
-    #     "janus": "create"
-    # })
-
     response = await transport.info()
+    logger.info(response)
 
+    response = await transport.send({"janus": "create"})
+    logger.info(response)
+
+    response = await transport.send(
+        {"janus": "destroy"}, session_id=int(response["data"]["id"])
+    )
     logger.info(response)
 
 
