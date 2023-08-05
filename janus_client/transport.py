@@ -37,6 +37,13 @@ class JanusTransport(ABC):
         pass
 
     def __init__(self, base_url: str, api_secret: str = None, token: str = None):
+        """Create connection instance
+
+        :param base_url: Janus server address
+        :param api_secret: (optional) API key for shared static secret authentication
+        :param token: (optional) Token for shared token based authentication
+        """
+
         self.__base_url = base_url.rstrip("/")
         self.__api_secret = api_secret
         self.__token = token
@@ -109,8 +116,24 @@ class JanusTransport(ABC):
         del self.__transactions[transaction_id]
         return response
 
-    def receive(self):
-        pass
+    async def receive(self, response: dict):
+        if "transaction" in response:
+            transaction_id = response["transaction"]
+            await self.__transactions[transaction_id].put(response)
+        else:
+            if "session_id" in response:
+                session_id = response["session_id"]
+                # This is response for session or plugin handle
+                if session_id in self.__sessions:
+                    self.__sessions[session_id].handle_async_response(response)
+                else:
+                    logger.warning(
+                        f"Got response for session but session not found."
+                        f"Session ID: {session_id} Unhandeled response: {response}"
+                    )
+            else:
+                # This is response for self
+                logger.info(f"Async event for Janus client core: {response}")
 
     async def create_session(self, session: "JanusSession") -> int:
         """Create Janus Session"""

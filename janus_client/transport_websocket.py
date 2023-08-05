@@ -1,0 +1,89 @@
+import logging
+from typing import Any
+import asyncio
+import json
+
+import websockets
+
+from .transport import JanusTransport
+
+
+logger = logging.getLogger(__name__)
+
+
+class JanusTransportWebsocket(JanusTransport):
+    """Janus transport through HTTP
+
+    Manage Sessions and Transactions
+    """
+
+    ws: websockets.WebSocketClientProtocol
+    connected: bool
+
+    def __init__(self, **kwargs: Any):
+        super().__init__(**kwargs)
+
+        self.connected = False
+
+    async def info(self) -> dict:
+        logger.info("Info not available with Websocket API")
+
+    async def connect(self, **kwargs: Any) -> None:
+        """Connect to server
+
+        All extra keyword arguments will be passed to websockets.connect
+        """
+
+        logger.info(f"Connecting to: {self.base_url}")
+
+        self.ws = await websockets.connect(
+            self.base_url,
+            subprotocols=[websockets.Subprotocol("janus-protocol")],
+            **kwargs,
+        )
+        self.receive_message_task = asyncio.create_task(self.receive_message())
+        self.receive_message_task.add_done_callback(self.receive_message_done_cb)
+
+        self.connected = True
+        logger.info("Connected")
+
+    def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
+        try:
+            # Check if any exceptions are raised
+            task.exception()
+            # traceback.print_tb(exception.__traceback__)
+            # logger.info(f"{type(exception)} : {exception}")
+        except asyncio.CancelledError:
+            logger.info("Receive message task ended")
+        except asyncio.InvalidStateError:
+            logger.info("receive_message_done_cb called with invalid state")
+        # except Exception as e:
+        #     traceback.logger.info_tb(e.__traceback__)
+
+    async def receive_message(self) -> None:
+        if not self.ws:
+            raise Exception("Not connected to server.")
+
+        async for message_raw in self.ws:
+            response = json.loads(message_raw)
+            logger.info(f"Received: {response}")
+
+            await self.receive(response)
+
+    async def _send(
+        self,
+        message: dict,
+    ) -> None:
+        if not self.connected:
+            await self.connect()
+
+        await self.ws.send(json.dumps(message))
+
+
+def protocol_matcher(base_url: str):
+    return base_url.startswith(("ws://", "wss://"))
+
+
+JanusTransport.register_transport(
+    protocol_matcher=protocol_matcher, transport_cls=JanusTransportWebsocket
+)

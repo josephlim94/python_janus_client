@@ -66,6 +66,10 @@ class JanusTransportHTTP(JanusTransport):
         pass
 
 
+def protocol_matcher(base_url: str):
+    return base_url.startswith(("http://", "https://"))
+
+
 JanusTransport.register_transport(
-    protocol_matcher=lambda _: True, transport_cls=JanusTransportHTTP
+    protocol_matcher=protocol_matcher, transport_cls=JanusTransportHTTP
 )
