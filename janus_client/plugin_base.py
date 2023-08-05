@@ -1,8 +1,10 @@
-from .session import JanusSession, SessionMessage
+import logging
+
+from .transport import ResponseHandlerType
+from .session import JanusSession
 
 
-class PluginMessage(SessionMessage):
-    handle_id: int = None
+logger = logging.getLogger(__name__)
 
 
 class JanusPlugin:
@@ -22,7 +24,7 @@ class JanusPlugin:
 
     async def attach(self, session: JanusSession):
         if self.__id:
-            raise Exception(f"Plugin already attached to session ({self.session.id})")
+            raise Exception(f"Plugin already attached to session ({self.session})")
 
         self.session = session
         self.__id = await session.attach_plugin(self)
@@ -30,10 +32,21 @@ class JanusPlugin:
     async def destroy(self):
         """Destroy plugin handle"""
 
-        await self.send(PluginMessage(janus="detach"))
+        await self.send({"janus": "detach"})
         self.session.detach_plugin(self)
 
-    async def send(self, message: PluginMessage) -> dict:
+    def __sanitize_message(self, message: dict) -> None:
+        if "handle_id" in message:
+            logger.warn(
+                f"Should not set handle_id ({message['handle_id']}). Overriding."
+            )
+            del message["handle_id"]
+
+    async def send(
+        self,
+        message: dict,
+        response_handler: ResponseHandlerType = lambda response: response,
+    ) -> dict:
         """Send raw message to plugin
 
         Will auto attach plugin ID to the message.
@@ -42,11 +55,11 @@ class JanusPlugin:
         :return: Synchronous reply from server
         """
 
-        if message.handle_id:
-            raise Exception("Plugin handle ID must not be manually added")
+        self.__sanitize_message(message=message)
 
-        message.handle_id = self.__id
-        return await self.session.send(message)
+        return await self.session.send(
+            message, handle_id=self.__id, response_handler=response_handler
+        )
 
     def handle_async_response(self, response: dict):
         """Handle asynchronous events from Janus
@@ -65,9 +78,6 @@ class JanusPlugin:
         :param candidate: Candidate payload. (I got it from WebRTC instance callback)
         """
 
-        class TrickleMessage(PluginMessage):
-            candidate: dict
-
         candidate_payload = dict()
         if candidate:
             candidate_payload = {
@@ -81,5 +91,5 @@ class JanusPlugin:
             candidate_payload = None
 
         # await self.send({"janus": "trickle", "candidate": candidate_payload})
-        await self.send(TrickleMessage(janus="trickle", candidate=candidate_payload))
+        await self.send({"janus": "trickle", "candidate": candidate_payload})
         # TODO: Implement sending an array of candidates

@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from .plugin_base import JanusPlugin, PluginMessage
+from .plugin_base import JanusPlugin
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +19,9 @@ class JanusVideoCallPlugin(JanusPlugin):
             logger.info(f"Event response: {response}")
             if "plugindata" in response:
                 if response["plugindata"]["data"]["videocall"] == "event":
-                    logger.info(f"Event result: {response['plugindata']['data']['result']}")
+                    logger.info(
+                        f"Event result: {response['plugindata']['data']['result']}"
+                    )
         else:
             logger.info(f"Unimplemented response handle: {response}")
 
@@ -28,16 +30,12 @@ class JanusVideoCallPlugin(JanusPlugin):
             asyncio.create_task(self.handle_jsep(response["jsep"]))
 
     async def list(self) -> None:
-
-        class ListMessage(PluginMessage):
-            body: dict
-
         response = await self.send(
-            ListMessage(
-                janus="message",
-                body={
+            {
+                "janus": "message",
+                "body": {
                     "request": "list",
                 },
-            )
+            }
         )
         return response

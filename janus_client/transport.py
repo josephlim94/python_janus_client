@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 import logging
-from dataclasses import dataclass
 import uuid
 import json
 
@@ -11,11 +10,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-
-@dataclass
-class JanusMessage:
-    janus: str
-    transaction: str
+ResponseHandlerType = Callable[[dict], dict]
 
 
 class JanusTransport(ABC):
@@ -25,15 +20,17 @@ class JanusTransport(ABC):
     __api_secret: str
     __token: str
     __transactions: dict[str, asyncio.Queue]
+    __transaction_response_handler: dict[str, ResponseHandlerType]
     __sessions: dict[int, "JanusSession"]
-
-    @abstractmethod
-    async def info(self):
-        pass
 
     @abstractmethod
     async def _send(self, message: dict):
         """Really sends the message and doesn't return a response"""
+        pass
+
+    @abstractmethod
+    async def info(self):
+        """Get info of Janus server. Only useful for HTTP protocol I think"""
         pass
 
     def __init__(self, base_url: str, api_secret: str = None, token: str = None):
@@ -48,6 +45,7 @@ class JanusTransport(ABC):
         self.__api_secret = api_secret
         self.__token = token
         self.__transactions = dict()
+        self.__transaction_response_handler = dict()
         self.__sessions = dict()
 
     @property
@@ -73,7 +71,7 @@ class JanusTransport(ABC):
         message: dict,
         session_id: int = None,
         handle_id: int = None,
-        response_handler=lambda response: response,
+        response_handler: ResponseHandlerType = lambda response: response,
     ) -> dict:
         """Send message to server
 
@@ -88,6 +86,7 @@ class JanusTransport(ABC):
         # Create transaction
         transaction_id = uuid.uuid4().hex
         self.__transactions[transaction_id] = asyncio.Queue()
+        self.__transaction_response_handler[transaction_id] = response_handler
         message["transaction"] = transaction_id
 
         # Authentication
@@ -108,32 +107,40 @@ class JanusTransport(ABC):
         await self._send(message=message)
 
         # Whenever we send a message with transaction, there must be a reply
-        response = response_handler(await self.__transactions[transaction_id].get())
-        while not response:
-            response = response_handler(await self.__transactions[transaction_id].get())
+        response = await self.__transactions[transaction_id].get()
 
         # Transaction complete, delete it
         del self.__transactions[transaction_id]
+        del self.__transaction_response_handler[transaction_id]
         return response
 
     async def receive(self, response: dict):
+        # Maybe it's for a transaction that is waiting
         if "transaction" in response:
             transaction_id = response["transaction"]
-            await self.__transactions[transaction_id].put(response)
-        else:
-            if "session_id" in response:
-                session_id = response["session_id"]
-                # This is response for session or plugin handle
-                if session_id in self.__sessions:
-                    self.__sessions[session_id].handle_async_response(response)
-                else:
-                    logger.warning(
-                        f"Got response for session but session not found."
-                        f"Session ID: {session_id} Unhandeled response: {response}"
-                    )
+
+            if transaction_id in self.__transaction_response_handler:
+                transaction_response = self.__transaction_response_handler[
+                    transaction_id
+                ](response)
+                if transaction_response:
+                    await self.__transactions[transaction_id].put(response)
+                    return
+
+        # If the response was not "eaten" by the transaction, then dispatch it
+        if "session_id" in response:
+            session_id = response["session_id"]
+            # This is response for session or plugin handle
+            if session_id in self.__sessions:
+                self.__sessions[session_id].handle_async_response(response)
             else:
-                # This is response for self
-                logger.info(f"Async event for Janus client core: {response}")
+                logger.warning(
+                    f"Got response for session but session not found."
+                    f"Session ID: {session_id} Unhandeled response: {response}"
+                )
+        else:
+            # This is response for self
+            logger.info(f"Async event for Janus client core: {response}")
 
     async def create_session(self, session: "JanusSession") -> int:
         """Create Janus Session"""

@@ -2,19 +2,13 @@ import asyncio
 from typing import Dict, TYPE_CHECKING
 import logging
 
-from .core import JanusMessage
-from .transport import JanusTransport
+from .transport import JanusTransport, ResponseHandlerType
 
 if TYPE_CHECKING:
     from .plugin_base import JanusPlugin
 
 
 logger = logging.getLogger(__name__)
-
-
-class SessionMessage(JanusMessage):
-    session_id: int = None
-    plugin: str = None
 
 
 class JanusSession:
@@ -41,6 +35,9 @@ class JanusSession:
                 api_secret=api_secret,
                 token=token,
             )
+
+    def __str__(self):
+        return f"Session ({self.__id}) {self}"
 
     async def __connect(self) -> None:
         if not self.__id:
@@ -69,13 +66,23 @@ class JanusSession:
             )
             del message["session_id"]
 
-    async def send(self, message: dict) -> dict:
+    async def send(
+        self,
+        message: dict,
+        handle_id: int = None,
+        response_handler: ResponseHandlerType = lambda response: response,
+    ) -> dict:
         self.__sanitize_message(message=message)
 
         if not self.created:
             await self.__connect()
 
-        return await self.transport.send(message, session_id=self.__id)
+        return await self.transport.send(
+            message,
+            session_id=self.__id,
+            handle_id=handle_id,
+            response_handler=response_handler,
+        )
 
     async def keepalive(self) -> None:
         # Reference: https://janus.conf.meetecho.com/docs/rest.html
@@ -104,7 +111,7 @@ class JanusSession:
         :param plugin: Plugin instance with janus_client.JanusPlugin as base class
         """
 
-        response = await self.send(SessionMessage(janus="attach", plugin=plugin.name))
+        response = await self.send({"janus": "attach", "plugin": plugin.name})
 
         # Extract plugin handle id
         handle_id = int(response["data"]["id"])

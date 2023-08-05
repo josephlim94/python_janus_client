@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from .plugin_base import JanusPlugin, PluginMessage
+from .plugin_base import JanusPlugin
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
 from .media import MediaPlayer
 
@@ -53,35 +53,30 @@ class JanusVideoRoomPlugin(JanusPlugin):
         :param display_name: Your display name when you join the room.
         """
 
-        class JoinMessage(PluginMessage):
-            body: dict
-
         response = await self.send(
-            JoinMessage(
-                janus="message",
-                body={
+            {
+                "janus": "message",
+                "body": {
                     "request": "join",
                     "ptype": "publisher",
                     "room": room_id,
                     "id": publisher_id,
                     "display": display_name,
                 },
-            )
+            },
+            response_handler=lambda response: response if response["janus"] == "ack" else None,
         )
         logger.info(f"Room join response: {response}")
         await self.joined_event.wait()
 
     async def leave(self):
-        class LeaveMessage(PluginMessage):
-            body: dict
-
         response = await self.send(
-            LeaveMessage(
-                janus="message",
-                body={
+            {
+                "janus": "message",
+                "body": {
                     "request": "leave",
                 },
-            )
+            }
         )
         logger.info(f"Room leave response: {response}")
 
@@ -118,20 +113,16 @@ class JanusVideoRoomPlugin(JanusPlugin):
         request = {"request": "configure"}
         request.update(media)
 
-        class PublishMessage(PluginMessage):
-            body: dict
-            jsep: dict
-
         await self.send(
-            PublishMessage(
-                janus="message",
-                body=request,
-                jsep={
+            {
+                "janus": "message",
+                "body": request,
+                "jsep": {
                     "sdp": self.pc.localDescription.sdp,
                     "trickle": False,
                     "type": self.pc.localDescription.type,
                 },
-            )
+            }
         )
 
         await self.joined_event.wait()
@@ -139,16 +130,13 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def unpublish(self) -> None:
         """Stop publishing"""
 
-        class UnpublishMessage(PluginMessage):
-            body: dict
-
         await self.send(
-            UnpublishMessage(
-                janus="message",
-                body={
+            {
+                "janus": "message",
+                "body": {
                     "request": "unpublish",
                 },
-            )
+            }
         )
         await self.pc.close()
 

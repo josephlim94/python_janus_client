@@ -30,10 +30,10 @@ ffmpeg_input = ffmpeg.input(
 )
 
 
-async def run():
+async def main():
     # Create session
     session = JanusSession(
-        uri="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+        base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
     )
 
     # Create plugin
@@ -59,6 +59,6 @@ async def run():
 
 if __name__ == "__main__":
     try:
-        asyncio.run(run())
+        asyncio.get_event_loop().run_until_complete(main())
     except KeyboardInterrupt:
         pass
