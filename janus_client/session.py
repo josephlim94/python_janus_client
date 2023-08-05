@@ -2,7 +2,8 @@ import asyncio
 from typing import Dict, TYPE_CHECKING
 import logging
 
-from .core import JanusConnection, JanusMessage
+from .core import JanusMessage
+from .transport import JanusTransportHTTP
 
 if TYPE_CHECKING:
     from .plugin_base import JanusPlugin
@@ -20,70 +21,68 @@ class JanusSession:
     """Janus session instance"""
 
     __id: int = None
-    connection: JanusConnection
+    transport: JanusTransportHTTP
     created: bool = False
 
     def __init__(
         self,
-        connection: JanusConnection = None,
         uri: str = "",
         api_secret: str = None,
         token: str = None,
+        transport: JanusTransportHTTP = None,
     ):
         self.plugin_handles: Dict[int, JanusPlugin] = dict()
 
-        if connection:
-            self.connection = connection
+        if transport:
+            self.transport = transport
         else:
-            self.connection = JanusConnection(
+            self.transport = JanusTransportHTTP(
                 uri=uri,
                 api_secret=api_secret,
                 token=token,
             )
 
-    async def __connect(self):
-        if not self.connection.connected:
-            await self.connection.connect()
-
+    async def __connect(self) -> None:
         if not self.__id:
-            self.__id = await self.connection.create_session(self)
+            self.__id = await self.transport.create_session(self)
 
         self.keepalive_task = asyncio.create_task(self.keepalive())
         self.created = True
 
-    @property
-    def id(self) -> int:
-        return self.__id
-
-    async def destroy(self):
+    async def destroy(self) -> None:
         """Release resources
 
         | Should be called when you don't need the session anymore.
         | Plugins from this session should be destroyed before this.
         """
 
-        await self.send(SessionMessage(janus="destroy"))
+        await self.send({"janus": "destroy"})
         self.keepalive_task.cancel()
-        self.connection.destroy_session(self)
+        self.transport.destroy_session(self.__id)
         self.__id = None
         self.created = False
 
-    async def send(self, message: SessionMessage) -> dict:
-        if message.session_id:
-            raise Exception("Session ID in message must not be manually added")
+    def __sanitize_message(self, message: dict) -> None:
+        if "session_id" in message:
+            logger.warn(
+                f"Should not set session_id ({message['session_id']}). Overriding."
+            )
+            del message["session_id"]
+
+    async def send(self, message: dict) -> dict:
+        self.__sanitize_message(message=message)
 
         if not self.created:
             await self.__connect()
 
-        message.session_id = self.__id
-        return await self.connection.send(message)
+        return await self.transport.send(message, session_id=self.__id)
 
-    async def keepalive(self):
+    async def keepalive(self) -> None:
         # Reference: https://janus.conf.meetecho.com/docs/rest.html
         # A Janus session is kept alive as long as there's no inactivity for 60 seconds
         while True:
             await asyncio.sleep(30)
-            await self.send(SessionMessage(janus="keepalive"))
+            await self.send({"janus": "keepalive"})
 
     def handle_async_response(self, response: dict):
         if "sender" in response:

@@ -71,6 +71,7 @@ class JanusTransportHTTP:
             logger.warn(
                 f"Should not set transaction ({message['transaction']}). Overriding."
             )
+            del message["transaction"]
 
     def __build_uri(self, session_id: int = None, handle_id: int = None) -> str:
         uri = self.uri
@@ -149,3 +150,20 @@ class JanusTransportHTTP:
 
     async def receive(self):
         pass
+
+    async def create_session(self, session: "JanusSession") -> int:
+        """Create Janus Session"""
+
+        response = await self.send({"janus": "create"})
+
+        # Extract session ID
+        session_id = int(response["data"]["id"])
+
+        # Register session
+        self.sessions[session_id] = session
+
+        return session_id
+
+    # Don't call this from client object, call destroy from session instead
+    def destroy_session(self, session_id: int) -> None:
+        del self.sessions[session_id]
