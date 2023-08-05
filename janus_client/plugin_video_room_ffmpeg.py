@@ -22,7 +22,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.joined_event = asyncio.Event()
-        self.loop = asyncio.get_running_loop()
+        # self.loop = asyncio.get_running_loop()
 
     def handle_async_response(self, response: dict):
         if response["janus"] == "event":

@@ -87,17 +87,6 @@ class JanusConnection:
         await self.ws.close()
         self.connected = False
 
-    def is_async_response(self, response: dict) -> bool:
-        janus_type = response["janus"]
-        return (
-            (janus_type == "event")
-            or (janus_type == "detached")
-            or (janus_type == "webrtcup")
-            or (janus_type == "media")
-            or (janus_type == "slowlink")
-            or (janus_type == "hangup")
-        )
-
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
             # Check if any exceptions are raised
@@ -117,13 +106,13 @@ class JanusConnection:
 
         async for message_raw in self.ws:
             response = json.loads(message_raw)
-            logger.info(f"Receive: {response}")
+            logger.info(f"Received: {response}")
 
-            if self.is_async_response(response):
-                self.handle_async_response(response)
-            else:
+            if "transaction" in response:
                 transaction_id = response["transaction"]
                 await self.transactions[transaction_id].put(response)
+            else:
+                self.handle_async_response(response)
 
     async def send(self, message: JanusMessage) -> dict:
         """Send message to server
@@ -155,6 +144,7 @@ class JanusConnection:
         # Assumption: there will be one and only one synchronous reply for a transaction.
         #   Other replies with the same transaction ID are asynchronous.
         response = await self.transactions[message.transaction].get()
+        logger.info(f"Transaction response: {response}")
 
         # Transaction complete, delete it
         del self.transactions[message.transaction]
