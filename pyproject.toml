@@ -24,6 +24,7 @@ ffmpeg-python = "^0.2.0"
 numpy = "^1.25.1"
 av = "^10.0.0"
 pydantic = "^2.1.1"
+aiohttp = {extras = ["speedups"], version = "^3.8.5"}
 
 
 [build-system]
