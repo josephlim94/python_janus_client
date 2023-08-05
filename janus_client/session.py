@@ -3,7 +3,7 @@ from typing import Dict, TYPE_CHECKING
 import logging
 
 from .core import JanusMessage
-from .transport import JanusTransportHTTP
+from .transport import JanusTransport
 
 if TYPE_CHECKING:
     from .plugin_base import JanusPlugin
@@ -21,23 +21,23 @@ class JanusSession:
     """Janus session instance"""
 
     __id: int = None
-    transport: JanusTransportHTTP
+    transport: JanusTransport
     created: bool = False
 
     def __init__(
         self,
-        uri: str = "",
+        base_url: str = "",
         api_secret: str = None,
         token: str = None,
-        transport: JanusTransportHTTP = None,
+        transport: JanusTransport = None,
     ):
         self.plugin_handles: Dict[int, JanusPlugin] = dict()
 
         if transport:
             self.transport = transport
         else:
-            self.transport = JanusTransportHTTP(
-                uri=uri,
+            self.transport = JanusTransport.create_transport(
+                base_url=base_url,
                 api_secret=api_secret,
                 token=token,
             )

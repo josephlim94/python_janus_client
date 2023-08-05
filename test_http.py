@@ -13,7 +13,7 @@ async def main():
     # transport = JanusTransportHTTP(
     #     uri="https://janusmy.josephgetmyip.com/janusbase/janus"
     # )
-    session = JanusSession(uri="https://janusmy.josephgetmyip.com/janusbase/janus")
+    session = JanusSession(base_url="https://janusmy.josephgetmyip.com/janusbase/janus")
 
     response = await session.send({"janus": "keepalive"})
     logger.info(response)
