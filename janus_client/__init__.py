@@ -1,5 +1,5 @@
 
-from .core import JanusAdminMonitorClient
+from .admin_monitor import JanusAdminMonitorClient
 from .session import JanusSession
 from .plugin_base import JanusPlugin
 from .plugin_video_room_ffmpeg import JanusVideoRoomPlugin
