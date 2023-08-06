@@ -14,6 +14,11 @@ ResponseHandlerType = Callable[[dict], dict]
 
 
 class JanusTransport(ABC):
+    """Janus transport protocol interface
+
+    Manage Sessions and Transactions
+    """
+
     __transport_implementation: list[tuple] = []
 
     __base_url: str
@@ -22,15 +27,32 @@ class JanusTransport(ABC):
     __transactions: dict[str, asyncio.Queue]
     __transaction_response_handler: dict[str, ResponseHandlerType]
     __sessions: dict[int, "JanusSession"]
+    connected: bool
+    """Must set this property when connected or disconnected"""
 
     @abstractmethod
-    async def _send(self, message: dict):
-        """Really sends the message and doesn't return a response"""
+    async def _send(self, message: dict) -> None:
+        """Really sends the message. Doesn't return a response"""
         pass
 
-    @abstractmethod
-    async def info(self):
+    async def connect(self) -> None:
+        """Initialize resources"""
+        self.connected = True
+
+    async def disconnect(self) -> None:
+        """Release resources"""
+        self.connected = False
+
+    async def info(self) -> dict:
         """Get info of Janus server. Only useful for HTTP protocol I think"""
+        logger.info("Server info only available with HTTP REST API")
+
+    async def dispatch_session_created(self, session_id: int) -> None:
+        """Override this method to get session created event"""
+        pass
+
+    async def dispatch_session_destroyed(self, session_id: int) -> None:
+        """Override this method to get session destroyed event"""
         pass
 
     def __init__(self, base_url: str, api_secret: str = None, token: str = None):
@@ -47,6 +69,10 @@ class JanusTransport(ABC):
         self.__transactions = dict()
         self.__transaction_response_handler = dict()
         self.__sessions = dict()
+        self.connected = False
+
+    # def __del__(self):
+    #     asyncio.run(asyncio.create_task(self.disconnect()))
 
     @property
     def base_url(self) -> str:
@@ -114,7 +140,8 @@ class JanusTransport(ABC):
         del self.__transaction_response_handler[transaction_id]
         return response
 
-    async def receive(self, response: dict):
+    async def receive(self, response: dict) -> None:
+        logger.info(f"Received: {response}")
         # Maybe it's for a transaction that is waiting
         if "transaction" in response:
             transaction_id = response["transaction"]
@@ -153,14 +180,18 @@ class JanusTransport(ABC):
         # Register session
         self.__sessions[session_id] = session
 
+        await self.dispatch_session_created(session_id=session_id)
+
         return session_id
 
     # Don't call this from client object, call destroy from session instead
-    def destroy_session(self, session_id: int) -> None:
+    async def destroy_session(self, session_id: int) -> None:
         del self.__sessions[session_id]
 
+        await self.dispatch_session_destroyed(session_id=session_id)
+
     @staticmethod
-    def register_transport(protocol_matcher, transport_cls: "JanusTransport"):
+    def register_transport(protocol_matcher, transport_cls: "JanusTransport") -> None:
         JanusTransport.__transport_implementation.append(
             (protocol_matcher, transport_cls)
         )

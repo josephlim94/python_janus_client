@@ -18,15 +18,11 @@ class JanusTransportWebsocket(JanusTransport):
     """
 
     ws: websockets.WebSocketClientProtocol
-    connected: bool
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
 
-        self.connected = False
-
-    async def info(self) -> dict:
-        logger.info("Info not available with Websocket API")
+        self._connected = False
 
     async def connect(self, **kwargs: Any) -> None:
         """Connect to server
@@ -47,6 +43,13 @@ class JanusTransportWebsocket(JanusTransport):
         self.connected = True
         logger.info("Connected")
 
+    async def disconnect(self) -> None:
+        logger.info("Disconnecting")
+        self.receive_message_task.cancel()
+        await self.ws.close()
+        self.connected = False
+        logger.info("Disconnected")
+
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
             # Check if any exceptions are raised
@@ -66,7 +69,6 @@ class JanusTransportWebsocket(JanusTransport):
 
         async for message_raw in self.ws:
             response = json.loads(message_raw)
-            logger.info(f"Received: {response}")
 
             await self.receive(response)
 
@@ -75,7 +77,7 @@ class JanusTransportWebsocket(JanusTransport):
         message: dict,
     ) -> None:
         if not self.connected:
-            await self.connect()
+            raise Exception("Must connect before any communication.")
 
         await self.ws.send(json.dumps(message))
 

@@ -40,6 +40,9 @@ class JanusSession:
         return f"Session ({self.__id}) {self}"
 
     async def __connect(self) -> None:
+        if not self.transport.connected:
+            await self.transport.connect()
+
         if not self.__id:
             self.__id = await self.transport.create_session(self)
 
@@ -53,9 +56,12 @@ class JanusSession:
         | Plugins from this session should be destroyed before this.
         """
 
-        await self.send({"janus": "destroy"})
+        await self.send(
+            {"janus": "destroy"},
+            response_handler=lambda res: res if res["janus"] == "success" else None,
+        )
         self.keepalive_task.cancel()
-        self.transport.destroy_session(self.__id)
+        await self.transport.destroy_session(self.__id)
         self.__id = None
         self.created = False
 

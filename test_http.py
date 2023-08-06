@@ -14,6 +14,7 @@ async def main():
     #     uri="https://janusmy.josephgetmyip.com/janusbase/janus"
     # )
     session = JanusSession(base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus")
+    # session = JanusSession(base_url="https://janusmy.josephgetmyip.com/janusbase/janus")
 
     response = await session.send({"janus": "keepalive"})
     logger.info(response)
