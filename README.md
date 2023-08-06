@@ -41,7 +41,7 @@ References:
   - Websocket API ([websockets](https://github.com/aaugustin/websockets))
   - HTTP ([aiohttp](https://docs.aiohttp.org/en/stable/index.html))
 
-:heavy_check_mark: Automatically manage Janus client connection
+:heavy_check_mark: Automatically manage Janus client connection  
 :heavy_check_mark: Manage message transactions with Janus  
 :heavy_check_mark: Manage sessions  
 ```python
