@@ -37,15 +37,23 @@ References:
 
 ### Features
 
-:heavy_check_mark: Connect to Janus server through websocket (using [websockets](https://github.com/aaugustin/websockets))  
+:heavy_check_mark: Connect to Janus server through:
+  - Websocket API ([websockets](https://github.com/aaugustin/websockets))
+  - HTTP ([aiohttp](https://docs.aiohttp.org/en/stable/index.html))
+
 :heavy_check_mark: Automatically manage Janus client connection
 :heavy_check_mark: Manage message transactions with Janus  
 :heavy_check_mark: Manage sessions  
 ```python
 from janus_client import JanusSession
 
+# Protocol will be derived from base_url
 session = JanusSession(
-    uri="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+    base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+)
+# OR
+session = JanusSession(
+    base_url="https://janusmy.josephgetmyip.com/janusbase/janus",
 )
 ```
 :heavy_check_mark: Manage plugins  
