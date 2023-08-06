@@ -2,7 +2,7 @@ import unittest
 import logging
 import asyncio
 
-from janus_client import JanusTransport
+from janus_client import JanusTransport, JanusSession
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -29,6 +29,17 @@ class BaseTestClass:
                 response_handler=lambda res: res if res["janus"] == "pong" else None,
             )
             self.assertEqual(response["janus"], "pong")
+
+        async def test_session(self):
+            session = JanusSession(transport=self.transport)
+
+            response = await session.send(
+                {"janus": "keepalive"},
+                response_handler=lambda res: res if res["janus"] == "ack" else None,
+            )
+            self.assertEqual(response["janus"], "ack")
+
+            await session.destroy()
 
 
 # class TestTransportHttp(BaseTestClass.TestClass):

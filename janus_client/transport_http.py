@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from dataclasses import dataclass
 
 import aiohttp
 
@@ -9,15 +10,21 @@ from .transport import JanusTransport
 logger = logging.getLogger(__name__)
 
 
+@dataclass
+class ReceiverTask:
+    task: asyncio.Task
+    destroyed_event: asyncio.Event
+
+
 class JanusTransportHTTP(JanusTransport):
     """Janus transport through HTTP"""
 
-    __receive_response_task_map: dict[int, asyncio.Task]
+    __receive_response_task_map: dict[int, ReceiverTask]
 
     def __init__(self, base_url: str, api_secret: str = None, token: str = None):
         super().__init__(base_url=base_url, api_secret=api_secret, token=token)
 
-        self.__receive_response_task_map: dict[int, asyncio.Task] = dict()
+        self.__receive_response_task_map = dict()
 
     def __build_url(self, session_id: int = None, handle_id: int = None) -> str:
         url = f"{self.base_url}"
@@ -65,36 +72,52 @@ class JanusTransportHTTP(JanusTransport):
                 # )
                 await self.receive(response=response_dict)
 
-    async def session_receive_response(self, session_id: str) -> None:
-        session_destroyed = False
-        while not session_destroyed:
-            async with aiohttp.ClientSession() as http_session:
-                async with http_session.get(
-                    url=self.__build_url(session_id=session_id),
-                ) as response:
-                    response.raise_for_status()
+    async def session_receive_response(
+        self, session_id: str, destroyed_event: asyncio.Event
+    ) -> None:
+        http_session = aiohttp.ClientSession()
 
-                    response_dict = await response.json()
+        while not destroyed_event.is_set():
+            async with http_session.get(
+                url=self.__build_url(session_id=session_id),
+            ) as response:
+                response.raise_for_status()
 
-                    if "error" in response_dict:
-                        raise Exception(response_dict)
+                response_dict = await response.json()
 
-                    if response_dict["janus"] == "keepalive":
-                        continue
+                if "error" in response_dict:
+                    raise Exception(response_dict)
 
-                    await self.receive(response=response_dict)
+                if response_dict["janus"] == "keepalive":
+                    continue
+
+                await self.receive(response=response_dict)
+
+        await http_session.close()
 
     async def dispatch_session_created(self, session_id: str) -> None:
         logger.info(f"Create session_receive_response task ({session_id})")
-        task = asyncio.create_task(self.session_receive_response(session_id=session_id))
-        self.__receive_response_task_map[session_id] = task
+        destroyed_event = asyncio.Event()
+        task = asyncio.create_task(
+            self.session_receive_response(
+                session_id=session_id, destroyed_event=destroyed_event
+            )
+        )
+        self.__receive_response_task_map[session_id] = ReceiverTask(
+            task=task, destroyed_event=destroyed_event
+        )
 
     async def dispatch_session_destroyed(self, session_id: int) -> None:
         if session_id not in self.__receive_response_task_map:
             logger.warn(f"Session receive response task not found for {session_id}")
 
         logger.info(f"Destroy session_receive_response task ({session_id})")
-        self.__receive_response_task_map[session_id].cancel()
+        receiver_task = self.__receive_response_task_map[session_id]
+        receiver_task.destroyed_event.set()
+
+        # Destroying sessions could cost some time because it needs to
+        # wait for the long-poll request to complete
+        await asyncio.wait([receiver_task.task])
 
 
 def protocol_matcher(base_url: str):
