@@ -101,10 +101,9 @@ await plugin_handle_1.unpublish()
 
 ### TODO
 
-:clock3: Emit events to respective session and plugin handlers  
-:clock3: Documentation  
 :clock3: Publish audio with FFmpeg VideoRoom plugin  
 :clock3: Subscribe to stream with FFmpeg VideoRoom plugin  
+:clock3: Replace websockets with aiohttp  
 
 ---
 

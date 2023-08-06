@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "janus-client"
-version = "0.4.1"
+version = "0.4.2"
 description = "Janus WebRTC async client in Python."
 authors = ["Joseph Lim <josephlim_94@hotmail.co.uk>"]
 license = "MIT"
