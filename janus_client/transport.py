@@ -46,6 +46,7 @@ class JanusTransport(ABC):
     async def info(self) -> dict:
         """Get info of Janus server. Only useful for HTTP protocol I think"""
         logger.info("Server info only available with HTTP REST API")
+        return {}
 
     async def dispatch_session_created(self, session_id: int) -> None:
         """Override this method to get session created event"""
