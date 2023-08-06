@@ -78,9 +78,9 @@ class JanusTransport(ABC):
     def base_url(self) -> str:
         return self.__base_url
 
-    async def put_response(self, transaction_id: int, response: dict) -> None:
-        logger.info(f"Received: {response}")
-        await self.__transactions[transaction_id].put(response)
+    # async def put_response(self, transaction_id: int, response: dict) -> None:
+    #     logger.info(f"Received: {response}")
+    #     await self.__transactions[transaction_id].put(response)
 
     def __sanitize_message(self, message: dict) -> None:
         if "janus" not in message:

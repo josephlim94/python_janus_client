@@ -1,5 +1,4 @@
 import logging
-from typing import Any
 import asyncio
 
 import aiohttp
@@ -15,8 +14,8 @@ class JanusTransportHTTP(JanusTransport):
 
     __receive_response_task_map: dict[int, asyncio.Task]
 
-    def __init__(self, **kwargs: Any):
-        super().__init__(**kwargs)
+    def __init__(self, base_url: str, api_secret: str = None, token: str = None):
+        super().__init__(base_url=base_url, api_secret=api_secret, token=token)
 
         self.__receive_response_task_map: dict[int, asyncio.Task] = dict()
 
@@ -48,9 +47,6 @@ class JanusTransportHTTP(JanusTransport):
                 url=self.__build_url(session_id=session_id, handle_id=handle_id),
                 json=message,
             ) as response:
-                print("Status:", response.status)
-                print("Content-type:", response.headers["content-type"])
-
                 response.raise_for_status()
 
                 response_dict = await response.json()
