@@ -20,15 +20,6 @@ class JanusTransportHTTP(JanusTransport):
 
         self.__receive_response_task_map: dict[int, asyncio.Task] = dict()
 
-    async def connect(self) -> None:
-        self.connected = True
-
-    # async def disconnect(self) -> None:
-    #     logger.info("Disconnecting")
-    #     self.__asyncio_session = None
-    #     self.connected = False
-    #     logger.info("Disconnected")
-
     def __build_url(self, session_id: int = None, handle_id: int = None) -> str:
         url = f"{self.base_url}"
 
@@ -49,9 +40,6 @@ class JanusTransportHTTP(JanusTransport):
         self,
         message: dict,
     ) -> None:
-        if not self.connected:
-            raise Exception("Must connect before any communication.")
-
         session_id = message.get("session_id")
         handle_id = message.get("handle_id")
 
@@ -82,10 +70,8 @@ class JanusTransportHTTP(JanusTransport):
                 await self.receive(response=response_dict)
 
     async def session_receive_response(self, session_id: str) -> None:
-        logger.info("start task")
         session_destroyed = False
         while not session_destroyed:
-            logger.info("Start loop")
             async with aiohttp.ClientSession() as http_session:
                 async with http_session.get(
                     url=self.__build_url(session_id=session_id),
@@ -100,7 +86,7 @@ class JanusTransportHTTP(JanusTransport):
                     if response_dict["janus"] == "keepalive":
                         continue
 
-                    self.receive(response=response_dict)
+                    await self.receive(response=response_dict)
 
     async def dispatch_session_created(self, session_id: str) -> None:
         logger.info(f"Create session_receive_response task ({session_id})")

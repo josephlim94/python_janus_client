@@ -32,8 +32,11 @@ ffmpeg_input = ffmpeg.input(
 
 async def main():
     # Create session
+    # session = JanusSession(
+    #     base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+    # )
     session = JanusSession(
-        base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+        base_url="https://janusmy.josephgetmyip.com/janusbase/janus",
     )
 
     # Create plugin
