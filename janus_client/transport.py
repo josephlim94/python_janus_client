@@ -48,6 +48,12 @@ class JanusTransport(ABC):
         logger.info("Server info only available with HTTP REST API")
         return {}
 
+    async def ping(self) -> dict:
+        return await self.send(
+            {"janus": "ping"},
+            response_handler=lambda res: res if res["janus"] == "pong" else None,
+        )
+
     async def dispatch_session_created(self, session_id: int) -> None:
         """Override this method to get session created event"""
         pass

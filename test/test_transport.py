@@ -24,10 +24,7 @@ class BaseTestClass:
             await asyncio.sleep(0.250)
 
         async def test_sanity(self):
-            response = await self.transport.send(
-                {"janus": "ping"},
-                response_handler=lambda res: res if res["janus"] == "pong" else None,
-            )
+            response = await self.transport.ping()
             self.assertEqual(response["janus"], "pong")
 
         async def test_session(self):
