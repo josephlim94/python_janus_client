@@ -27,8 +27,7 @@ class JanusTransport(ABC):
     __transactions: dict[str, asyncio.Queue]
     __transaction_response_handler: dict[str, ResponseHandlerType]
     __sessions: dict[int, "JanusSession"]
-    __connecting: bool
-    __disconnecting: bool
+    __connect_lock: asyncio.Lock
     connected: bool
     """Must set this property when connected or disconnected"""
 
@@ -78,8 +77,7 @@ class JanusTransport(ABC):
         self.__transactions = dict()
         self.__transaction_response_handler = dict()
         self.__sessions = dict()
-        self.__connecting = False
-        self.__disconnecting = False
+        self.__connect_lock = asyncio.Lock()
         self.connected = False
 
     # def __del__(self):
@@ -95,21 +93,19 @@ class JanusTransport(ABC):
 
     async def connect(self) -> None:
         """Initialize resources"""
-        if not self.__connecting and not self.connected:
-            self.__connecting = True
-            await self._connect()
+        async with self.__connect_lock:
+            if not self.connected:
+                await self._connect()
 
-            self.connected = True
-            self.__connecting = False
+                self.connected = True
 
     async def disconnect(self) -> None:
         """Release resources"""
-        if not self.__disconnecting and self.connected:
-            self.__disconnecting = True
-            await self._disconnect()
+        async with self.__connect_lock:
+            if self.connected:
+                await self._disconnect()
 
-            self.connected = False
-            self.__disconnecting = False
+                self.connected = False
 
     def __sanitize_message(self, message: dict) -> None:
         if "janus" not in message:

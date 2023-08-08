@@ -2,7 +2,7 @@ import unittest
 import logging
 import asyncio
 
-from janus_client import JanusTransport, JanusSession
+from janus_client import JanusTransport, JanusSession, JanusVideoRoomPlugin
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -23,39 +23,69 @@ class BaseTestClass:
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
             await asyncio.sleep(0.250)
 
-        # async def test_1_1_N(self):
-        #     """
-        #     1 transport. transport:session = 1:1
-        #     1 session. session:plugin = 1:N
-        #     3 plugin
-        #     """
+        async def test_1_1_1(self):
+            """
+            1 transport. transport:session = 1:1
+            1 session. session:plugin = 1:1
+            1 plugin
+            """
 
-        #     session_1 = JanusSession(transport=self.transport)
-        #     session_2 = JanusSession(transport=self.transport)
-        #     session_3 = JanusSession(transport=self.transport)
+            room_id = 1234
 
-        #     response_list = await asyncio.gather(
-        #         session_1.send(
-        #             {"janus": "keepalive"},
-        #             response_handler=lambda res: res if res["janus"] == "ack" else None,
-        #         ),
-        #         session_2.send(
-        #             {"janus": "keepalive"},
-        #             response_handler=lambda res: res if res["janus"] == "ack" else None,
-        #         ),
-        #         session_3.send(
-        #             {"janus": "keepalive"},
-        #             response_handler=lambda res: res if res["janus"] == "ack" else None,
-        #         ),
-        #     )
+            session = JanusSession(transport=self.transport)
 
-        #     self.assertEqual(response_list[0]["janus"], "ack")
-        #     self.assertEqual(response_list[1]["janus"], "ack")
-        #     self.assertEqual(response_list[2]["janus"], "ack")
+            plugin = JanusVideoRoomPlugin()
 
-        #     await asyncio.gather(
-        #         session_1.destroy(), session_2.destroy(), session_3.destroy()
-        #     )
+            await plugin.attach(session=session)
+
+            await plugin.join(room_id, 111, "aaa")
+
+            await plugin.leave()
+
+            await plugin.destroy()
+
+            await session.destroy()
+
+        async def test_1_1_N(self):
+            """
+            1 transport. transport:session = 1:1
+            1 session. session:plugin = 1:N
+            3 plugin
+            """
+
+            room_id = 1234
+
+            session = JanusSession(transport=self.transport)
+
+            plugin_1 = JanusVideoRoomPlugin()
+            plugin_2 = JanusVideoRoomPlugin()
+            plugin_3 = JanusVideoRoomPlugin()
+
+            await asyncio.gather(
+                plugin_1.attach(session=session),
+                plugin_2.attach(session=session),
+                plugin_3.attach(session=session),
+            )
+
+            await asyncio.gather(
+                plugin_1.join(room_id, 111, "aaa"),
+                plugin_2.join(room_id, 222, "bbb"),
+                plugin_3.join(room_id, 333, "ccc"),
+            )
+
+            await asyncio.gather(
+                plugin_1.leave(),
+                plugin_2.leave(),
+                plugin_3.leave(),
+            )
+
+            await asyncio.gather(
+                plugin_1.destroy(),
+                plugin_2.destroy(),
+                plugin_3.destroy(),
+            )
+
+            await session.destroy()
 
         async def test_1_N_1(self):
             """
