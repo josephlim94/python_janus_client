@@ -15,8 +15,11 @@ class JanusPlugin:
 
     Must override to match plugin name in Janus server.
     """
-    __id: str = None
+    __id: str
     session: JanusSession
+
+    def __init__(self) -> None:
+        self.__id = None
 
     @property
     def id(self) -> int:

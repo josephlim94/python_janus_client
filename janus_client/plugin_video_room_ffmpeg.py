@@ -17,11 +17,12 @@ class JanusVideoRoomPlugin(JanusPlugin):
     """
 
     name = "janus.plugin.videoroom"  #: Plugin name
-    pc = RTCPeerConnection()
+    pc: RTCPeerConnection
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.joined_event = asyncio.Event()
+        self.pc = RTCPeerConnection()
         # self.loop = asyncio.get_running_loop()
 
     def handle_async_response(self, response: dict):
@@ -64,7 +65,9 @@ class JanusVideoRoomPlugin(JanusPlugin):
                     "display": display_name,
                 },
             },
-            response_handler=lambda response: response if response["janus"] == "ack" else None,
+            response_handler=lambda response: response
+            if response["janus"] == "ack"
+            else None,
         )
         logger.info(f"Room join response: {response}")
         await self.joined_event.wait()
