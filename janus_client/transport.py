@@ -100,6 +100,7 @@ class JanusTransport(ABC):
             await self._connect()
 
             self.connected = True
+            self.__connecting = False
 
     async def disconnect(self) -> None:
         """Release resources"""
@@ -108,6 +109,7 @@ class JanusTransport(ABC):
             await self._disconnect()
 
             self.connected = False
+            self.__disconnecting = False
 
     def __sanitize_message(self, message: dict) -> None:
         if "janus" not in message:
@@ -216,6 +218,10 @@ class JanusTransport(ABC):
         del self.__sessions[session_id]
 
         await self.dispatch_session_destroyed(session_id=session_id)
+
+        # Also release transport resources if this is the last session
+        if len(self.__sessions) == 0:
+            await self.disconnect()
 
     @staticmethod
     def register_transport(protocol_matcher, transport_cls: "JanusTransport") -> None:
