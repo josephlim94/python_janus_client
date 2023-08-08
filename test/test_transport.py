@@ -27,6 +27,11 @@ class BaseTestClass:
             response = await self.transport.ping()
             self.assertEqual(response["janus"], "pong")
 
+        async def test_info(self):
+            response = await self.transport.info()
+            self.assertEqual(response["janus"], "server_info")
+            self.assertEqual(response["name"], "Janus WebRTC Server")
+
         async def test_session(self):
             session = JanusSession(transport=self.transport)
 

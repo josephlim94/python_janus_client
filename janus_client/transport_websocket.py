@@ -50,6 +50,9 @@ class JanusTransportWebsocket(JanusTransport):
         self.connected = False
         logger.info("Disconnected")
 
+    async def info(self) -> dict:
+        return await self.send({"janus": "info"})
+
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
             # Check if any exceptions are raised
