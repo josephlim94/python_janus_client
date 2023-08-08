@@ -12,3 +12,6 @@ dist
 
 # Sphinx
 docs/_build/*
+
+# Code coverage
+.coverage

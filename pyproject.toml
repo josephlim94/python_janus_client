@@ -26,6 +26,9 @@ av = "^10.0.0"
 aiohttp = {extras = ["speedups"], version = "^3.8.5"}
 
 
+[tool.poetry.group.dev.dependencies]
+coverage = "^7.2.7"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
