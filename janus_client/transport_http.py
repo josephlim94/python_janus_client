@@ -26,6 +26,12 @@ class JanusTransportHTTP(JanusTransport):
 
         self.__receive_response_task_map = dict()
 
+    async def _connect(self):
+        pass
+
+    async def _disconnect(self):
+        pass
+
     def __build_url(self, session_id: int = None, handle_id: int = None) -> str:
         url = f"{self.base_url}"
 

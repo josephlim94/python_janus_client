@@ -24,7 +24,7 @@ class JanusTransportWebsocket(JanusTransport):
 
         self._connected = False
 
-    async def connect(self, **kwargs: Any) -> None:
+    async def _connect(self, **kwargs: Any) -> None:
         """Connect to server
 
         All extra keyword arguments will be passed to websockets.connect
@@ -43,7 +43,7 @@ class JanusTransportWebsocket(JanusTransport):
         self.connected = True
         logger.info("Connected")
 
-    async def disconnect(self) -> None:
+    async def _disconnect(self) -> None:
         logger.info("Disconnecting")
         self.receive_message_task.cancel()
         await self.ws.close()

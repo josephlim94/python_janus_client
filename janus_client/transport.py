@@ -27,6 +27,8 @@ class JanusTransport(ABC):
     __transactions: dict[str, asyncio.Queue]
     __transaction_response_handler: dict[str, ResponseHandlerType]
     __sessions: dict[int, "JanusSession"]
+    __connecting: bool
+    __disconnecting: bool
     connected: bool
     """Must set this property when connected or disconnected"""
 
@@ -35,13 +37,13 @@ class JanusTransport(ABC):
         """Really sends the message. Doesn't return a response"""
         pass
 
-    async def connect(self) -> None:
-        """Initialize resources"""
-        self.connected = True
+    @abstractmethod
+    async def _connect(self) -> None:
+        pass
 
-    async def disconnect(self) -> None:
-        """Release resources"""
-        self.connected = False
+    @abstractmethod
+    async def _disconnect(self) -> None:
+        pass
 
     async def info(self) -> dict:
         """Get info of Janus server. Only useful for HTTP protocol I think"""
@@ -76,6 +78,8 @@ class JanusTransport(ABC):
         self.__transactions = dict()
         self.__transaction_response_handler = dict()
         self.__sessions = dict()
+        self.__connecting = False
+        self.__disconnecting = False
         self.connected = False
 
     # def __del__(self):
@@ -88,6 +92,22 @@ class JanusTransport(ABC):
     # async def put_response(self, transaction_id: int, response: dict) -> None:
     #     logger.info(f"Received: {response}")
     #     await self.__transactions[transaction_id].put(response)
+
+    async def connect(self) -> None:
+        """Initialize resources"""
+        if not self.__connecting and not self.connected:
+            self.__connecting = True
+            await self._connect()
+
+            self.connected = True
+
+    async def disconnect(self) -> None:
+        """Release resources"""
+        if not self.__disconnecting and self.connected:
+            self.__disconnecting = True
+            await self._disconnect()
+
+            self.connected = False
 
     def __sanitize_message(self, message: dict) -> None:
         if "janus" not in message:
