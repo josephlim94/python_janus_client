@@ -94,29 +94,26 @@ class JanusTransportHTTP(JanusTransport):
     async def session_receive_response(
         self, session_id: str, destroyed_event: asyncio.Event
     ) -> None:
-        http_session = aiohttp.ClientSession()
+        async with aiohttp.ClientSession() as http_session:
+            while not destroyed_event.is_set():
+                async with http_session.get(
+                    url=self.__build_url(session_id=session_id),
+                ) as response:
+                    # Maybe session is destroyed during http request
+                    if destroyed_event.is_set():
+                        break
 
-        while not destroyed_event.is_set():
-            async with http_session.get(
-                url=self.__build_url(session_id=session_id),
-            ) as response:
-                # Maybe session is destroyed during http request
-                if destroyed_event.is_set():
-                    break
+                    response.raise_for_status()
 
-                response.raise_for_status()
+                    response_dict = await response.json()
 
-                response_dict = await response.json()
+                    if "error" in response_dict:
+                        raise Exception(response_dict)
 
-                if "error" in response_dict:
-                    raise Exception(response_dict)
+                    if response_dict["janus"] == "keepalive":
+                        continue
 
-                if response_dict["janus"] == "keepalive":
-                    continue
-
-                await self.receive(response=response_dict)
-
-        await http_session.close()
+                    await self.receive(response=response_dict)
 
     async def dispatch_session_created(self, session_id: str) -> None:
         logger.info(f"Create session_receive_response task ({session_id})")
