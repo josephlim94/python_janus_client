@@ -78,6 +78,19 @@ class JanusTransportHTTP(JanusTransport):
                 # )
                 await self.receive(response=response_dict)
 
+    def session_receive_response_done_cb(
+        self, task: asyncio.Task, context=None
+    ) -> None:
+        try:
+            # Check if any exceptions are raised
+            task.exception()
+        except asyncio.CancelledError:
+            logger.info("Receive message task ended")
+        except asyncio.InvalidStateError:
+            logger.info("receive_message_done_cb called with invalid state")
+        except Exception as err:
+            logger.error(err)
+
     async def session_receive_response(
         self, session_id: str, destroyed_event: asyncio.Event
     ) -> None:
@@ -87,6 +100,10 @@ class JanusTransportHTTP(JanusTransport):
             async with http_session.get(
                 url=self.__build_url(session_id=session_id),
             ) as response:
+                # Maybe session is destroyed during http request
+                if destroyed_event.is_set():
+                    break
+
                 response.raise_for_status()
 
                 response_dict = await response.json()
@@ -109,6 +126,7 @@ class JanusTransportHTTP(JanusTransport):
                 session_id=session_id, destroyed_event=destroyed_event
             )
         )
+        task.add_done_callback(self.session_receive_response_done_cb)
         self.__receive_response_task_map[session_id] = ReceiverTask(
             task=task, destroyed_event=destroyed_event
         )
