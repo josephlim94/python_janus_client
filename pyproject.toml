@@ -28,6 +28,7 @@ aiohttp = {extras = ["speedups"], version = "^3.8.5"}
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2.7"
+sphinx = "^7.1.2"
 
 [build-system]
 requires = ["poetry-core"]

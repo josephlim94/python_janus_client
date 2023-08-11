@@ -1,9 +1,9 @@
-.. Janus Client in Python documentation master file, created by
+.. Janus Client documentation master file, created by
    sphinx-quickstart on Sat Mar 13 18:02:45 2021.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Janus Client in Python's documentation!
+Welcome to Janus Client's documentation!
 ==================================================
 
 .. toctree::
@@ -19,18 +19,18 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Client
+Transport
 ===============
 
-.. autoclass:: janus_client.JanusClient
-   :members: connect, disconnect, create_session
+.. autoclass:: janus_client.JanusTransport
+   :members: _connect, _disconnect, _send, info, ping
    :special-members: __init__
 
 Session
 =======
 
 .. autoclass:: janus_client.JanusSession
-   :members: create_plugin_handle, destroy
+   :members: create, destroy, send, attach_plugin, detach_plugin
 
 Plugin Handle
 =============
@@ -39,10 +39,10 @@ Base Class
 ----------
 
 .. autoclass:: janus_client.JanusPlugin
-   :members:
+   :members: attach, destroy, send, handle_async_response, trickle
 
 VideoRoom Plugin
 ----------------
 
-.. autoclass:: janus_client.plugin_video_room.JanusVideoRoomPlugin
+.. autoclass:: janus_client.JanusVideoRoomPlugin
    :members:

@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'Janus Client in Python'
+project = 'Janus Client'
 copyright = '2021, Lim Meng Kiat'
 author = 'Lim Meng Kiat'
 
