@@ -11,6 +11,11 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+class PluginAttachFail(Exception):
+    def __init__(self, response: dict) -> None:
+        super().__init__(f"Fail to attach plugin: {response['error']}")
+
+
 class JanusSession:
     """Janus session instance"""
 
@@ -136,7 +141,17 @@ class JanusSession:
         :param plugin: Plugin instance with janus_client.JanusPlugin as base class
         """
 
-        response = await self.send({"janus": "attach", "plugin": plugin.name})
+        def response_handler(res):
+            if res["janus"] in ["error", "success"]:
+                return res
+
+        response = await self.send(
+            {"janus": "attach", "plugin": plugin.name},
+            response_handler=response_handler,
+        )
+
+        if response["janus"] == "error":
+            raise PluginAttachFail(response=response)
 
         # Extract plugin handle id
         handle_id = int(response["data"]["id"])

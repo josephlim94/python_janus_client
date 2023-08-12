@@ -1,6 +1,6 @@
 
 from .admin_monitor import JanusAdminMonitorClient
-from .session import JanusSession
+from .session import JanusSession, PluginAttachFail
 from .plugin_base import JanusPlugin
 from .plugin_video_room_ffmpeg import JanusVideoRoomPlugin
 from .plugin_video_call import JanusVideoCallPlugin
