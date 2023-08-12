@@ -134,6 +134,8 @@ class JanusTransportHTTP(JanusTransport):
 
         logger.info(f"Destroy session_receive_response task ({session_id})")
         receiver_task = self.__receive_response_task_map[session_id]
+        # Don't use task.cancel() to avoid
+        # Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000027A269465F0>
         receiver_task.destroyed_event.set()
 
         # Destroying sessions could cost some time because it needs to
