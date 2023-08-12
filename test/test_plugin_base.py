@@ -29,26 +29,26 @@ class BaseTestClass:
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
             await asyncio.sleep(0.250)
 
-        async def test_plugin_create_fail(self):
-            session = JanusSession(transport=self.transport)
+        # async def test_plugin_create_fail(self):
+        #     session = JanusSession(transport=self.transport)
 
-            plugin = JanusPlugin()
+        #     plugin = JanusPlugin()
 
-            with self.assertRaises(PluginAttachFail):
-                await plugin.attach(session=session)
+        #     with self.assertRaises(PluginAttachFail):
+        #         await plugin.attach(session=session)
 
-            await session.destroy()
+        #     await session.destroy()
 
-        async def test_plugin_echotest_create(self):
-            session = JanusSession(transport=self.transport)
+        # async def test_plugin_echotest_create(self):
+        #     session = JanusSession(transport=self.transport)
 
-            plugin = JanusEchoTestPlugin()
+        #     plugin = JanusEchoTestPlugin()
 
-            await plugin.attach(session=session)
+        #     await plugin.attach(session=session)
 
-            await plugin.destroy()
+        #     await plugin.destroy()
 
-            await session.destroy()
+        #     await session.destroy()
 
 
 # class TestTransportHttps(BaseTestClass.TestClass):

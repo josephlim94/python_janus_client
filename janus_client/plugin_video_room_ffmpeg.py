@@ -25,7 +25,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         self.pc = RTCPeerConnection()
         # self.loop = asyncio.get_running_loop()
 
-    def handle_async_response(self, response: dict):
+    def on_receive(self, response: dict):
         if response["janus"] == "event":
             logger.info(f"Event response: {response}")
             if "plugindata" in response:

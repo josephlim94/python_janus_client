@@ -121,19 +121,22 @@ class JanusSession:
             await asyncio.sleep(30)
             await self.send({"janus": "keepalive"})
 
-    def handle_async_response(self, response: dict):
-        if "sender" in response:
-            # This is response for plugin handle
-            if response["sender"] in self.plugin_handles:
-                self.plugin_handles[response["sender"]].handle_async_response(response)
-            else:
-                logger.info(
-                    f"Got response for plugin handle but handle not found. Handle ID: {response['sender']}"
-                )
-                logger.info(f"Unhandeled response: {response}")
-        else:
+    def on_receive(self, response: dict):
+        if "sender" not in response:
             # This is response for self
             logger.info(f"Async event for session: {response}")
+            return
+
+        # This is response for plugin handle
+        plugin_id = response["sender"]
+        if plugin_id not in self.plugin_handles:
+            logger.info(
+                f"Got response for plugin handle but handle not found. Handle ID: {plugin_id}"
+            )
+            logger.info(f"Unhandeled response: {response}")
+            return
+
+        self.plugin_handles[plugin_id].on_receive(response)
 
     async def attach_plugin(self, plugin: "JanusPlugin") -> int:
         """Create plugin handle for the given plugin type

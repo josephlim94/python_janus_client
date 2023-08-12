@@ -2,6 +2,7 @@ import logging
 from typing import Any
 import asyncio
 import json
+import traceback
 
 import websockets
 
@@ -56,15 +57,15 @@ class JanusTransportWebsocket(JanusTransport):
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
             # Check if any exceptions are raised
-            task.exception()
-            # traceback.print_tb(exception.__traceback__)
-            # logger.info(f"{type(exception)} : {exception}")
+            exception = task.exception()
+            if exception:
+                logger.error(''.join(traceback.format_exception(exception)))
         except asyncio.CancelledError:
             logger.info("Receive message task ended")
         except asyncio.InvalidStateError:
             logger.info("receive_message_done_cb called with invalid state")
-        # except Exception as e:
-        #     traceback.logger.info_tb(e.__traceback__)
+
+        self.connected = False
 
     async def receive_message(self) -> None:
         if not self.ws:

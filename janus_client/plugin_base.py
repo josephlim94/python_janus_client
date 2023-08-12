@@ -64,7 +64,7 @@ class JanusPlugin:
             message, handle_id=self.__id, response_handler=response_handler
         )
 
-    def handle_async_response(self, response: dict):
+    def on_receive(self, response: dict):
         """Handle asynchronous events from Janus
 
         Must be overridden
