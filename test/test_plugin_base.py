@@ -2,7 +2,13 @@ import unittest
 import logging
 import asyncio
 
-from janus_client import JanusTransport, JanusSession, JanusPlugin, PluginAttachFail
+from janus_client import (
+    JanusTransport,
+    JanusSession,
+    JanusPlugin,
+    PluginAttachFail,
+    JanusEchoTestPlugin,
+)
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -30,6 +36,17 @@ class BaseTestClass:
 
             with self.assertRaises(PluginAttachFail):
                 await plugin.attach(session=session)
+
+            await session.destroy()
+
+        async def test_plugin_echotest_create(self):
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusEchoTestPlugin()
+
+            await plugin.attach(session=session)
+
+            await plugin.destroy()
 
             await session.destroy()
 
