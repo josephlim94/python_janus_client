@@ -3,7 +3,7 @@ import logging
 
 from .plugin_base import JanusPlugin
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
-from aiortc.contrib.media import MediaPlayer
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
 logger = logging.getLogger(__name__)
 
@@ -13,6 +13,7 @@ class JanusEchoTestPlugin(JanusPlugin):
 
     name = "janus.plugin.echotest"
     __pc: RTCPeerConnection
+    __recorder: MediaRecorder
 
     async def on_receive(self, response: dict):
         if "jsep" in response and self.__pc:
@@ -20,6 +21,9 @@ class JanusEchoTestPlugin(JanusPlugin):
             await self.__pc.setRemoteDescription(
                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
             )
+        if response["janus"] == "media":
+            if response["receiving"]:
+                await self.__recorder.start()
 
     async def start(self):
         self.__pc = RTCPeerConnection()
@@ -36,6 +40,16 @@ class JanusEchoTestPlugin(JanusPlugin):
             self.__pc.addTrack(player.video)
         else:
             self.__pc.addTrack(VideoStreamTrack())
+
+        self.__recorder = MediaRecorder("./asdasd.mp4")
+
+        @self.__pc.on("track")
+        async def on_track(track):
+            logger.info("Track %s received" % track.kind)
+            if track.kind == "video":
+                self.__recorder.addTrack(track)
+            if track.kind == "audio":
+                self.__recorder.addTrack(track)
 
         # send offer
         await self.__pc.setLocalDescription(await self.__pc.createOffer())
