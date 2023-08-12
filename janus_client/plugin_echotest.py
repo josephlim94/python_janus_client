@@ -14,8 +14,12 @@ class JanusEchoTestPlugin(JanusPlugin):
     name = "janus.plugin.echotest"
     __pc: RTCPeerConnection
 
-    def on_receive(self, response: dict):
-        logger.info(f"EchoTest received: {response}")
+    async def on_receive(self, response: dict):
+        if "jsep" in response and self.__pc:
+            jsep = response["jsep"]
+            await self.__pc.setRemoteDescription(
+                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+            )
 
     async def start(self):
         self.__pc = RTCPeerConnection()
@@ -61,9 +65,9 @@ class JanusEchoTestPlugin(JanusPlugin):
 
         response = await self.send(message)
 
-        # apply answer
-        # await self.__pc.setRemoteDescription(
-        #     RTCSessionDescription(
-        #         sdp=response["jsep"]["sdp"], type=response["jsep"]["type"]
-        #     )
-        # )
+        # Immediately apply answer if it's found
+        if "jsep" in response:
+            jsep = response["jsep"]
+            await self.__pc.setRemoteDescription(
+                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+            )

@@ -184,7 +184,7 @@ class JanusTransport(ABC):
             session_id = response["session_id"]
             # This is response for session or plugin handle
             if session_id in self.__sessions:
-                self.__sessions[session_id].on_receive(response)
+                await self.__sessions[session_id].on_receive(response)
             else:
                 logger.warning(
                     f"Got response for session but session not found."

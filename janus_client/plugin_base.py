@@ -66,7 +66,7 @@ class JanusPlugin(ABC):
         )
 
     @abstractmethod
-    def on_receive(self, response: dict):
+    async def on_receive(self, response: dict):
         """Handle asynchronous events from Janus
         """
         pass

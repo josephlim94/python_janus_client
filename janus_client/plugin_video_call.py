@@ -14,7 +14,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
     name = "janus.plugin.videocall"  #: Plugin name
 
-    def on_receive(self, response: dict):
+    async def on_receive(self, response: dict):
         if response["janus"] == "event":
             logger.info(f"Event response: {response}")
             if "plugindata" in response:

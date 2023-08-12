@@ -9,12 +9,6 @@ logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
 
 
-async def test_task():
-    # raise Exception("Exception in task")
-    await asyncio.sleep(2)
-    logger.info("done")
-
-
 async def main():
     # transport = JanusTransportHTTP(
     #     uri="https://janusmy.josephgetmyip.com/janusbase/janus"
@@ -36,14 +30,6 @@ async def main():
     await plugin_handle.destroy()
 
     await session.destroy()
-
-
-async def main2():
-    task = asyncio.create_task(test_task())
-    await asyncio.sleep(3)
-    raise task.exception()
-    logger.info(exception)
-    await task
 
 
 if __name__ == "__main__":
