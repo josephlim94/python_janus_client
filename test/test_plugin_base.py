@@ -5,7 +5,6 @@ import asyncio
 from janus_client import (
     JanusTransport,
     JanusSession,
-    JanusPlugin,
     PluginAttachFail,
     JanusEchoTestPlugin,
 )
@@ -29,26 +28,29 @@ class BaseTestClass:
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
             await asyncio.sleep(0.250)
 
-        # async def test_plugin_create_fail(self):
-        #     session = JanusSession(transport=self.transport)
+        async def test_plugin_create_fail(self):
+            session = JanusSession(transport=self.transport)
 
-        #     plugin = JanusPlugin()
+            plugin = JanusEchoTestPlugin()
 
-        #     with self.assertRaises(PluginAttachFail):
-        #         await plugin.attach(session=session)
+            # Give it a dummy plugin name
+            plugin.name = "dummy_name"
 
-        #     await session.destroy()
+            with self.assertRaises(PluginAttachFail):
+                await plugin.attach(session=session)
 
-        # async def test_plugin_echotest_create(self):
-        #     session = JanusSession(transport=self.transport)
+            await session.destroy()
 
-        #     plugin = JanusEchoTestPlugin()
+        async def test_plugin_echotest_create(self):
+            session = JanusSession(transport=self.transport)
 
-        #     await plugin.attach(session=session)
+            plugin = JanusEchoTestPlugin()
 
-        #     await plugin.destroy()
+            await plugin.attach(session=session)
 
-        #     await session.destroy()
+            await plugin.destroy()
+
+            await session.destroy()
 
 
 # class TestTransportHttps(BaseTestClass.TestClass):

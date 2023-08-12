@@ -57,6 +57,8 @@ class JanusTransportWebsocket(JanusTransport):
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
             # Check if any exceptions are raised
+            # If it's CancelledError or InvalidStateError exception then they will be raised
+            # else the exception in task will be returned
             exception = task.exception()
             if exception:
                 logger.error(''.join(traceback.format_exception(exception)))

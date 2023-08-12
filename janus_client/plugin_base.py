@@ -1,4 +1,5 @@
 import logging
+from abc import ABC, abstractmethod
 
 from .transport import ResponseHandlerType
 from .session import JanusSession
@@ -7,7 +8,7 @@ from .session import JanusSession
 logger = logging.getLogger(__name__)
 
 
-class JanusPlugin:
+class JanusPlugin(ABC):
     """Base class to inherit when implementing a plugin"""
 
     name: str = "janus.plugin.base.dummy"
@@ -64,15 +65,11 @@ class JanusPlugin:
             message, handle_id=self.__id, response_handler=response_handler
         )
 
+    @abstractmethod
     def on_receive(self, response: dict):
         """Handle asynchronous events from Janus
-
-        Must be overridden
-
-        :raises NotImplementedError: If not overridden and received event from server
         """
-
-        raise NotImplementedError()
+        pass
 
     async def trickle(self, sdpMLineIndex, candidate):
         """Send WebRTC candidates to Janus

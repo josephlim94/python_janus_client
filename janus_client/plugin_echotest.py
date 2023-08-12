@@ -14,8 +14,8 @@ class JanusEchoTestPlugin(JanusPlugin):
     name = "janus.plugin.echotest"
     __pc: RTCPeerConnection
 
-    # def on_receive(self, response: dict):
-    #     logger.info(response)
+    def on_receive(self, response: dict):
+        logger.info(f"EchoTest received: {response}")
 
     async def start(self):
         self.__pc = RTCPeerConnection()
