@@ -20,12 +20,14 @@ async def main():
 
     await plugin_handle.attach(session=session)
 
-    await plugin_handle.start()
+    await plugin_handle.start(
+        play_from="./Into.the.Wild.2007.mp4", record_to="./asdasd.mp4"
+    )
 
     response = await session.transport.ping()
     logger.info(response)
 
-    await asyncio.sleep(10)
+    await asyncio.sleep(15)
 
     await plugin_handle.destroy()
 

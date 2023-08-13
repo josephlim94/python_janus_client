@@ -23,12 +23,14 @@ class JanusEchoTestPlugin(JanusPlugin):
             )
         if response["janus"] == "media":
             if response["receiving"]:
+                # It's ok to start multiple times, only the track that
+                # has not been started will start
                 await self.__recorder.start()
 
-    async def start(self):
+    async def start(self, play_from: str, record_to: str = ""):
         self.__pc = RTCPeerConnection()
 
-        player = MediaPlayer("C:\\Users\\Joseph\\Downloads\\De Kandar Demo.mp4")
+        player = MediaPlayer(play_from)
 
         # configure media
         media = {"audio": False, "video": True}
@@ -41,15 +43,16 @@ class JanusEchoTestPlugin(JanusPlugin):
         else:
             self.__pc.addTrack(VideoStreamTrack())
 
-        self.__recorder = MediaRecorder("./asdasd.mp4")
+        if record_to:
+            self.__recorder = MediaRecorder(record_to)
 
-        @self.__pc.on("track")
-        async def on_track(track):
-            logger.info("Track %s received" % track.kind)
-            if track.kind == "video":
-                self.__recorder.addTrack(track)
-            if track.kind == "audio":
-                self.__recorder.addTrack(track)
+            @self.__pc.on("track")
+            async def on_track(track):
+                logger.info("Track %s received" % track.kind)
+                if track.kind == "video":
+                    self.__recorder.addTrack(track)
+                if track.kind == "audio":
+                    self.__recorder.addTrack(track)
 
         # send offer
         await self.__pc.setLocalDescription(await self.__pc.createOffer())
