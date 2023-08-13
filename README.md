@@ -1,6 +1,6 @@
 # Janus Client in Python
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg) [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest) ![UT Coverage](https://img.shields.io/badge/coverage-71%25-orange)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg) [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest) ![UT Coverage](https://img.shields.io/badge/coverage-74%25-yellow)
 
 
 A [Janus](https://github.com/meetecho/janus-gateway) WebRTC client in Python asyncio.
@@ -27,11 +27,11 @@ The VideoRoom plugin implemented in [plugin_video_room_ffmpeg.py](./janus_client
   - Websocket API ([websockets](https://github.com/aaugustin/websockets))
   - HTTP ([aiohttp](https://docs.aiohttp.org/en/stable/index.html))
 
-:heavy_check_mark: Automatically manage Janus client connection  
-:heavy_check_mark: Manage message transactions with Janus  
-:heavy_check_mark: Manage sessions  
+:heavy_check_mark: Manage Janus client connection, session, and plugins  
+:heavy_check_mark: Multiple connections in parallel  
+:heavy_check_mark: Direct message transactions to correct senders asynchronously  
 ```python
-from janus_client import JanusSession
+from janus_client import JanusSession, JanusEchoTestPlugin, JanusVideoRoomPlugin
 
 # Protocol will be derived from base_url
 session = JanusSession(
@@ -41,14 +41,9 @@ session = JanusSession(
 session = JanusSession(
     base_url="https://janusmy.josephgetmyip.com/janusbase/janus",
 )
-```
-:heavy_check_mark: Manage plugins  
-:heavy_check_mark: Manage multiple sessions and or multiple plugins at the same time  
-```python
-from janus_client import JanusVideoRoomPlugin
 
 plugin_handle_1 = JanusVideoRoomPlugin()
-plugin_handle_2 = JanusVideoRoomPlugin()
+plugin_handle_2 = JanusEchoTestPlugin()
 
 # Attach to Janus session
 await plugin_handle_1.attach(session=session)
@@ -56,8 +51,9 @@ await plugin_handle_2.attach(session=session)
 ```
 :heavy_check_mark: Support authentication with shared static secret (API key) and/or stored token  
 :heavy_check_mark: Expose Admin/Monitor API client  
-:heavy_check_mark: Use Janus VideoRoom plugin with FFmpeg  
+:heavy_check_mark: Janus VideoRoom plugin with FFmpeg (Partial: Only sends video)  
 ```python
+from janus_client import JanusVideoRoomPlugin
 import ffmpeg
 
 room_id = 1234
@@ -79,10 +75,22 @@ ffmpeg_input = ffmpeg.input(
     show_region=1,
 )
 
+plugin_handle_1 = JanusVideoRoomPlugin()
 await plugin_handle_1.join(room_id, publisher_id, display_name)
 await plugin_handle_1.publish(ffmpeg_input=ffmpeg_input, width=width, height=height)
 await asyncio.sleep(60)
 await plugin_handle_1.unpublish()
+```
+:heavy_check_mark: Janus EchoTest plugin  
+```python
+from janus_client import JanusEchoTestPlugin
+
+plugin_handle_2 = JanusEchoTestPlugin()
+await plugin_handle_2.start(
+    play_from="./Into.the.Wild.2007.mp4", record_to="./asdasd.mp4"
+)
+await asyncio.sleep(15)
+await plugin_handle_2.close_stream()
 ```
 
 ### FFmpeg Stream To WebRTC (:warning: **WARNING !!!**)
@@ -106,6 +114,7 @@ References:
 :clock3: Subscribe to stream with FFmpeg VideoRoom plugin  
 :clock3: Disable keepalive recurring task for HTTP transport  
 :clock3: Handle error when fail to join room because of "User ID _ already exists" error  
+:clock3: Gracefully detach plugin. Handle "detached" response  
 
 ---
 
