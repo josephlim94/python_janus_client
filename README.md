@@ -48,6 +48,11 @@ plugin_handle_2 = JanusEchoTestPlugin()
 # Attach to Janus session
 await plugin_handle_1.attach(session=session)
 await plugin_handle_2.attach(session=session)
+
+# Destroy plugin handles in parallel
+await asyncio.gather(
+    plugin_handle_1.destroy(), plugin_handle_2.destroy()
+)
 ```
 :heavy_check_mark: Support authentication with shared static secret (API key) and/or stored token  
 :heavy_check_mark: Expose Admin/Monitor API client  
