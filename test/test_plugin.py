@@ -1,6 +1,7 @@
 import unittest
 import logging
 import asyncio
+import os
 
 from janus_client import (
     JanusTransport,
@@ -44,11 +45,30 @@ class BaseTestClass:
         async def test_plugin_echotest_create(self):
             session = JanusSession(transport=self.transport)
 
-            plugin = JanusEchoTestPlugin()
+            plugin_handle = JanusEchoTestPlugin()
 
-            await plugin.attach(session=session)
+            await plugin_handle.attach(session=session)
 
-            await plugin.destroy()
+            output_filename = "./asdasd.mp4"
+
+            if os.path.exists(output_filename):
+                os.remove(output_filename)
+
+            await plugin_handle.start(
+                play_from="./Into.the.Wild.2007.mp4", record_to=output_filename
+            )
+
+            response = await session.transport.ping()
+            self.assertEqual(response["janus"], "pong")
+
+            await asyncio.sleep(15)
+
+            await plugin_handle.close_stream()
+
+            if not os.path.exists(output_filename):
+                self.fail(f"Stream record file ({output_filename}) is not created.")
+
+            await plugin_handle.destroy()
 
             await session.destroy()
 

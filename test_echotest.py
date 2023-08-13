@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 # from janus_client.transport import JanusTransportHTTP
 from janus_client import JanusSession, JanusEchoTestPlugin
@@ -19,6 +20,9 @@ async def main():
     plugin_handle = JanusEchoTestPlugin()
 
     await plugin_handle.attach(session=session)
+
+    if os.path.exists("./asdasd.mp4"):
+        os.remove("./asdasd.mp4")
 
     await plugin_handle.start(
         play_from="./Into.the.Wild.2007.mp4", record_to="./asdasd.mp4"
