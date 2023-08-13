@@ -29,6 +29,8 @@ async def main():
 
     await asyncio.sleep(15)
 
+    await plugin_handle.close_stream()
+
     await plugin_handle.destroy()
 
     await session.destroy()

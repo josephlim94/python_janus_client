@@ -16,16 +16,46 @@ class JanusEchoTestPlugin(JanusPlugin):
     __recorder: MediaRecorder
 
     async def on_receive(self, response: dict):
-        if "jsep" in response and self.__pc:
-            jsep = response["jsep"]
-            await self.__pc.setRemoteDescription(
-                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
-            )
-        if response["janus"] == "media":
+        if "jsep" in response:
+            await self.on_receive_jsep(jsep=response["jsep"])
+
+        janus_code = response["janus"]
+
+        if janus_code == "media":
             if response["receiving"]:
                 # It's ok to start multiple times, only the track that
                 # has not been started will start
                 await self.__recorder.start()
+
+        if janus_code == "event":
+            plugin_data = response["plugindata"]["data"]
+
+            if plugin_data["echotest"] != "event":
+                # This plugin will only get events
+                logger.error(f"Invalid response: {response}")
+                return
+
+            if "result" in plugin_data:
+                if plugin_data["result"] == "ok":
+                    # Successful start stream request. Do nothing.
+                    pass
+
+                if plugin_data["result"] == "done":
+                    # Stream ended. Ok to close PC multiple times.
+                    if self.__pc:
+                        await self.__pc.close()
+                    # Ok to stop recording multiple times.
+                    if self.__recorder:
+                        await self.__recorder.stop()
+
+            if "errorcode" in plugin_data:
+                logger.error(f"Plugin Error: {response}")
+
+    async def on_receive_jsep(self, jsep: dict):
+        if self.__pc and self.__pc.signalingState != "closed":
+            await self.__pc.setRemoteDescription(
+                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+            )
 
     async def start(self, play_from: str, record_to: str = ""):
         self.__pc = RTCPeerConnection()
@@ -33,10 +63,8 @@ class JanusEchoTestPlugin(JanusPlugin):
         player = MediaPlayer(play_from)
 
         # configure media
-        media = {"audio": False, "video": True}
         if player and player.audio:
             self.__pc.addTrack(player.audio)
-            media["audio"] = True
 
         if player and player.video:
             self.__pc.addTrack(player.video)
@@ -84,7 +112,15 @@ class JanusEchoTestPlugin(JanusPlugin):
 
         # Immediately apply answer if it's found
         if "jsep" in response:
-            jsep = response["jsep"]
-            await self.__pc.setRemoteDescription(
-                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
-            )
+            await self.on_receive_jsep(jsep=response["jsep"])
+
+    async def close_stream(self):
+        """Close stream
+
+        This should cause the stream to stop and a done event to be received.
+        """
+        if self.__pc:
+            await self.__pc.close()
+
+        if self.__recorder:
+            await self.__recorder.stop()
