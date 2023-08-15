@@ -3,6 +3,7 @@ import logging
 import asyncio
 
 from janus_client import JanusTransport, JanusSession, JanusVideoRoomPlugin
+from test.util import async_test
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -10,7 +11,7 @@ logger = logging.getLogger()
 
 
 class BaseTestClass:
-    class TestClass(unittest.IsolatedAsyncioTestCase):
+    class TestClass(unittest.TestCase):
         server_url: str
 
         async def asyncSetUp(self) -> None:
@@ -23,12 +24,15 @@ class BaseTestClass:
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
             await asyncio.sleep(0.250)
 
+        @async_test
         async def test_0_1_1(self):
             """
             0 transport. transport created automatically by session
             1 session. session:plugin = 1:1
             1 plugin
             """
+
+            await self.asyncSetUp()
 
             room_id = 1234
 
@@ -46,12 +50,17 @@ class BaseTestClass:
 
             await session.destroy()
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_1_1_1(self):
             """
             1 transport. transport:session = 1:1
             1 session. session:plugin = 1:1
             1 plugin
             """
+
+            await self.asyncSetUp()
 
             room_id = 1234
 
@@ -69,11 +78,16 @@ class BaseTestClass:
 
             await session.destroy()
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_1_N_0(self):
             """
             1 transport. transport:session = 1:N
             3 session. session:plugin = 1:1
             """
+
+            await self.asyncSetUp()
 
             session_1 = JanusSession(transport=self.transport)
             session_2 = JanusSession(transport=self.transport)
@@ -102,12 +116,17 @@ class BaseTestClass:
                 session_1.destroy(), session_2.destroy(), session_3.destroy()
             )
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_0_N_0(self):
             """
             0 transport. transport created automatically by session
             3 session. session:plugin = 1:1
             0 plugin
             """
+
+            await self.asyncSetUp()
 
             session_1 = JanusSession(base_url=self.server_url)
             session_2 = JanusSession(base_url=self.server_url)
@@ -136,12 +155,17 @@ class BaseTestClass:
                 session_1.destroy(), session_2.destroy(), session_3.destroy()
             )
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_1_1_N(self):
             """
             1 transport. transport:session = 1:1
             1 session. session:plugin = 1:N
             3 plugin
             """
+
+            await self.asyncSetUp()
 
             room_id = 1234
 
@@ -177,11 +201,16 @@ class BaseTestClass:
 
             await session.destroy()
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_1_N_N(self):
             """
             1 transport. transport:session = 1:N
             3 session. session:plugin = 1:1
             """
+
+            await self.asyncSetUp()
 
             async def test_N_plugin(session, publisher_id):
                 room_id = 1234
@@ -247,11 +276,16 @@ class BaseTestClass:
                 session_1.destroy(), session_2.destroy(), session_3.destroy()
             )
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_0_N_N(self):
             """
             1 transport. transport:session = 1:N
             3 session. session:plugin = 1:1
             """
+
+            await self.asyncSetUp()
 
             async def test_N_plugin(session, publisher_id):
                 room_id = 1234
@@ -316,6 +350,8 @@ class BaseTestClass:
             await asyncio.gather(
                 session_1.destroy(), session_2.destroy(), session_3.destroy()
             )
+
+            await self.asyncTearDown()
 
 
 class TestTransportHttps(BaseTestClass.TestClass):

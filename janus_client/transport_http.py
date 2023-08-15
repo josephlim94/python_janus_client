@@ -1,6 +1,7 @@
 import logging
 import asyncio
 from dataclasses import dataclass
+from typing import Dict
 
 import aiohttp
 
@@ -19,7 +20,7 @@ class ReceiverTask:
 class JanusTransportHTTP(JanusTransport):
     """Janus transport through HTTP"""
 
-    __receive_response_task_map: dict[int, ReceiverTask]
+    __receive_response_task_map: Dict[int, ReceiverTask]
 
     def __init__(self, base_url: str, api_secret: str = None, token: str = None):
         super().__init__(base_url=base_url, api_secret=api_secret, token=token)
@@ -43,14 +44,14 @@ class JanusTransportHTTP(JanusTransport):
 
         return url
 
-    async def info(self) -> dict:
+    async def info(self) -> Dict:
         async with aiohttp.ClientSession() as http_session:
             async with http_session.get(f"{self.base_url}/info") as response:
                 return await response.json()
 
     async def _send(
         self,
-        message: dict,
+        message: Dict,
     ) -> None:
         session_id = message.get("session_id")
         handle_id = message.get("handle_id")

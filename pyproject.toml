@@ -17,18 +17,18 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = ">=3.7,<3.11"
 websockets = "^11.0.3"
 aiortc = "^1.5.0"
 ffmpeg-python = "^0.2.0"
-numpy = "^1.25.1"
+numpy = ">=1.21.6,<1.22"
 av = "^10.0.0"
 aiohttp = {extras = ["speedups"], version = "^3.8.5"}
 
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2.7"
-sphinx = "^7.1.2"
+sphinx = "^5.3.0"
 
 [build-system]
 requires = ["poetry-core"]

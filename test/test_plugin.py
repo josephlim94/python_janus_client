@@ -9,6 +9,7 @@ from janus_client import (
     PluginAttachFail,
     JanusEchoTestPlugin,
 )
+from test.util import async_test
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -16,7 +17,7 @@ logger = logging.getLogger()
 
 
 class BaseTestClass:
-    class TestClass(unittest.IsolatedAsyncioTestCase):
+    class TestClass(unittest.TestCase):
         server_url: str
 
         async def asyncSetUp(self) -> None:
@@ -29,7 +30,10 @@ class BaseTestClass:
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
             await asyncio.sleep(0.250)
 
+        @async_test
         async def test_plugin_create_fail(self):
+            await self.asyncSetUp()
+
             session = JanusSession(transport=self.transport)
 
             plugin = JanusEchoTestPlugin()
@@ -42,7 +46,12 @@ class BaseTestClass:
 
             await session.destroy()
 
+            await self.asyncTearDown()
+
+        @async_test
         async def test_plugin_echotest_create(self):
+            await self.asyncSetUp()
+
             session = JanusSession(transport=self.transport)
 
             plugin_handle = JanusEchoTestPlugin()
@@ -71,6 +80,8 @@ class BaseTestClass:
             await plugin_handle.destroy()
 
             await session.destroy()
+
+            await self.asyncTearDown()
 
 
 # class TestTransportHttps(BaseTestClass.TestClass):

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING, Callable, List, Dict
 import logging
 import uuid
 import json
@@ -19,20 +19,20 @@ class JanusTransport(ABC):
     Manage Sessions and Transactions
     """
 
-    __transport_implementation: list[tuple] = []
+    __transport_implementation: List[tuple] = []
 
     __base_url: str
     __api_secret: str
     __token: str
-    __transactions: dict[str, asyncio.Queue]
-    __transaction_response_handler: dict[str, ResponseHandlerType]
-    __sessions: dict[int, "JanusSession"]
+    __transactions: Dict[str, asyncio.Queue]
+    __transaction_response_handler: Dict[str, ResponseHandlerType]
+    __sessions: Dict[int, "JanusSession"]
     __connect_lock: asyncio.Lock
     connected: bool
     """Must set this property when connected or disconnected"""
 
     @abstractmethod
-    async def _send(self, message: dict) -> None:
+    async def _send(self, message: Dict) -> None:
         """Really sends the message. Doesn't return a response"""
         pass
 
@@ -44,12 +44,12 @@ class JanusTransport(ABC):
     async def _disconnect(self) -> None:
         pass
 
-    async def info(self) -> dict:
+    async def info(self) -> Dict:
         """Get info of Janus server. Only useful for HTTP protocol I think"""
         logger.info("Server info only available with HTTP REST API")
         return {}
 
-    async def ping(self) -> dict:
+    async def ping(self) -> Dict:
         return await self.send(
             {"janus": "ping"},
             response_handler=lambda res: res if res["janus"] == "pong" else None,
@@ -107,7 +107,7 @@ class JanusTransport(ABC):
 
                 self.connected = False
 
-    def __sanitize_message(self, message: dict) -> None:
+    def __sanitize_message(self, message: Dict) -> None:
         if "janus" not in message:
             raise Exception('Must set "janus" field')
 
@@ -119,11 +119,11 @@ class JanusTransport(ABC):
 
     async def send(
         self,
-        message: dict,
+        message: Dict,
         session_id: int = None,
         handle_id: int = None,
         response_handler: ResponseHandlerType = lambda response: response,
-    ) -> dict:
+    ) -> Dict:
         """Send message to server
 
         :param message: JSON serializable dictionary to send
