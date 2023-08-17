@@ -6,18 +6,29 @@ from typing import Dict, List, Union
 def is_subset(dict_1: Dict, dict_2: Dict) -> bool:
     """Check if dict_2 is subset of dict_1 recursively
 
-    Only checks dict or str type in dict_2
+    Only checks dict, str or int type in dict_2
     """
     if not isinstance(dict_1, dict):
-        raise Exception(f"dict_1 must be a dictionary: {dict_1}")
+        raise TypeError(f"dict_1 must be a dictionary: {dict_1}")
 
     if not isinstance(dict_2, dict):
-        return True
+        raise TypeError(f"dict_2 must be a dictionary: {dict_2}")
 
     if not dict_2:
         return True
 
     for key_2, val_2 in dict_2.items():
+        if not (
+            isinstance(val_2, dict) or isinstance(val_2, str) or isinstance(val_2, int)
+        ):
+            # If not these few types, then only need
+            # key_2 to be in dict_1
+            if key_2 in dict_1:
+                continue
+            else:
+                return False
+
+        # Need to check values
         val_1 = dict_1.get(key_2, None)
 
         # Simple compare
@@ -59,6 +70,9 @@ class MessageTransaction:
     async def get(
         self, dict_matcher: Dict = {}, timeout: Union[float, None] = None
     ) -> Dict:
+        if not isinstance(dict_matcher, dict):
+            raise TypeError(f"dict_matcher must be a dictionary: {dict_matcher}")
+
         # Try to find message in saved messages
         for msg in self.__msg_all:
             if is_subset(msg, dict_matcher):
