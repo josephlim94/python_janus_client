@@ -3,6 +3,7 @@ from typing import Dict, TYPE_CHECKING
 import logging
 
 from .transport import JanusTransport, ResponseHandlerType
+from .message_transaction import MessageTransaction
 
 if TYPE_CHECKING:
     from .plugin_base import JanusPlugin
@@ -67,10 +68,11 @@ class JanusSession:
                 self.created = True
 
     async def _destroy(self) -> None:
-        await self.send(
+        message_transaction = await self.send(
             {"janus": "destroy"},
-            response_handler=lambda res: res if res["janus"] == "success" else None,
+            # response_handler=lambda res: res if res["janus"] == "success" else None,
         )
+        await message_transaction.get(dict_matcher={"janus": "success"}, timeout=15)
         self.keepalive_task.cancel()
         await self.transport.destroy_session(self.__id)
         self.__id = None
@@ -99,7 +101,7 @@ class JanusSession:
         message: dict,
         handle_id: int = None,
         response_handler: ResponseHandlerType = lambda response: response,
-    ) -> dict:
+    ) -> MessageTransaction:
         self.__sanitize_message(message=message)
 
         if not self.created:
