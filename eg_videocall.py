@@ -33,7 +33,7 @@ ffmpeg_input = ffmpeg.input(
 async def main():
     # Create session
     session = JanusSession(
-        uri="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+        base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
     )
 
     # Create plugin
@@ -43,8 +43,12 @@ async def main():
     await plugin_handle.attach(session=session)
     logger.info("plugin created")
 
-    list_response = await plugin_handle.list()
-    logger.info(list_response)
+    await asyncio.gather(
+        plugin_handle.list(),
+        plugin_handle.list(),
+    )
+    # list_response = await plugin_handle.list()
+    # logger.info(list_response)
 
     # Destroy plugin
     await plugin_handle.destroy()
