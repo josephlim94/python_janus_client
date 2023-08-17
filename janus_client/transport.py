@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import TYPE_CHECKING, Callable, List, Dict
+from typing import TYPE_CHECKING, List, Dict
 import logging
 
 # import uuid
@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     from .session import JanusSession
 
 logger = logging.getLogger(__name__)
-
-ResponseHandlerType = Callable[[dict], dict]
 
 
 class JanusTransport(ABC):
@@ -28,8 +26,6 @@ class JanusTransport(ABC):
     __api_secret: str
     __token: str
     __message_transaction: Dict[str, MessageTransaction]
-    __transactions: Dict[str, asyncio.Queue]
-    __transaction_response_handler: Dict[str, ResponseHandlerType]
     __sessions: Dict[int, "JanusSession"]
     __connect_lock: asyncio.Lock
     connected: bool
@@ -58,7 +54,9 @@ class JanusTransport(ABC):
             {"janus": "ping"},
             # response_handler=lambda res: res if res["janus"] == "pong" else None,
         )
-        return await message_transaction.get(dict_matcher={"janus": "pong"}, timeout=15)
+        response = await message_transaction.get(matcher={"janus": "pong"}, timeout=15)
+        await message_transaction.done()
+        return response
 
     async def dispatch_session_created(self, session_id: int) -> None:
         """Override this method to get session created event"""
@@ -80,8 +78,6 @@ class JanusTransport(ABC):
         self.__api_secret = api_secret
         self.__token = token
         self.__message_transaction = dict()
-        self.__transactions = dict()
-        self.__transaction_response_handler = dict()
         self.__sessions = dict()
         self.__connect_lock = asyncio.Lock()
         self.connected = False
@@ -128,7 +124,6 @@ class JanusTransport(ABC):
         message: Dict,
         session_id: int = None,
         handle_id: int = None,
-        # response_handler: ResponseHandlerType = lambda response: response,
     ) -> MessageTransaction:
         """Send message to server
 
@@ -143,9 +138,6 @@ class JanusTransport(ABC):
         # Create transaction
         message_transaction = MessageTransaction()
         self.__message_transaction[message_transaction.id] = message_transaction
-        # transaction_id = uuid.uuid4().hex
-        # self.__transactions[transaction_id] = asyncio.Queue()
-        # self.__transaction_response_handler[transaction_id] = response_handler
         message["transaction"] = message_transaction.id
 
         # Delete itself if done is called
@@ -173,31 +165,15 @@ class JanusTransport(ABC):
 
         return message_transaction
 
-        # # Whenever we send a message with transaction, there must be a reply
-        # response = await self.__transactions[transaction_id].get()
-
-        # # Transaction complete, delete it
-        # del self.__transactions[transaction_id]
-        # del self.__transaction_response_handler[transaction_id]
-        # return response
-
     async def receive(self, response: dict) -> None:
         logger.info(f"Received: {response}")
-        # Maybe it's for a transaction that is waiting
+        # First try transaction handlers
         if "transaction" in response:
             transaction_id = response["transaction"]
 
             if transaction_id in self.__message_transaction:
                 self.__message_transaction[transaction_id].put_msg(message=response)
                 return
-
-            # if transaction_id in self.__transaction_response_handler:
-            #     transaction_response = self.__transaction_response_handler[
-            #         transaction_id
-            #     ](response)
-            #     if transaction_response:
-            #         await self.__transactions[transaction_id].put(response)
-            #         return
 
         # If the response was not "eaten" by the transaction, then dispatch it
         if "session_id" in response:
@@ -217,8 +193,9 @@ class JanusTransport(ABC):
     async def create_session(self, session: "JanusSession") -> int:
         """Create Janus Session"""
 
-        transaction = await self.send({"janus": "create"})
-        response = await transaction.get()
+        message_transaction = await self.send({"janus": "create"})
+        response = await message_transaction.get()
+        await message_transaction.done()
 
         # Extract session ID
         session_id = int(response["data"]["id"])

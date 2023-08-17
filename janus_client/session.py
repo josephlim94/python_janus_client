@@ -2,7 +2,7 @@ import asyncio
 from typing import Dict, TYPE_CHECKING
 import logging
 
-from .transport import JanusTransport, ResponseHandlerType
+from .transport import JanusTransport
 from .message_transaction import MessageTransaction
 
 if TYPE_CHECKING:
@@ -70,9 +70,9 @@ class JanusSession:
     async def _destroy(self) -> None:
         message_transaction = await self.send(
             {"janus": "destroy"},
-            # response_handler=lambda res: res if res["janus"] == "success" else None,
         )
-        await message_transaction.get(dict_matcher={"janus": "success"}, timeout=15)
+        await message_transaction.get(matcher={"janus": "success"}, timeout=15)
+        await message_transaction.done()
         self.keepalive_task.cancel()
         await self.transport.destroy_session(self.__id)
         self.__id = None
@@ -100,7 +100,6 @@ class JanusSession:
         self,
         message: dict,
         handle_id: int = None,
-        response_handler: ResponseHandlerType = lambda response: response,
     ) -> MessageTransaction:
         self.__sanitize_message(message=message)
 
@@ -111,7 +110,6 @@ class JanusSession:
             message,
             session_id=self.__id,
             handle_id=handle_id,
-            response_handler=response_handler,
         )
 
     # TODO: This is not required if using HTTP REST API, though it
@@ -121,7 +119,8 @@ class JanusSession:
         # A Janus session is kept alive as long as there's no inactivity for 60 seconds
         while True:
             await asyncio.sleep(30)
-            await self.send({"janus": "keepalive"})
+            message_transaction = await self.send({"janus": "keepalive"})
+            await message_transaction.done()
 
     async def on_receive(self, response: dict):
         if "sender" not in response:
@@ -146,14 +145,14 @@ class JanusSession:
         :param plugin: Plugin instance with janus_client.JanusPlugin as base class
         """
 
-        def response_handler(res):
-            if res["janus"] in ["error", "success"]:
-                return res
+        def matcher(res):
+            return res["janus"] in ["error", "success"]
 
-        response = await self.send(
+        message_transaction = await self.send(
             {"janus": "attach", "plugin": plugin.name},
-            response_handler=response_handler,
         )
+        response = await message_transaction.get(matcher=matcher)
+        await message_transaction.done()
 
         if response["janus"] == "error":
             raise PluginAttachFail(response=response)

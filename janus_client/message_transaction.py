@@ -1,6 +1,6 @@
 import asyncio
 import uuid
-from typing import Dict, List, Union
+from typing import Dict, List, Union, Callable
 
 
 def is_subset(dict_1: Dict, dict_2: Dict) -> bool:
@@ -68,14 +68,27 @@ class MessageTransaction:
         self.__msg_in.put_nowait(message)
 
     async def get(
-        self, dict_matcher: Dict = {}, timeout: Union[float, None] = None
+        self,
+        matcher: Union[Dict, Callable] = lambda *args, **kwargs: True,
+        timeout: Union[float, None] = None,
     ) -> Dict:
-        if not isinstance(dict_matcher, dict):
-            raise TypeError(f"dict_matcher must be a dictionary: {dict_matcher}")
+        if not (isinstance(matcher, dict) or callable(matcher)):
+            raise TypeError(f"matcher must be callable or dictionary: {matcher}")
+
+        _matcher: Callable
+        if callable(matcher):
+            # matcher is a function
+            _matcher = matcher
+        else:
+            # matcher is a dict
+            def dict_matcher(msg: dict) -> bool:
+                return is_subset(msg, matcher)
+
+            _matcher = dict_matcher
 
         # Try to find message in saved messages
         for msg in self.__msg_all:
-            if is_subset(msg, dict_matcher):
+            if _matcher(msg):
                 return msg
 
         # Wait in queue until a matching message is found
@@ -83,11 +96,15 @@ class MessageTransaction:
         # Always save received messages
         self.__msg_all.append(msg)
 
-        while not is_subset(msg, dict_matcher):
+        while not _matcher(msg):
             msg = await asyncio.wait_for(self.__msg_in.get(), timeout=timeout)
             self.__msg_all.append(msg)
 
         return msg
 
-    async def on_done(self):
+    async def on_done(self) -> None:
         pass
+
+    async def done(self) -> None:
+        """Must call this when finish using to release resources"""
+        await self.on_done()
