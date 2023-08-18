@@ -7,10 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 class JanusVideoCallPlugin(JanusPlugin):
-    """Janus Video Call plugin instance
-
-    Implements API to interact with Video Call plugin.
-    """
+    """Janus Video Call plugin implementation"""
 
     name = "janus.plugin.videocall"  #: Plugin name
 
@@ -30,12 +27,23 @@ class JanusVideoCallPlugin(JanusPlugin):
             asyncio.create_task(self.handle_jsep(response["jsep"]))
 
     async def list(self) -> None:
-        response = await self.send(
-            {
+        message_transaction = await self.send(
+            message={
                 "janus": "message",
                 "body": {
                     "request": "list",
                 },
+            },
+        )
+        response = await message_transaction.get(
+            {
+                "janus": "event",
+                "plugindata": {
+                    "plugin": "janus.plugin.videocall",
+                    "data": {"videocall": "event", "result": {"list": None}},
+                },
             }
         )
-        return response
+        await message_transaction.done()
+
+        return response["plugindata"]["data"]["result"]["list"]

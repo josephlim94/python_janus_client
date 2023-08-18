@@ -43,12 +43,12 @@ async def main():
     await plugin_handle.attach(session=session)
     logger.info("plugin created")
 
-    await asyncio.gather(
+    list_result = await asyncio.gather(
         plugin_handle.list(),
         plugin_handle.list(),
     )
     # list_response = await plugin_handle.list()
-    # logger.info(list_response)
+    logger.info(list_result)
 
     # Destroy plugin
     await plugin_handle.destroy()
