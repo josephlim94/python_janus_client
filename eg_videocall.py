@@ -43,6 +43,10 @@ async def main():
     await plugin_handle.attach(session=session)
     logger.info("plugin created")
 
+    await plugin_handle.register("test")
+    result = await plugin_handle.register("test")
+    logger.info(result)
+
     list_result = await asyncio.gather(
         plugin_handle.list(),
         plugin_handle.list(),
