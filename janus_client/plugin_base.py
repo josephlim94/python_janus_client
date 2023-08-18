@@ -1,8 +1,8 @@
 import logging
 from abc import ABC, abstractmethod
 
-from .transport import ResponseHandlerType
 from .session import JanusSession
+from .message_transaction import MessageTransaction
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,9 @@ class JanusPlugin(ABC):
     async def destroy(self):
         """Destroy plugin handle"""
 
-        await self.send({"janus": "detach"})
+        message_transaction = await self.send({"janus": "detach"})
+        await message_transaction.get()
+        await message_transaction.done()
         self.session.detach_plugin(self)
 
     def __sanitize_message(self, message: dict) -> None:
@@ -49,8 +51,7 @@ class JanusPlugin(ABC):
     async def send(
         self,
         message: dict,
-        response_handler: ResponseHandlerType = lambda response: response,
-    ) -> dict:
+    ) -> MessageTransaction:
         """Send raw message to plugin
 
         Will auto attach plugin ID to the message.
@@ -61,14 +62,11 @@ class JanusPlugin(ABC):
 
         self.__sanitize_message(message=message)
 
-        return await self.session.send(
-            message, handle_id=self.__id, response_handler=response_handler
-        )
+        return await self.session.send(message, handle_id=self.__id)
 
     @abstractmethod
     async def on_receive(self, response: dict):
-        """Handle asynchronous events from Janus
-        """
+        """Handle asynchronous events from Janus"""
         pass
 
     async def trickle(self, sdpMLineIndex, candidate):

@@ -49,10 +49,11 @@ class BaseTestClass:
 
             session = JanusSession(transport=self.transport)
 
-            response = await session.send(
+            message_transaction = await session.send(
                 {"janus": "keepalive"},
-                response_handler=lambda res: res if res["janus"] == "ack" else None,
             )
+            response = await message_transaction.get({"janus": "ack"})
+            await message_transaction.done()
             self.assertEqual(response["janus"], "ack")
 
             await session.destroy()

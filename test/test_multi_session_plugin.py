@@ -93,24 +93,27 @@ class BaseTestClass:
             session_2 = JanusSession(transport=self.transport)
             session_3 = JanusSession(transport=self.transport)
 
-            response_list = await asyncio.gather(
+            message_transaction_list = await asyncio.gather(
                 session_1.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_2.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_3.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
             )
+            response_1 = await message_transaction_list[0].get({"janus": "ack"})
+            response_2 = await message_transaction_list[1].get({"janus": "ack"})
+            response_3 = await message_transaction_list[2].get({"janus": "ack"})
+            await message_transaction_list[0].done()
+            await message_transaction_list[1].done()
+            await message_transaction_list[2].done()
 
-            self.assertEqual(response_list[0]["janus"], "ack")
-            self.assertEqual(response_list[1]["janus"], "ack")
-            self.assertEqual(response_list[2]["janus"], "ack")
+            self.assertEqual(response_1["janus"], "ack")
+            self.assertEqual(response_2["janus"], "ack")
+            self.assertEqual(response_3["janus"], "ack")
 
             await asyncio.gather(
                 session_1.destroy(), session_2.destroy(), session_3.destroy()
@@ -132,24 +135,27 @@ class BaseTestClass:
             session_2 = JanusSession(base_url=self.server_url)
             session_3 = JanusSession(base_url=self.server_url)
 
-            response_list = await asyncio.gather(
+            message_transaction_list = await asyncio.gather(
                 session_1.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_2.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_3.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
             )
+            response_1 = await message_transaction_list[0].get({"janus": "ack"})
+            response_2 = await message_transaction_list[1].get({"janus": "ack"})
+            response_3 = await message_transaction_list[2].get({"janus": "ack"})
+            await message_transaction_list[0].done()
+            await message_transaction_list[1].done()
+            await message_transaction_list[2].done()
 
-            self.assertEqual(response_list[0]["janus"], "ack")
-            self.assertEqual(response_list[1]["janus"], "ack")
-            self.assertEqual(response_list[2]["janus"], "ack")
+            self.assertEqual(response_1["janus"], "ack")
+            self.assertEqual(response_2["janus"], "ack")
+            self.assertEqual(response_3["janus"], "ack")
 
             await asyncio.gather(
                 session_1.destroy(), session_2.destroy(), session_3.destroy()
@@ -247,24 +253,27 @@ class BaseTestClass:
             session_2 = JanusSession(transport=self.transport)
             session_3 = JanusSession(transport=self.transport)
 
-            response_list = await asyncio.gather(
+            message_transaction_list = await asyncio.gather(
                 session_1.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_2.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_3.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
             )
+            response_1 = await message_transaction_list[0].get({"janus": "ack"})
+            response_2 = await message_transaction_list[1].get({"janus": "ack"})
+            response_3 = await message_transaction_list[2].get({"janus": "ack"})
+            await message_transaction_list[0].done()
+            await message_transaction_list[1].done()
+            await message_transaction_list[2].done()
 
-            self.assertEqual(response_list[0]["janus"], "ack")
-            self.assertEqual(response_list[1]["janus"], "ack")
-            self.assertEqual(response_list[2]["janus"], "ack")
+            self.assertEqual(response_1["janus"], "ack")
+            self.assertEqual(response_2["janus"], "ack")
+            self.assertEqual(response_3["janus"], "ack")
 
             await asyncio.gather(
                 test_N_plugin(session=session_1, publisher_id=111),
@@ -322,24 +331,27 @@ class BaseTestClass:
             session_2 = JanusSession(base_url=self.server_url)
             session_3 = JanusSession(base_url=self.server_url)
 
-            response_list = await asyncio.gather(
+            message_transaction_list = await asyncio.gather(
                 session_1.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_2.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
                 session_3.send(
                     {"janus": "keepalive"},
-                    response_handler=lambda res: res if res["janus"] == "ack" else None,
                 ),
             )
+            response_1 = await message_transaction_list[0].get({"janus": "ack"})
+            response_2 = await message_transaction_list[1].get({"janus": "ack"})
+            response_3 = await message_transaction_list[2].get({"janus": "ack"})
+            await message_transaction_list[0].done()
+            await message_transaction_list[1].done()
+            await message_transaction_list[2].done()
 
-            self.assertEqual(response_list[0]["janus"], "ack")
-            self.assertEqual(response_list[1]["janus"], "ack")
-            self.assertEqual(response_list[2]["janus"], "ack")
+            self.assertEqual(response_1["janus"], "ack")
+            self.assertEqual(response_2["janus"], "ack")
+            self.assertEqual(response_3["janus"], "ack")
 
             await asyncio.gather(
                 test_N_plugin(session=session_1, publisher_id=111),

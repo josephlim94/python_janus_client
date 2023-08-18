@@ -108,7 +108,9 @@ class JanusEchoTestPlugin(JanusPlugin):
             "type": self.__pc.localDescription.type,
         }
 
-        response = await self.send(message)
+        message_transaction = await self.send(message)
+        response = await message_transaction.get()
+        await message_transaction.done()
 
         # Immediately apply answer if it's found
         if "jsep" in response:

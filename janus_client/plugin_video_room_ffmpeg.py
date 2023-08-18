@@ -54,7 +54,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         :param display_name: Your display name when you join the room.
         """
 
-        response = await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -65,15 +65,21 @@ class JanusVideoRoomPlugin(JanusPlugin):
                     "display": display_name,
                 },
             },
-            response_handler=lambda response: response
-            if response["janus"] == "ack"
-            else None,
         )
+        response = await message_transaction.get(
+            {
+                "janus": "event",
+                "plugindata": {
+                    "plugin": "janus.plugin.videoroom",
+                    "data": {"videoroom": "joined"},
+                },
+            }
+        )
+        await message_transaction.done()
         logger.info(f"Room join response: {response}")
-        await self.joined_event.wait()
 
-    async def leave(self):
-        response = await self.send(
+    async def leave(self) -> None:
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -81,6 +87,16 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        response = await message_transaction.get(
+            {
+                "janus": "event",
+                "plugindata": {
+                    "plugin": "janus.plugin.videoroom",
+                    "data": {"videoroom": "event", "leaving": "ok"},
+                },
+            }
+        )
+        await message_transaction.done()
         logger.info(f"Room leave response: {response}")
 
     async def publish(self, ffmpeg_input, width: int, height: int) -> None:
@@ -116,7 +132,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         request = {"request": "configure"}
         request.update(media)
 
-        await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": request,
@@ -127,13 +143,15 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        await message_transaction.get()
+        await message_transaction.done()
 
         await self.joined_event.wait()
 
     async def unpublish(self) -> None:
         """Stop publishing"""
 
-        await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -141,6 +159,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        await message_transaction.get()
+        await message_transaction.done()
         await self.pc.close()
 
     async def subscribe(self, room_id: int, feed_id: int) -> None:
@@ -151,7 +171,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         :param feed_id: ID of the feed that you want to stream. Should be their publisher ID.
         """
 
-        await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -169,12 +189,14 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        await message_transaction.get()
+        await message_transaction.done()
         await self.joined_event.wait()
 
     async def unsubscribe(self) -> None:
         """Unsubscribe from the feed"""
 
-        await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -182,6 +204,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        await message_transaction.get()
+        await message_transaction.done()
         self.joined_event.clear()
 
     async def start(self, answer=None) -> None:
@@ -194,12 +218,14 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 "type": "answer",
                 "trickle": True,
             }
-        await self.send(payload)
+        message_transaction = await self.send(payload)
+        await message_transaction.get()
+        await message_transaction.done()
 
     async def pause(self) -> None:
         """Pause media streaming"""
 
-        await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -207,6 +233,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        await message_transaction.get()
+        await message_transaction.done()
 
     async def list_participants(self, room_id: int) -> list:
         """Get participant list
@@ -217,7 +245,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         :return: A list containing the participants. Can be empty.
         """
 
-        response = await self.send(
+        message_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {
@@ -226,6 +254,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 },
             }
         )
+        response = await message_transaction.get()
+        await message_transaction.done()
         return response["plugindata"]["data"]["participants"]
 
     async def handle_jsep(self, jsep):

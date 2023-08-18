@@ -54,7 +54,10 @@ class JanusTransportWebsocket(JanusTransport):
         logger.info("Disconnected")
 
     async def info(self) -> dict:
-        return await self.send({"janus": "info"})
+        message_transaction = await self.send({"janus": "info"})
+        response = await message_transaction.get()
+        await message_transaction.done()
+        return response
 
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
         try:
@@ -63,7 +66,7 @@ class JanusTransportWebsocket(JanusTransport):
             # else the exception in task will be returned
             exception = task.exception()
             if exception:
-                logger.error(''.join(traceback.format_exception(exception)))
+                logger.error("".join(traceback.format_exception(exception)))
         except asyncio.CancelledError:
             logger.info("Receive message task ended")
         except asyncio.InvalidStateError:
