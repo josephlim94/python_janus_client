@@ -14,7 +14,7 @@ async def on_incoming_call(plugin: JanusVideoCallPlugin, jsep: dict):
     player = MediaPlayer(
         "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
     )
-    recorder = MediaRecorder("./videocall_in_record.mp4")
+    recorder = MediaRecorder("./videocall_record_in.mp4")
     pc = await plugin.create_pc(
         player=player,
         recorder=recorder,
@@ -45,8 +45,6 @@ async def main():
 
     # username = "testusername"
     username_in = "testusernamein"
-    # player = MediaPlayer("./Into.the.Wild.2007.mp4")
-    # recorder = MediaRecorder("./videocall_record.mp4")
 
     plugin_handle.on_incoming_call = on_incoming_call
 

@@ -55,7 +55,9 @@ class JanusVideoCallPlugin(JanusPlugin):
                         "event" in event_result
                         and event_result["event"] == "incomingcall"
                     ):
-                        asyncio.create_task(self.on_incoming_call(plugin=self, jsep=response["jsep"]))
+                        asyncio.create_task(
+                            self.on_incoming_call(plugin=self, jsep=response["jsep"])
+                        )
         else:
             logger.info(f"Unimplemented response handle: {response}")
 
@@ -244,7 +246,13 @@ class JanusVideoCallPlugin(JanusPlugin):
 
         return is_subset(response, matcher_success)
 
-    async def accept(self, jsep: dict, pc: RTCPeerConnection, player: MediaPlayer, recorder: MediaRecorder = None) -> bool:
+    async def accept(
+        self,
+        jsep: dict,
+        pc: RTCPeerConnection,
+        player: MediaPlayer,
+        recorder: MediaRecorder = None,
+    ) -> bool:
         self.__pc = pc
         self.__player = player
         self.__recorder = recorder
@@ -335,8 +343,11 @@ class JanusVideoCallPlugin(JanusPlugin):
         # Stream ended. Ok to close PC multiple times.
         if self.__pc:
             await self.__pc.close()
+            self.__pc = None
         # Ok to stop recording multiple times.
         if self.__recorder:
             await self.__recorder.stop()
+            self.__recorder = None
+        self.__player = None
 
         return is_subset(response, matcher_success)
