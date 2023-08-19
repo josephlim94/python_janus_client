@@ -17,7 +17,7 @@ pip install janus-client
 
 ## Description
 
-This is a client that can communicate with Janus WebRTC server to use provided services.
+This client communicates with Janus WebRTC server to use provided services.
 
 The VideoRoom plugin implemented in [plugin_video_room_ffmpeg.py](./janus_client/plugin_video_room_ffmpeg.py) uses FFmpeg. It depends on the ffmpeg-cli, and that is required to be installed separately.
 
@@ -97,6 +97,7 @@ await plugin_handle_2.start(
 await asyncio.sleep(15)
 await plugin_handle_2.close_stream()
 ```
+:heavy_check_mark: Janus VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))  
 
 ### FFmpeg Stream To WebRTC (:warning: **WARNING !!!**)
 
