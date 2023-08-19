@@ -9,6 +9,27 @@ logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
 
 
+async def on_incoming_call(plugin: JanusVideoCallPlugin, jsep: dict):
+    # self.__player = MediaPlayer("./Into.the.Wild.2007.mp4")
+    player = MediaPlayer(
+        "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
+    )
+    recorder = MediaRecorder("./videocall_in_record.mp4")
+    pc = await plugin.create_pc(
+        player=player,
+        recorder=recorder,
+        jsep=jsep,
+    )
+
+    await pc.setLocalDescription(await pc.createAnswer())
+    jsep = {
+        "sdp": pc.localDescription.sdp,
+        "trickle": False,
+        "type": pc.localDescription.type,
+    }
+    await plugin.accept(jsep=jsep, pc=pc, player=player, recorder=recorder)
+
+
 async def main():
     # Create session
     session = JanusSession(
@@ -27,6 +48,8 @@ async def main():
     # player = MediaPlayer("./Into.the.Wild.2007.mp4")
     # recorder = MediaRecorder("./videocall_record.mp4")
 
+    plugin_handle.on_incoming_call = on_incoming_call
+
     result = await plugin_handle.register(username=username_in)
     logger.info(result)
 
@@ -35,7 +58,8 @@ async def main():
     # )
     # logger.info(result)
 
-    await asyncio.sleep(60)
+    if result:
+        await asyncio.sleep(60)
 
     result = await plugin_handle.hangup()
     logger.info(result)

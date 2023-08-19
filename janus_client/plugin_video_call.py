@@ -55,7 +55,7 @@ class JanusVideoCallPlugin(JanusPlugin):
                         "event" in event_result
                         and event_result["event"] == "incomingcall"
                     ):
-                        asyncio.create_task(self.on_incoming_call(response["jsep"]))
+                        asyncio.create_task(self.on_incoming_call(plugin=self, jsep=response["jsep"]))
         else:
             logger.info(f"Unimplemented response handle: {response}")
 
@@ -96,22 +96,24 @@ class JanusVideoCallPlugin(JanusPlugin):
         return pc
 
     async def on_incoming_call(self, jsep: dict):
-        # self.__player = MediaPlayer("./Into.the.Wild.2007.mp4")
-        self.__player = MediaPlayer("http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4")
-        self.__recorder = MediaRecorder("./videocall_in_record.mp4")
-        self.__pc = await self.create_pc(
-            player=self.__player,
-            recorder=self.__recorder,
-            jsep=jsep,
-        )
+        """Override this. This will be called when plugin receive incoming call event"""
+        pass
+        # # self.__player = MediaPlayer("./Into.the.Wild.2007.mp4")
+        # self.__player = MediaPlayer("http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4")
+        # self.__recorder = MediaRecorder("./videocall_in_record.mp4")
+        # self.__pc = await self.create_pc(
+        #     player=self.__player,
+        #     recorder=self.__recorder,
+        #     jsep=jsep,
+        # )
 
-        await self.__pc.setLocalDescription(await self.__pc.createAnswer())
-        jsep = {
-            "sdp": self.__pc.localDescription.sdp,
-            "trickle": False,
-            "type": self.__pc.localDescription.type,
-        }
-        await self.accept(jsep=jsep)
+        # await self.__pc.setLocalDescription(await self.__pc.createAnswer())
+        # jsep = {
+        #     "sdp": self.__pc.localDescription.sdp,
+        #     "trickle": False,
+        #     "type": self.__pc.localDescription.type,
+        # }
+        # await self.accept(jsep=jsep)
 
     async def send_wrapper(self, message: dict, matcher: dict, jsep: dict = {}) -> dict:
         def function_matcher(message: dict):
@@ -242,7 +244,11 @@ class JanusVideoCallPlugin(JanusPlugin):
 
         return is_subset(response, matcher_success)
 
-    async def accept(self, jsep: dict) -> bool:
+    async def accept(self, jsep: dict, pc: RTCPeerConnection, player: MediaPlayer, recorder: MediaRecorder = None) -> bool:
+        self.__pc = pc
+        self.__player = player
+        self.__recorder = recorder
+
         matcher_success = {
             "janus": "event",
             "plugindata": {
