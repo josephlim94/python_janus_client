@@ -66,7 +66,15 @@ class JanusTransportWebsocket(JanusTransport):
             # else the exception in task will be returned
             exception = task.exception()
             if exception:
-                logger.error("".join(traceback.format_exception(exception)))
+                logger.error(
+                    "".join(
+                        traceback.format_exception(
+                            etype=type(exception),
+                            value=exception,
+                            tb=exception.__traceback__,
+                        )
+                    )
+                )
         except asyncio.CancelledError:
             logger.info("Receive message task ended")
         except asyncio.InvalidStateError:
