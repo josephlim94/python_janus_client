@@ -2,32 +2,11 @@ import asyncio
 import logging
 
 from janus_client import JanusSession, JanusVideoCallPlugin
-import ffmpeg
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
-
-room_id = 1234
-publisher_id = 333
-display_name = "qweqwe"
-
-width = 640
-height = 480
-# Specify the input part of ffmpeg
-ffmpeg_input = ffmpeg.input(
-    "desktop",
-    format="gdigrab",
-    framerate=30,
-    offset_x=20,
-    offset_y=30,
-    # s=f"{width}x{height}",
-    video_size=[
-        width,
-        height,
-    ],  # Using this video_size=[] or s="" is the same
-    show_region=1,
-)
 
 
 async def main():
@@ -43,16 +22,23 @@ async def main():
     await plugin_handle.attach(session=session)
     logger.info("plugin created")
 
-    await plugin_handle.register("test")
-    result = await plugin_handle.register("test")
+    username = "testusername"
+    username_self = "testusernameself"
+    player = MediaPlayer("./Into.the.Wild.2007.mp4")
+    recorder = MediaRecorder("./videocall_record.mp4")
+
+    result = await plugin_handle.register(username=username_self)
     logger.info(result)
 
-    list_result = await asyncio.gather(
-        plugin_handle.list(),
-        plugin_handle.list(),
+    result = await plugin_handle.call(
+        username=username, player=player, recorder=recorder
     )
-    # list_response = await plugin_handle.list()
-    logger.info(list_result)
+    logger.info(result)
+
+    await asyncio.sleep(30)
+
+    result = await plugin_handle.hangup()
+    logger.info(result)
 
     # Destroy plugin
     await plugin_handle.destroy()
