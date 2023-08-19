@@ -22,12 +22,23 @@ async def main():
     await plugin_handle.attach(session=session)
     logger.info("plugin created")
 
-    username = "testusername"
-    username_self = "testusernameself"
-    player = MediaPlayer("./Into.the.Wild.2007.mp4")
-    recorder = MediaRecorder("./videocall_record.mp4")
+    username = "testusernamein"
+    username_out = "testusernameout"
+    # player = MediaPlayer("./Into.the.Wild.2007.mp4")
+    # player = MediaPlayer("http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4")
+    player = MediaPlayer(
+        "desktop",
+        format="gdigrab",
+        options={
+            "video_size": "640x480",
+            "framerate": "30",
+            "offset_x": "20",
+            "offset_y": "30",
+        },
+    )
+    recorder = MediaRecorder("./videocall_record_out.mp4")
 
-    result = await plugin_handle.register(username=username_self)
+    result = await plugin_handle.register(username=username_out)
     logger.info(result)
 
     result = await plugin_handle.call(

@@ -1,6 +1,5 @@
 import logging
 import asyncio
-from typing import Tuple, Union
 
 from aiortc import (
     RTCPeerConnection,
@@ -22,14 +21,16 @@ class JanusVideoCallPlugin(JanusPlugin):
     name = "janus.plugin.videocall"  #: Plugin name
     __username: str
     __pc: RTCPeerConnection
+    __player: MediaPlayer
+    __recorder: MediaRecorder
 
     def __init__(self) -> None:
         super().__init__()
 
         self.__username = ""
         self.__pc = None
+        self.__player = None
         self.__recorder = None
-        self.player = None
 
     async def on_receive(self, response: dict):
         # Handle JSEP. Could be answer or offer.
@@ -66,7 +67,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
     async def create_pc(
         self, player: MediaPlayer, recorder: MediaRecorder = None, jsep: dict = {}
-    ) -> Tuple[RTCPeerConnection, MediaPlayer, Union[MediaRecorder, None]]:
+    ) -> RTCPeerConnection:
         pc = RTCPeerConnection()
 
         # configure media
@@ -78,6 +79,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
         # Must configure on track event before setRemoteDescription
         if recorder:
+
             @pc.on("track")
             async def on_track(track: MediaStreamTrack):
                 logger.info("Track %s received" % track.kind)
@@ -91,17 +93,17 @@ class JanusVideoCallPlugin(JanusPlugin):
                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
             )
 
-        return (pc, player, recorder)
+        return pc
 
     async def on_incoming_call(self, jsep: dict):
-        pc, player, recorder = await self.create_pc(
-            player=MediaPlayer("./Into.the.Wild.2007.mp4"),
-            recorder=MediaRecorder("./videocall_in_record.mp4"),
+        # self.__player = MediaPlayer("./Into.the.Wild.2007.mp4")
+        self.__player = MediaPlayer("http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4")
+        self.__recorder = MediaRecorder("./videocall_in_record.mp4")
+        self.__pc = await self.create_pc(
+            player=self.__player,
+            recorder=self.__recorder,
             jsep=jsep,
         )
-        self.__pc = pc
-        self.__player = player
-        self.__recorder = recorder
 
         await self.__pc.setLocalDescription(await self.__pc.createAnswer())
         jsep = {
@@ -201,27 +203,9 @@ class JanusVideoCallPlugin(JanusPlugin):
     ) -> bool:
         if not self.__username:
             raise Exception("Register a username first")
-        self.__pc = RTCPeerConnection()
-
-        # configure media
-        if player.audio:
-            self.__pc.addTrack(player.audio)
-
-        if player.video:
-            self.__pc.addTrack(player.video)
-
-        if recorder:
-            self.__recorder = recorder
-
-            @self.__pc.on("track")
-            async def on_track(track: MediaStreamTrack):
-                logger.info("Track %s received" % track.kind)
-                if track.kind == "video":
-                    self.__recorder.addTrack(track)
-                if track.kind == "audio":
-                    self.__recorder.addTrack(track)
-
-            await recorder.start()
+        self.__pc = await self.create_pc(player=player, recorder=recorder)
+        self.__player = player
+        self.__recorder = recorder
 
         # send offer
         await self.__pc.setLocalDescription(await self.__pc.createOffer())
