@@ -67,11 +67,6 @@ class JanusVideoCallPlugin(JanusPlugin):
         self.__pc = RTCPeerConnection()
         self.player = MediaPlayer("./Into.the.Wild.2007.mp4")
 
-        jsep = response["jsep"]
-        await self.__pc.setRemoteDescription(
-            RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
-        )
-
         # configure media
         if self.player.audio:
             self.__pc.addTrack(self.player.audio)
@@ -79,18 +74,21 @@ class JanusVideoCallPlugin(JanusPlugin):
         if self.player.video:
             self.__pc.addTrack(self.player.video)
 
-        recorder = MediaRecorder("./videocall_in_record.mp4")
+        self.__recorder = MediaRecorder("./videocall_in_record.mp4")
 
-        if recorder:
-            self.__recorder = recorder
+        # Must configure on track event before setRemoteDescription
+        @self.__pc.on("track")
+        async def on_track(track: MediaStreamTrack):
+            logger.info("Track %s received" % track.kind)
+            if track.kind == "video":
+                self.__recorder.addTrack(track)
+            if track.kind == "audio":
+                self.__recorder.addTrack(track)
 
-            @self.__pc.on("track")
-            async def on_track(track: MediaStreamTrack):
-                logger.info("Track %s received" % track.kind)
-                if track.kind == "video":
-                    self.__recorder.addTrack(track)
-                if track.kind == "audio":
-                    self.__recorder.addTrack(track)
+        jsep = response["jsep"]
+        await self.__pc.setRemoteDescription(
+            RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+        )
 
         await self.__pc.setLocalDescription(await self.__pc.createAnswer())
         jsep = {
