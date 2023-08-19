@@ -1,5 +1,6 @@
 import logging
 import asyncio
+from typing import Tuple, Union
 
 from aiortc import (
     RTCPeerConnection,
@@ -53,7 +54,7 @@ class JanusVideoCallPlugin(JanusPlugin):
                         "event" in event_result
                         and event_result["event"] == "incomingcall"
                     ):
-                        asyncio.create_task(self.on_incoming_call(response))
+                        asyncio.create_task(self.on_incoming_call(response["jsep"]))
         else:
             logger.info(f"Unimplemented response handle: {response}")
 
@@ -63,32 +64,44 @@ class JanusVideoCallPlugin(JanusPlugin):
                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
             )
 
-    async def on_incoming_call(self, response: dict):
-        self.__pc = RTCPeerConnection()
-        self.player = MediaPlayer("./Into.the.Wild.2007.mp4")
+    async def create_pc(
+        self, player: MediaPlayer, recorder: MediaRecorder = None, jsep: dict = {}
+    ) -> Tuple[RTCPeerConnection, MediaPlayer, Union[MediaRecorder, None]]:
+        pc = RTCPeerConnection()
 
         # configure media
-        if self.player.audio:
-            self.__pc.addTrack(self.player.audio)
+        if player.audio:
+            pc.addTrack(player.audio)
 
-        if self.player.video:
-            self.__pc.addTrack(self.player.video)
-
-        self.__recorder = MediaRecorder("./videocall_in_record.mp4")
+        if player.video:
+            pc.addTrack(player.video)
 
         # Must configure on track event before setRemoteDescription
-        @self.__pc.on("track")
-        async def on_track(track: MediaStreamTrack):
-            logger.info("Track %s received" % track.kind)
-            if track.kind == "video":
-                self.__recorder.addTrack(track)
-            if track.kind == "audio":
-                self.__recorder.addTrack(track)
+        if recorder:
+            @pc.on("track")
+            async def on_track(track: MediaStreamTrack):
+                logger.info("Track %s received" % track.kind)
+                if track.kind == "video":
+                    recorder.addTrack(track)
+                if track.kind == "audio":
+                    recorder.addTrack(track)
 
-        jsep = response["jsep"]
-        await self.__pc.setRemoteDescription(
-            RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+        if jsep:
+            await pc.setRemoteDescription(
+                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+            )
+
+        return (pc, player, recorder)
+
+    async def on_incoming_call(self, jsep: dict):
+        pc, player, recorder = await self.create_pc(
+            player=MediaPlayer("./Into.the.Wild.2007.mp4"),
+            recorder=MediaRecorder("./videocall_in_record.mp4"),
+            jsep=jsep,
         )
+        self.__pc = pc
+        self.__player = player
+        self.__recorder = recorder
 
         await self.__pc.setLocalDescription(await self.__pc.createAnswer())
         jsep = {
