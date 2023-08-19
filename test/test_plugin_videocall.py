@@ -208,8 +208,8 @@ class BaseTestClass:
             await self.asyncTearDown()
 
 
-# class TestTransportHttps(BaseTestClass.TestClass):
-#     server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+class TestTransportHttps(BaseTestClass.TestClass):
+    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
 
 
 class TestTransportWebsocketSecure(BaseTestClass.TestClass):
