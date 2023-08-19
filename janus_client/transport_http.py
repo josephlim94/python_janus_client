@@ -65,8 +65,8 @@ class JanusTransportHTTP(JanusTransport):
 
                 response_dict = await response.json()
 
-                if "error" in response_dict:
-                    raise Exception(response_dict)
+                # if "error" in response_dict:
+                #     raise Exception(response_dict)
 
                 # # There must be a transaction ID
                 # response_transaction_id = response_dict["transaction"]
