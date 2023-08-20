@@ -1,9 +1,9 @@
 import asyncio
 import logging
 
-from .plugin_base import JanusPlugin
+from ..plugin_base import JanusPlugin
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
-from .media import MediaPlayer
+from ..media import MediaPlayer
 
 logger = logging.getLogger(__name__)
 

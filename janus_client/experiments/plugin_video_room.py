@@ -1,5 +1,5 @@
 
-from .plugin_base import JanusPlugin
+from ..plugin_base import JanusPlugin
 import asyncio
 import logging
 logger = logging.getLogger(__name__)
