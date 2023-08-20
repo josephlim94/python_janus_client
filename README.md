@@ -17,11 +17,17 @@ pip install janus-client
 
 ## Description
 
-This client communicates with Janus WebRTC server to use provided services.
+This Python client communicates with Janus WebRTC server to use provided services. It's using `aiortc` for WebRTC communication and subsequently `PyAV` for media stack.
 
-The VideoRoom plugin implemented in [plugin_video_room_ffmpeg.py](./janus_client/plugin_video_room_ffmpeg.py) uses FFmpeg. It depends on the ffmpeg-cli, and that is required to be installed separately.
+FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, together with GStreamer support.
 
-### Features
+## Goals
+
+- Simple interface
+- Minimal dependency/Maximum compatibility
+- Extendable
+
+## Features
 
 :heavy_check_mark: Connect to Janus server through:
   - Websocket API ([websockets](https://github.com/aaugustin/websockets))
@@ -99,32 +105,11 @@ await plugin_handle_2.close_stream()
 ```
 :heavy_check_mark: Janus VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))  
 
-### FFmpeg Stream To WebRTC (:warning: **WARNING !!!**)
-
-This FFmpeg stream to WebRTC solution is a hack. The fact is that FFmpeg doesn't support WebRTC and aiortc is implemented using PyAV. PyAV has much less features than a full fledged installed FFmpeg, so to support more features and keep things simple, I hacked about a solution without the use of neither WHIP server nor UDP nor RTMP.
-
-First the ffmpeg input part should be constructed by the user, before passing it to `JanusVideoRoomPlugin.publish`. When the media player needs to stream the video, the following happens:
-1. A thread will be created and a ffmpeg process will be created. Output of ffmpeg is hardcoded to be `rawvideo rgb24`.
-2. Thread reads output of ffmpeg process.
-3. Coverts the output data to numpy array and then to `av.VideoFrame` frame.
-4. Hack the `pts` and `time_base` parameter of the frame. I don't know what it is and just found a value that works.
-5. Put the frame into video track queue to be received and sent by `aiortc.mediastreams.MediaStreamTrack`.
-
-References:
-- [Aiortc Janus](https://github.com/aiortc/aiortc/tree/main/examples/janus).
-- [FFmpeg webrtc](https://github.com/ossrs/ffmpeg-webrtc/pull/1).
-
-### TODO
-
-:clock3: Publish audio with FFmpeg VideoRoom plugin  
-:clock3: Subscribe to stream with FFmpeg VideoRoom plugin  
-:clock3: Disable keepalive recurring task for HTTP transport  
-:clock3: Handle error when fail to join room because of "User ID _ already exists" error  
-:clock3: Gracefully detach plugin. Handle "detached" response  
-
 ---
 
-## Usage
+## Examples
+
+## Demo
 
 Use [test_ffmpeg.py](./test_ffmpeg.py) to try streaming a portion of monitor display to Janus videoroom demo.
 
@@ -137,10 +122,6 @@ Delay of 0.175s
 Server ping:
 
 ![image](https://github.com/josephlim94/janus_gst_client_py/assets/5723232/e08c3f2d-d12e-4aa3-8c81-3539be4b0304)
-
-### Support for GStreamer VideoRoom plugin has been deprecated since v0.2.5
-
-Contributions to migrate the [plugin](./janus_client/plugin_video_room.py) to latest `JanusPlugin` API would be greatly appreciated.
 
 ## Documentation
 
