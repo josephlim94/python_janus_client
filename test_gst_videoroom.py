@@ -5,7 +5,7 @@ import pathlib
 from concurrent.futures import TimeoutError
 
 from janus_client import JanusClient, JanusAdminMonitorClient
-from janus_client.experiments.plugin_video_room import JanusVideoRoomPlugin
+from janus_client.experiments.plugin_video_room_gst import JanusVideoRoomPlugin
 from typing import TYPE_CHECKING, Type
 
 if TYPE_CHECKING:
