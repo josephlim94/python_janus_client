@@ -238,14 +238,14 @@ class JanusVideoRoomPlugin(JanusPlugin):
             "janus": "success",
             "plugindata": {
                 "plugin": self.name,
-                "data": {"videoroom": "success", "room": room_id, "exists": None},
+                "data": {"videoroom": "success", "room": room_id, "allowed": None},
             },
         }
         response = await self.send_wrapper(
             message={
                 "janus": "message",
                 "body": {
-                    "request": "exists",
+                    "request": "allowed",
                     "room": room_id,
                     "secret": secret,
                     "action": action.value,
@@ -255,10 +255,40 @@ class JanusVideoRoomPlugin(JanusPlugin):
             matcher=success_matcher,
         )
 
-        return (
-            is_subset(response, success_matcher)
-            and response["plugindata"]["data"]["exists"]
+        return is_subset(response, success_matcher)
+
+    async def kick(
+        self,
+        room_id: int,
+        id: str,
+        secret: str = "",
+    ) -> bool:
+        """Kick a participant by ID.
+
+        Only works for room administrators (i.e. you created the room).
+        """
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "success"},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "kick",
+                    "room": room_id,
+                    "secret": secret,
+                    "id": id,
+                },
+            },
+            matcher=success_matcher,
         )
+
+        return is_subset(response, success_matcher)
 
     async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
         """Join a room
