@@ -135,7 +135,33 @@ class BaseTestClass:
             response = await plugin.create(room_id)
             self.assertTrue(response)
 
-            response = await plugin.kick(room_id=room_id, id=123)
+            response = await plugin.kick(room_id=room_id, id=22222)
+            self.assertFalse(response)
+
+            response = await plugin.destroy(room_id)
+            self.assertTrue(response)
+
+            await session.destroy()
+
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_moderate(self):
+            """Test "kick" API."""
+            await self.asyncSetUp()
+
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusVideoRoomPlugin()
+
+            await plugin.attach(session=session)
+
+            room_id = 123
+
+            response = await plugin.create(room_id)
+            self.assertTrue(response)
+
+            response = await plugin.moderate(room_id=room_id, id=22222, mid="0", mute=True)
             self.assertFalse(response)
 
             response = await plugin.destroy(room_id)

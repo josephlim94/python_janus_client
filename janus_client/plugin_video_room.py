@@ -290,6 +290,43 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         return is_subset(response, success_matcher)
 
+    async def moderate(
+        self,
+        room_id: int,
+        id: str,
+        mid: str,
+        mute: bool,
+        secret: str = "",
+    ) -> bool:
+        """Moderate a participant by ID.
+
+        Only works for room administrators (i.e. you created the room).
+        """
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "success"},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "moderate",
+                    "room": room_id,
+                    "secret": secret,
+                    "id": id,
+                    "mid": mid,
+                    "mute": mute,
+                },
+            },
+            matcher=success_matcher,
+        )
+
+        return is_subset(response, success_matcher)
+
     async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
         """Join a room
 
