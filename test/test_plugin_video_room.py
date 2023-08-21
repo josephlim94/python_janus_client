@@ -29,7 +29,7 @@ class BaseTestClass:
             await asyncio.sleep(0.250)
 
         @async_test
-        async def test_create_destroy(self):
+        async def test_create_edit_destroy(self):
             await self.asyncSetUp()
 
             session = JanusSession(transport=self.transport)
@@ -43,7 +43,13 @@ class BaseTestClass:
             response = await plugin.destroy(room_id)
             self.assertFalse(response)
 
+            response = await plugin.edit(room_id)
+            self.assertFalse(response)
+
             response = await plugin.create(room_id)
+            self.assertTrue(response)
+
+            response = await plugin.edit(room_id)
             self.assertTrue(response)
 
             response = await plugin.destroy(room_id)

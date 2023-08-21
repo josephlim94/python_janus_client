@@ -127,6 +127,60 @@ class JanusVideoRoomPlugin(JanusPlugin):
         )
         return is_subset(response, success_matcher)
 
+    async def edit(
+        self,
+        room_id: int,
+        secret: str = "",
+        new_description: str = "",
+        new_secret: str = "",
+        new_pin: str = "",
+        new_is_private: bool = False,
+        new_require_pvtid: bool = False,
+        new_bitrate: int = None,
+        new_fir_freq: int = None,
+        new_publishers: int = 3,
+        new_lock_record: bool = False,
+        new_rec_dir: str = None,
+        permanent: bool = False,
+    ) -> bool:
+        """Edit a room."""
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "edited", "room": room_id},
+            },
+        }
+
+        body = {
+            "request": "edit",
+            "room": room_id,
+            "secret": secret,
+            "new_description": new_description,
+            "new_secret": new_secret,
+            "new_pin": new_pin,
+            "new_is_private": new_is_private,
+            "new_require_pvtid": new_require_pvtid,
+            "new_publishers": new_publishers,
+            "new_lock_record": new_lock_record,
+            "permanent": permanent,
+        }
+        if new_bitrate:
+            body["new_bitrate"] = new_bitrate
+        if new_fir_freq:
+            body["new_fir_freq"] = new_fir_freq
+        if new_rec_dir:
+            body["new_rec_dir"] = new_rec_dir
+
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": body,
+            },
+            matcher=success_matcher,
+        )
+        return is_subset(response, success_matcher)
+
     async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
         """Join a room
 
