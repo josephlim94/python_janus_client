@@ -106,7 +106,10 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def destroy(
         self, room_id: int, secret: str = "", permanent: bool = False
     ) -> bool:
-        """Destroy a room."""
+        """Destroy a room.
+
+        All other participants in the room will also get the "destroyed" event.
+        """
 
         success_matcher = {
             "janus": "success",
