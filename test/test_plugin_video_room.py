@@ -90,6 +90,35 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_allowed(self):
+            """Test "allowed" API.
+
+            This is a dummy test to increase coverage.
+            """
+            await self.asyncSetUp()
+
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusVideoRoomPlugin()
+
+            await plugin.attach(session=session)
+
+            room_id = 123
+
+            response = await plugin.create(room_id)
+            self.assertTrue(response)
+
+            response = await plugin.allowed(room_id)
+            self.assertTrue(response)
+
+            response = await plugin.destroy(room_id)
+            self.assertTrue(response)
+
+            await session.destroy()
+
+            await self.asyncTearDown()
+
 
 # class TestTransportHttps(BaseTestClass.TestClass):
 #     server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"

@@ -1,5 +1,7 @@
 import asyncio
 import logging
+from enum import Enum
+from typing import List
 
 from .plugin_base import JanusPlugin
 from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
@@ -7,6 +9,13 @@ from .experiments.media import MediaPlayer
 from .message_transaction import is_subset
 
 logger = logging.getLogger(__name__)
+
+
+class AllowedAction(Enum):
+    ENABLE = "enable"
+    DISABLE = "disable"
+    ADD = "add"
+    REMOVE = "remove"
 
 
 class JanusVideoRoomPlugin(JanusPlugin):
@@ -101,6 +110,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             },
             matcher=success_matcher,
         )
+
         return is_subset(response, success_matcher)
 
     async def destroy(
@@ -130,6 +140,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             },
             matcher=success_matcher,
         )
+
         return is_subset(response, success_matcher)
 
     async def edit(
@@ -185,6 +196,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             },
             matcher=success_matcher,
         )
+
         return is_subset(response, success_matcher)
 
     async def exists(self, room_id: int) -> bool:
@@ -207,6 +219,42 @@ class JanusVideoRoomPlugin(JanusPlugin):
             },
             matcher=success_matcher,
         )
+
+        return (
+            is_subset(response, success_matcher)
+            and response["plugindata"]["data"]["exists"]
+        )
+
+    async def allowed(
+        self,
+        room_id: int,
+        secret: str = "",
+        action: AllowedAction = AllowedAction.ENABLE,
+        allowed: List[str] = [],
+    ) -> bool:
+        """Configure ACL of a room."""
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "success", "room": room_id, "exists": None},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "exists",
+                    "room": room_id,
+                    "secret": secret,
+                    "action": action.value,
+                    "allowed": allowed,
+                },
+            },
+            matcher=success_matcher,
+        )
+
         return (
             is_subset(response, success_matcher)
             and response["plugindata"]["data"]["exists"]
