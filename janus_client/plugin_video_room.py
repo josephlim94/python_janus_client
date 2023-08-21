@@ -327,6 +327,35 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         return is_subset(response, success_matcher)
 
+    async def list_room(self) -> List[dict]:
+        """List all rooms created.
+
+        If admin_key is included, then private rooms will be listed as well.
+        TODO: Find out how to include admin_key.
+        """
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "success", "list": None},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "list",
+                },
+            },
+            matcher=success_matcher,
+        )
+
+        if is_subset(response, success_matcher):
+            return response["plugindata"]["data"]["list"]
+        else:
+            raise Exception(f"Fail to list rooms: {response}")
+
     async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
         """Join a room
 
