@@ -356,6 +356,42 @@ class JanusVideoRoomPlugin(JanusPlugin):
         else:
             raise Exception(f"Fail to list rooms: {response}")
 
+    async def list_participants(self, room_id: int) -> list:
+        """Get participant list in a room
+
+        Get a list of publishers in the room, that are currently publishing.
+
+        :param room_id: List participants in this room
+        :return: A list containing the participants. Can be empty.
+        """
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videoroom": "participants",
+                    "room": room_id,
+                    "participants": None,
+                },
+            },
+        }
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "listparticipants",
+                    "room": room_id,
+                },
+            },
+            matcher=success_matcher,
+        )
+
+        if is_subset(response, success_matcher):
+            return response["plugindata"]["data"]["participants"]
+        else:
+            raise Exception(f"Fail to list participants: {response}")
+
     async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
         """Join a room
 
@@ -548,28 +584,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
         )
         await message_transaction.get()
         await message_transaction.done()
-
-    async def list_participants(self, room_id: int) -> list:
-        """Get participant list
-
-        Get a list of publishers in the room, that are currently publishing.
-
-        :param room_id: List participants in this room
-        :return: A list containing the participants. Can be empty.
-        """
-
-        message_transaction = await self.send(
-            {
-                "janus": "message",
-                "body": {
-                    "request": "listparticipants",
-                    "room": room_id,
-                },
-            }
-        )
-        response = await message_transaction.get()
-        await message_transaction.done()
-        return response["plugindata"]["data"]["participants"]
 
     async def handle_jsep(self, jsep):
         logger.info(jsep)
