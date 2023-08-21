@@ -85,6 +85,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         Refer to documentation for description of parameters.
         https://janus.conf.meetecho.com/docs/videoroom.html
         """
+
         success_matcher = {
             "janus": "success",
             "plugindata": {"plugin": self.name, "data": {"videoroom": "created"}},
@@ -106,6 +107,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         self, room_id: int, secret: str = "", permanent: bool = False
     ) -> bool:
         """Destroy a room."""
+
         success_matcher = {
             "janus": "success",
             "plugindata": {
@@ -144,6 +146,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         permanent: bool = False,
     ) -> bool:
         """Edit a room."""
+
         success_matcher = {
             "janus": "success",
             "plugindata": {
@@ -180,6 +183,31 @@ class JanusVideoRoomPlugin(JanusPlugin):
             matcher=success_matcher,
         )
         return is_subset(response, success_matcher)
+
+    async def exists(self, room_id: int) -> bool:
+        """Check if a room exists."""
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "success", "room": room_id, "exists": None},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "exists",
+                    "room": room_id,
+                },
+            },
+            matcher=success_matcher,
+        )
+        return (
+            is_subset(response, success_matcher)
+            and response["plugindata"]["data"]["exists"]
+        )
 
     async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
         """Join a room
