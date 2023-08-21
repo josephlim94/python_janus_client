@@ -45,19 +45,23 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def send_wrapper(self, message: dict, matcher: dict, jsep: dict = {}) -> dict:
         def function_matcher(message: dict):
-            return is_subset(message, matcher) or is_subset(
-                message,
-                {
-                    "janus": "success",
-                    "plugindata": {
-                        "plugin": self.name,
-                        "data": {
-                            "videoroom": "event",
-                            "error_code": None,
-                            "error": None,
+            return (
+                is_subset(message, matcher)
+                or is_subset(
+                    message,
+                    {
+                        "janus": "success",
+                        "plugindata": {
+                            "plugin": self.name,
+                            "data": {
+                                "videoroom": "event",
+                                "error_code": None,
+                                "error": None,
+                            },
                         },
                     },
-                },
+                )
+                or is_subset(message, {"janus": "error", "error": {}})
             )
 
         full_message = message
@@ -70,9 +74,17 @@ class JanusVideoRoomPlugin(JanusPlugin):
         response = await message_transaction.get(matcher=function_matcher, timeout=15)
         await message_transaction.done()
 
+        if is_subset(response, {"janus": "error", "error": {}}):
+            raise Exception(f"Janus error: {response}")
+
         return response
 
-    async def create(self) -> bool:
+    async def create(self, room_id: int, configuration: dict = {}) -> bool:
+        """Create a room.
+
+        Refer to documentation for description of parameters.
+        https://janus.conf.meetecho.com/docs/videoroom.html
+        """
         success_matcher = {
             "janus": "success",
             "plugindata": {"plugin": self.name, "data": {"videoroom": "created"}},
@@ -82,7 +94,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 "janus": "message",
                 "body": {
                     "request": "create",
-                    "room": 123,
+                    "room": room_id,
+                    **configuration,
                 },
             },
             matcher=success_matcher,
@@ -92,6 +105,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def destroy(
         self, room_id: int, secret: str = "", permanent: bool = False
     ) -> bool:
+        """Destroy a room."""
         success_matcher = {
             "janus": "success",
             "plugindata": {
