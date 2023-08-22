@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from enum import Enum
 from typing import List
@@ -40,22 +39,30 @@ class JanusVideoRoomPlugin(JanusPlugin):
     #     super().__init__(*args, **kwargs)
 
     async def on_receive(self, response: dict):
-        if response["janus"] == "event":
-            logger.info(f"Event response: {response}")
-            if "plugindata" in response:
-                if response["plugindata"]["data"]["videoroom"] == "attached":
-                    # Subscriber attached
-                    self.joined_event.set()
-                elif response["plugindata"]["data"]["videoroom"] == "joined":
-                    # Participant joined (joined as publisher but may not publish)
-                    self.joined_event.set()
-        else:
-            logger.info(f"Unimplemented response handle: {response['janus']}")
-            logger.info(response)
+        """Handle asynchronous messages"""
 
-        # Handle JSEP. Could be answer or offer.
-        if "jsep" in response:
-            asyncio.create_task(self.handle_jsep(response["jsep"]))
+        janus_code = response["janus"]
+
+        if janus_code == "media":
+            if response["receiving"]:
+                # It's ok to start multiple times, only the track that
+                # has not been started will start
+                if self.__recorder:
+                    await self.__recorder.start()
+
+        if janus_code == "event":
+            logger.info(f"Event response: {response}")
+            # if "plugindata" in response:
+            #     if response["plugindata"]["data"]["videoroom"] == "attached":
+            #         # Subscriber attached
+            #         self.joined_event.set()
+            #     elif response["plugindata"]["data"]["videoroom"] == "joined":
+            #         # Participant joined (joined as publisher but may not publish)
+            #         self.joined_event.set()
+        else:
+            logger.info(f"Unimplemented response handle: {response}")
+
+        # VideoRoom plugin doesn't send JSEP asynchronously
 
     async def send_wrapper(self, message: dict, matcher: dict, jsep: dict = {}) -> dict:
         def function_matcher(message: dict):
@@ -65,6 +72,20 @@ class JanusVideoRoomPlugin(JanusPlugin):
                     message,
                     {
                         "janus": "success",
+                        "plugindata": {
+                            "plugin": self.name,
+                            "data": {
+                                "videoroom": "event",
+                                "error_code": None,
+                                "error": None,
+                            },
+                        },
+                    },
+                )
+                or is_subset(
+                    message,
+                    {
+                        "janus": "event",
                         "plugindata": {
                             "plugin": self.name,
                             "data": {
@@ -430,7 +451,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         success_matcher = {
             "janus": "event",
             "plugindata": {
-                "plugin": "janus.plugin.videoroom",
+                "plugin": self.name,
                 "data": {"videoroom": "joined", "room": room_id},
             },
         }
@@ -454,7 +475,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         success_matcher = {
             "janus": "event",
             "plugindata": {
-                "plugin": "janus.plugin.videoroom",
+                "plugin": self.name,
                 "data": {"videoroom": "event", "leaving": "ok"},
             },
         }
@@ -473,16 +494,24 @@ class JanusVideoRoomPlugin(JanusPlugin):
         return is_subset(response, success_matcher)
 
     async def create_pc(
-        self, player: MediaPlayer, recorder: MediaRecorder = None, jsep: dict = {}
+        self,
+        player: MediaPlayer = None,
+        recorder: MediaRecorder = None,
+        jsep: dict = {},
     ) -> RTCPeerConnection:
         pc = RTCPeerConnection()
 
         # configure media
-        if player.audio:
-            pc.addTrack(player.audio)
+        if player:
+            if player.audio:
+                pc.addTrack(player.audio)
 
-        if player.video:
-            pc.addTrack(player.video)
+            if player.video:
+                pc.addTrack(player.video)
+            else:
+                # Add dummy video track because aiortc cannot open
+                # PC without at least 1 media stream
+                pc.addTrack(VideoStreamTrack())
         else:
             # Add dummy video track because aiortc cannot open
             # PC without at least 1 media stream
@@ -499,6 +528,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
                 if track.kind == "audio":
                     recorder.addTrack(track)
 
+                await recorder.start()
+
         if jsep:
             await pc.setRemoteDescription(
                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
@@ -509,7 +540,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def publish(
         self,
         player: MediaPlayer,
-        recorder: MediaRecorder = None,
+        recorder: MediaRecorder = None,  # Probably no need for recorder in publish
         configuration: dict = {},
     ) -> None:
         """Publish video stream to the room
@@ -547,7 +578,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         success_matcher = {
             "janus": "event",
             "plugindata": {
-                "plugin": "janus.plugin.videoroom",
+                "plugin": self.name,
                 "data": {"videoroom": "event", "configured": "ok"},
             },
         }
@@ -576,7 +607,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         success_matcher = {
             "janus": "event",
             "plugindata": {
-                "plugin": "janus.plugin.videoroom",
+                "plugin": self.name,
                 "data": {"videoroom": "event", "unpublished": "ok"},
             },
         }
@@ -594,64 +625,118 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         return is_subset(response, success_matcher)
 
-    async def subscribe(self, room_id: int, feed_id: int) -> None:
-        """Subscribe to a feed
+    # TODO: Implement "configure", 'joinandconfigure", "rtp_forward", "stop_rtp_forward", "listforwarders", "enable_recording"
+
+    async def subscribe_and_start(
+        self,
+        room_id: int,
+        recorder: MediaRecorder,
+        stream: dict,
+        use_msid: bool = False,
+        autoupdate: bool = True,
+        private_id: int = None,
+        # streams: List = [],
+    ) -> bool:
+        """Subscribe to a feed. Only supporting subscribe to 1 stream.
 
         :param room_id: Room ID containing the feed. The same ID that
             you would use to join the room.
-        :param feed_id: ID of the feed that you want to stream. Should be their publisher ID.
+        :param recorder: AIORTC MediaRecorder
+        :param stream: Configuration of the stream to subscribe to. Minimum should have
+            a feed ID.
+        :param use_msid: whether subscriptions should include an msid that references the publisher; false by default.
+        :param autoupdate: whether a new SDP offer is sent automatically when a subscribed publisher leaves; true by default.
+        :param private_id: unique ID of the publisher that originated this request; optional, unless mandated by the room configuration.
         """
 
-        message_transaction = await self.send(
-            {
+        body = {
+            "request": "join",
+            "ptype": "subscriber",
+            "room": room_id,
+            "use_msid": use_msid,
+            "autoupdate": autoupdate,
+            "streams": [stream],
+        }
+        if private_id:
+            body["private_id"] = private_id
+
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "attached", "room": room_id, "streams": []},
+            },
+        }
+
+        response = await self.send_wrapper(
+            message={
                 "janus": "message",
-                "body": {
-                    "request": "join",
-                    "ptype": "subscriber",
-                    "room": room_id,
-                    "feed": feed_id,
-                    # "close_pc": True,
-                    # "audio": True,
-                    # "video": True,
-                    # "data": True,
-                    # "offer_audio": True,
-                    # "offer_video": True,
-                    # "offer_data": True,
-                },
-            }
+                "body": body,
+            },
+            matcher=success_matcher,
         )
-        await message_transaction.get()
-        await message_transaction.done()
-        await self.joined_event.wait()
+
+        if not is_subset(response, success_matcher):
+            raise Exception("Fail to subscribe.")
+
+        # Successfully attached. Create PeerConnection then start.
+        self._pc = await self.create_pc(recorder=recorder, jsep=response["jsep"])
+        self.__recorder = recorder
+        await self._pc.setLocalDescription(await self._pc.createAnswer())
+
+        return await self.start(
+            jsep=await self.create_jsep(self._pc),
+        )
 
     async def unsubscribe(self) -> None:
         """Unsubscribe from the feed"""
 
-        message_transaction = await self.send(
-            {
-                "janus": "message",
-                "body": {
-                    "request": "leave",
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videoroom": "event",
+                    "left": "ok",
                 },
-            }
+            },
+        }
+
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {"request": "leave"},
+            },
+            matcher=success_matcher,
         )
-        await message_transaction.get()
-        await message_transaction.done()
-        self.joined_event.clear()
 
-    async def start(self, answer=None) -> None:
-        """Signal WebRTC start. I guess"""
+        await self._pc.close()
+        if self.__recorder:
+            await self.__recorder.stop()
 
-        payload = {"janus": "message", "body": {"request": "start"}}
-        if answer:
-            payload["jsep"] = {
-                "sdp": answer,
-                "type": "answer",
-                "trickle": True,
-            }
-        message_transaction = await self.send(payload)
-        await message_transaction.get()
-        await message_transaction.done()
+        return is_subset(response, success_matcher)
+
+    async def start(self, jsep: dict = None) -> bool:
+        """Signal WebRTC start."""
+
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {"videoroom": "event", "started": "ok"},
+            },
+        }
+
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": {"request": "start"},
+            },
+            matcher=success_matcher,
+            jsep=jsep,
+        )
+
+        return is_subset(response, success_matcher)
 
     async def pause(self) -> None:
         """Pause media streaming"""
@@ -667,24 +752,24 @@ class JanusVideoRoomPlugin(JanusPlugin):
         await message_transaction.get()
         await message_transaction.done()
 
-    async def handle_jsep(self, jsep):
-        logger.info(jsep)
-        if "sdp" in jsep:
-            sdp = jsep["sdp"]
-            if jsep["type"] == "answer":
-                logger.info(f"Received answer:\n{sdp}")
+    # async def handle_jsep(self, jsep):
+    #     logger.info(jsep)
+    #     if "sdp" in jsep:
+    #         sdp = jsep["sdp"]
+    #         if jsep["type"] == "answer":
+    #             logger.info(f"Received answer:\n{sdp}")
 
-                # apply answer
-                await self.pc.setRemoteDescription(
-                    RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
-                )
-            elif jsep["type"] == "offer":
-                pass
-            else:
-                raise Exception("Invalid JSEP")
+    #             # apply answer
+    #             await self.pc.setRemoteDescription(
+    #                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+    #             )
+    #         elif jsep["type"] == "offer":
+    #             pass
+    #         else:
+    #             raise Exception("Invalid JSEP")
 
-        elif "ice" in jsep:
-            ice = jsep["ice"]
-            candidate = ice["candidate"]
-            sdpMLineIndex = ice["sdpMLineIndex"]
-            self.webrtcbin.emit("add-ice-candidate", sdpMLineIndex, candidate)
+    #     elif "ice" in jsep:
+    #         ice = jsep["ice"]
+    #         candidate = ice["candidate"]
+    #         sdpMLineIndex = ice["sdpMLineIndex"]
+    #         self.webrtcbin.emit("add-ice-candidate", sdpMLineIndex, candidate)
