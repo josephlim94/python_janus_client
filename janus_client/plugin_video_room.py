@@ -392,61 +392,80 @@ class JanusVideoRoomPlugin(JanusPlugin):
         else:
             raise Exception(f"Fail to list participants: {response}")
 
-    async def join(self, room_id: int, publisher_id: int, display_name: str) -> None:
+    async def join(
+        self,
+        room_id: int,
+        publisher_id: int = None,
+        display_name: str = "",
+        token: str = None,
+    ) -> bool:
         """Join a room
 
-        | A handle can join a room and then do nothing, but this should be called before publishing.
-        | There is an API to configure and publish at the same time, but it's not implemented yet.
+        A handle can join a room and then do nothing, but this should be called before publishing.
+        There is an API to configure and publish at the same time, but it's not implemented yet.
 
-        :param room_id: Room ID to join. This must be available at the server.
-        :param publisher_id: Your publisher ID to set.
-        :param display_name: Your display name when you join the room.
+        :param room_id: unique ID of the room to join.
+        :param publisher_id: unique ID to register for the publisher; optional, will be chosen by the plugin if missing.
+        :param display_name: display name for the publisher; optional.
+        :param token: invitation token, in case the room has an ACL; optional.
+
+        :return: True if room is created.
         """
 
-        message_transaction = await self.send(
-            {
-                "janus": "message",
-                "body": {
-                    "request": "join",
-                    "ptype": "publisher",
-                    "room": room_id,
-                    "id": publisher_id,
-                    "display": display_name,
-                },
+        body = {
+            "request": "join",
+            "ptype": "publisher",
+            "room": room_id,
+            "display": display_name,
+        }
+        if publisher_id:
+            body["publisher_id"] = publisher_id
+        if token:
+            body["token"] = token
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": "janus.plugin.videoroom",
+                "data": {"videoroom": "joined", "room": room_id},
             },
-        )
-        response = await message_transaction.get(
-            {
-                "janus": "event",
-                "plugindata": {
-                    "plugin": "janus.plugin.videoroom",
-                    "data": {"videoroom": "joined"},
-                },
-            }
-        )
-        await message_transaction.done()
-        logger.info(f"Room join response: {response}")
+        }
 
-    async def leave(self) -> None:
-        message_transaction = await self.send(
-            {
+        response = await self.send_wrapper(
+            message={
+                "janus": "message",
+                "body": body,
+            },
+            matcher=success_matcher,
+        )
+
+        return is_subset(response, success_matcher)
+
+    async def leave(self) -> bool:
+        """Leave the room. Will unpublish if publishing.
+
+        :return: True if successfully leave.
+        """
+
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": "janus.plugin.videoroom",
+                "data": {"videoroom": "event", "leaving": "ok"},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
                 "janus": "message",
                 "body": {
                     "request": "leave",
                 },
-            }
+            },
+            matcher=success_matcher,
         )
-        response = await message_transaction.get(
-            {
-                "janus": "event",
-                "plugindata": {
-                    "plugin": "janus.plugin.videoroom",
-                    "data": {"videoroom": "event", "leaving": "ok"},
-                },
-            }
-        )
-        await message_transaction.done()
-        logger.info(f"Room leave response: {response}")
+
+        await self.pc.close()
+
+        return is_subset(response, success_matcher)
 
     async def publish(self, ffmpeg_input, width: int, height: int) -> None:
         """Publish video stream to the room
@@ -497,20 +516,32 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         await self.joined_event.wait()
 
-    async def unpublish(self) -> None:
-        """Stop publishing"""
+    async def unpublish(self) -> bool:
+        """Stop publishing.
 
-        message_transaction = await self.send(
-            {
+        :return: True if successfully unpublished.
+        """
+
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": "janus.plugin.videoroom",
+                "data": {"videoroom": "event", "unpublished": "ok"},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
                 "janus": "message",
                 "body": {
                     "request": "unpublish",
                 },
-            }
+            },
+            matcher=success_matcher,
         )
-        await message_transaction.get()
-        await message_transaction.done()
+
         await self.pc.close()
+
+        return is_subset(response, success_matcher)
 
     async def subscribe(self, room_id: int, feed_id: int) -> None:
         """Subscribe to a feed

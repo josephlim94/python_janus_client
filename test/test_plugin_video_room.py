@@ -227,6 +227,35 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_join_and_leave(self):
+            """Test "listparticipants" API."""
+            await self.asyncSetUp()
+
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusVideoRoomPlugin()
+
+            await plugin.attach(session=session)
+
+            room_id = 123
+
+            response = await plugin.create(room_id)
+            self.assertTrue(response)
+
+            response = await plugin.join(room_id=room_id)
+            self.assertTrue(response)
+
+            response = await plugin.leave()
+            self.assertTrue(response)
+
+            response = await plugin.destroy(room_id)
+            self.assertTrue(response)
+
+            await session.destroy()
+
+            await self.asyncTearDown()
+
 
 # class TestTransportHttps(BaseTestClass.TestClass):
 #     server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
