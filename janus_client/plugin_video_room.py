@@ -3,9 +3,15 @@ import logging
 from enum import Enum
 from typing import List
 
+from aiortc import (
+    RTCPeerConnection,
+    RTCSessionDescription,
+    VideoStreamTrack,
+    MediaStreamTrack,
+)
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
 from .plugin_base import JanusPlugin
-from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
-from .experiments.media import MediaPlayer
 from .message_transaction import is_subset
 
 logger = logging.getLogger(__name__)
@@ -27,12 +33,11 @@ class JanusVideoRoomPlugin(JanusPlugin):
     """
 
     name = "janus.plugin.videoroom"  #: Plugin name
-    pc: RTCPeerConnection
+    __player: MediaPlayer
+    __recorder: MediaRecorder
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.joined_event = asyncio.Event()
-        self.pc = RTCPeerConnection()
+    # def __init__(self, *args, **kwargs):
+    #     super().__init__(*args, **kwargs)
 
     async def on_receive(self, response: dict):
         if response["janus"] == "event":
@@ -88,7 +93,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         return response
 
-    async def create(self, room_id: int, configuration: dict = {}) -> bool:
+    async def create_room(self, room_id: int, configuration: dict = {}) -> bool:
         """Create a room.
 
         Refer to documentation for description of parameters.
@@ -113,7 +118,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         return is_subset(response, success_matcher)
 
-    async def destroy(
+    async def destroy_room(
         self, room_id: int, secret: str = "", permanent: bool = False
     ) -> bool:
         """Destroy a room.
@@ -463,58 +468,104 @@ class JanusVideoRoomPlugin(JanusPlugin):
             matcher=success_matcher,
         )
 
-        await self.pc.close()
+        await self._pc.close()
 
         return is_subset(response, success_matcher)
 
-    async def publish(self, ffmpeg_input, width: int, height: int) -> None:
-        """Publish video stream to the room
-
-        Should already have joined a room before this. Then this will publish the
-        video stream to the handle.
-        """
-
-        # create media source
-        player = MediaPlayer(
-            ffmpeg_input,
-            width,
-            height,
-        )
-        # Just save the media player. Not used
-        self.player = player
+    async def create_pc(
+        self, player: MediaPlayer, recorder: MediaRecorder = None, jsep: dict = {}
+    ) -> RTCPeerConnection:
+        pc = RTCPeerConnection()
 
         # configure media
-        media = {"audio": False, "video": True}
-        if player and player.audio:
-            self.pc.addTrack(player.audio)
-            media["audio"] = True
+        if player.audio:
+            pc.addTrack(player.audio)
 
-        if player and player.video:
-            self.pc.addTrack(player.video)
+        if player.video:
+            pc.addTrack(player.video)
         else:
-            self.pc.addTrack(VideoStreamTrack())
+            # Add dummy video track because aiortc cannot open
+            # PC without at least 1 media stream
+            pc.addTrack(VideoStreamTrack())
+
+        # Must configure on track event before setRemoteDescription
+        if recorder:
+
+            @pc.on("track")
+            async def on_track(track: MediaStreamTrack):
+                logger.info("Track %s received" % track.kind)
+                if track.kind == "video":
+                    recorder.addTrack(track)
+                if track.kind == "audio":
+                    recorder.addTrack(track)
+
+        if jsep:
+            await pc.setRemoteDescription(
+                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+            )
+
+        return pc
+
+    async def publish(
+        self,
+        player: MediaPlayer,
+        recorder: MediaRecorder = None,
+        configuration: dict = {},
+    ) -> None:
+        """Publish video stream to the room
+
+        Should already have joined a room before this.
+        """
+
+        self._pc = await self.create_pc(player=player, recorder=recorder)
+        self.__player = player
+        self.__recorder = recorder
 
         # send offer
-        await self.pc.setLocalDescription(await self.pc.createOffer())
+        await self._pc.setLocalDescription(await self._pc.createOffer())
 
-        request = {"request": "configure"}
-        request.update(media)
+        body = {
+            "request": "publish",
+            # "audiocodec" : "<audio codec to prefer among the negotiated ones; optional>",
+            # "videocodec" : "<video codec to prefer among the negotiated ones; optional>",
+            # "bitrate" : <bitrate cap to return via REMB; optional, overrides the global room value if present>,
+            # "record" : <true|false, whether this publisher should be recorded or not; optional>,
+            # "filename" : "<if recording, the base path/file to use for the recording files; optional>",
+            # "display" : "<display name to use in the room; optional>",
+            # "audio_level_average" : "<if provided, overrided the room audio_level_average for this user; optional>",
+            # "audio_active_packets" : "<if provided, overrided the room audio_active_packets for this user; optional>",
+            # "descriptions" : [      // Optional
+            #         {
+            #                 "mid" : "<unique mid of a stream being published>",
+            #                 "description" : "<text description of the stream (e.g., My front webcam)>"
+            #         },
+            #         // Other descriptions, if any
+            # ]}
+            **configuration,
+        }
 
-        message_transaction = await self.send(
-            {
+        success_matcher = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": "janus.plugin.videoroom",
+                "data": {"videoroom": "event", "configured": "ok"},
+            },
+        }
+        response = await self.send_wrapper(
+            message={
                 "janus": "message",
-                "body": request,
-                "jsep": {
-                    "sdp": self.pc.localDescription.sdp,
-                    "trickle": False,
-                    "type": self.pc.localDescription.type,
-                },
-            }
+                "body": body,
+            },
+            matcher=success_matcher,
+            jsep=await self.create_jsep(pc=self._pc),
         )
-        await message_transaction.get()
-        await message_transaction.done()
 
-        await self.joined_event.wait()
+        if is_subset(response, success_matcher):
+            await self.on_receive_jsep(jsep=response["jsep"])
+
+            return True
+        else:
+            return False
 
     async def unpublish(self) -> bool:
         """Stop publishing.
@@ -539,7 +590,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             matcher=success_matcher,
         )
 
-        await self.pc.close()
+        await self._pc.close()
 
         return is_subset(response, success_matcher)
 

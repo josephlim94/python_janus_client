@@ -1,6 +1,9 @@
 import unittest
 import logging
 import asyncio
+import os
+
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
 from janus_client import (
     JanusTransport,
@@ -40,19 +43,19 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertFalse(response)
 
             response = await plugin.edit(room_id)
             self.assertFalse(response)
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             response = await plugin.edit(room_id)
             self.assertTrue(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -74,16 +77,16 @@ class BaseTestClass:
             response = await plugin.exists(room_id)
             self.assertFalse(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertFalse(response)
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             response = await plugin.exists(room_id)
             self.assertTrue(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -106,13 +109,13 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             response = await plugin.allowed(room_id)
             self.assertTrue(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -132,13 +135,13 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             response = await plugin.kick(room_id=room_id, id=22222)
             self.assertFalse(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -158,7 +161,7 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             response = await plugin.moderate(
@@ -166,7 +169,7 @@ class BaseTestClass:
             )
             self.assertFalse(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -186,7 +189,7 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             room_list = await plugin.list_room()
@@ -194,7 +197,7 @@ class BaseTestClass:
                 len(list(filter(lambda room: room["room"] == room_id, room_list))) > 0
             )
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -214,13 +217,13 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             room_list = await plugin.list_participants(room_id=room_id)
             self.assertListEqual(room_list, [])
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
 
             await session.destroy()
@@ -240,7 +243,7 @@ class BaseTestClass:
 
             room_id = 123
 
-            response = await plugin.create(room_id)
+            response = await plugin.create_room(room_id)
             self.assertTrue(response)
 
             response = await plugin.join(room_id=room_id)
@@ -249,8 +252,56 @@ class BaseTestClass:
             response = await plugin.leave()
             self.assertTrue(response)
 
-            response = await plugin.destroy(room_id)
+            response = await plugin.destroy_room(room_id)
             self.assertTrue(response)
+
+            await session.destroy()
+
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_publish_and_unpublish(self):
+            """Test "listparticipants" API."""
+            await self.asyncSetUp()
+
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusVideoRoomPlugin()
+
+            await plugin.attach(session=session)
+
+            room_id = 1234
+
+            # response = await plugin.create_room(room_id)
+            # self.assertTrue(response)
+
+            response = await plugin.join(
+                room_id=room_id, display_name="Test video room"
+            )
+            self.assertTrue(response)
+
+            output_filename_out = "./video_room_record_out.mp4"
+            if os.path.exists(output_filename_out):
+                os.remove(output_filename_out)
+
+            # player = MediaPlayer(
+            #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
+            # )
+            player = MediaPlayer("./Into.the.Wild.2007.mp4")
+            recorder = MediaRecorder(output_filename_out)
+            response = await plugin.publish(player=player, recorder=recorder)
+            self.assertTrue(response)
+
+            await asyncio.sleep(15)
+
+            response = await plugin.unpublish()
+            self.assertTrue(response)
+
+            response = await plugin.leave()
+            self.assertTrue(response)
+
+            # response = await plugin.destroy_room(room_id)
+            # self.assertTrue(response)
 
             await session.destroy()
 
