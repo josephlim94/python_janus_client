@@ -9,7 +9,7 @@ packages = [{include = "janus_client"}]
 repository = "https://github.com/josephlim94/janus_gst_client_py"
 classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
