@@ -57,11 +57,11 @@ Simple Connect And Disconnect
    await plugin_handle.attach(session=session)
 
    # Destroy plugin handle
-   await plugin_handle_1.destroy()
+   await plugin_handle.destroy()
 
-This will connect create a plugin handle and then destroy it. Notice
-that we don't need to call connect or disconnect explicitly. It's managed
-internally.
+This will create a plugin handle and then destroy it.
+
+Notice that we don't need to call connect or disconnect explicitly. It's managed internally.
 
 Make Video Calls
 ----------------
@@ -126,10 +126,10 @@ Make Video Calls
       except KeyboardInterrupt:
          pass
 
-This example will register to the VideoCall plugin using username `testusernameout`.
-It will then call the user registered using the username `testusernamein`. A portion
-of the screen will be captured and sent in the call media stream. The incoming
-media stream will be saved into `videocall_record_out.mp4` file.
+This example will register to the VideoCall plugin using username `testusernameout`. It will then call the user registered using the username `testusernamein`.
+
+A portion of the screen will be captured and sent in the call media stream.
+The incoming media stream will be saved into `videocall_record_out.mp4` file.
 
 Table Of Contents
 ==================
