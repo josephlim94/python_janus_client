@@ -17,7 +17,9 @@ pip install janus-client
 
 ## Description
 
-This Python client communicates with Janus WebRTC server to use provided services. It's using `aiortc` for WebRTC communication and subsequently `PyAV` for media stack.
+This Python client communicates with Janus WebRTC server to use provided services.
+
+It's using `aiortc` for WebRTC communication and subsequently `PyAV` for media stack.
 
 FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, together with GStreamer support.
 
@@ -29,87 +31,119 @@ FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, 
 
 ## Features
 
-:heavy_check_mark: Connect to Janus server through:
-  - Websocket API ([websockets](https://github.com/aaugustin/websockets))
-  - HTTP ([aiohttp](https://docs.aiohttp.org/en/stable/index.html))
+✅ Connect to Janus server using:
+  - Websocket
+  - HTTP
 
-:heavy_check_mark: Manage Janus client connection, session, and plugins  
-:heavy_check_mark: Multiple connections in parallel  
-:heavy_check_mark: Direct message transactions to correct senders asynchronously  
-```python
-from janus_client import JanusSession, JanusEchoTestPlugin, JanusVideoRoomPlugin
-
-# Protocol will be derived from base_url
-session = JanusSession(
-    base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
-)
-# OR
-session = JanusSession(
-    base_url="https://janusmy.josephgetmyip.com/janusbase/janus",
-)
-
-plugin_handle_1 = JanusVideoRoomPlugin()
-plugin_handle_2 = JanusEchoTestPlugin()
-
-# Attach to Janus session
-await plugin_handle_1.attach(session=session)
-await plugin_handle_2.attach(session=session)
-
-# Destroy plugin handles in parallel
-await asyncio.gather(
-    plugin_handle_1.destroy(), plugin_handle_2.destroy()
-)
-```
-:heavy_check_mark: Support authentication with shared static secret (API key) and/or stored token  
-:heavy_check_mark: Expose Admin/Monitor API client  
-:heavy_check_mark: Janus VideoRoom plugin with FFmpeg (Partial: Only sends video)  
-```python
-from janus_client import JanusVideoRoomPlugin
-import ffmpeg
-
-room_id = 1234
-publisher_id = 333
-display_name = "qweqwe"
-
-width = 640
-height = 480
-ffmpeg_input = ffmpeg.input(
-    "desktop",
-    format="gdigrab",
-    framerate=30,
-    offset_x=20,
-    offset_y=30,
-    video_size=[
-        width,
-        height,
-    ],
-    show_region=1,
-)
-
-plugin_handle_1 = JanusVideoRoomPlugin()
-await plugin_handle_1.join(room_id, publisher_id, display_name)
-await plugin_handle_1.publish(ffmpeg_input=ffmpeg_input, width=width, height=height)
-await asyncio.sleep(60)
-await plugin_handle_1.unpublish()
-```
-:heavy_check_mark: Janus EchoTest plugin  
-```python
-from janus_client import JanusEchoTestPlugin
-
-plugin_handle_2 = JanusEchoTestPlugin()
-await plugin_handle_2.start(
-    play_from="./Into.the.Wild.2007.mp4", record_to="./asdasd.mp4"
-)
-await asyncio.sleep(15)
-await plugin_handle_2.close_stream()
-```
-:heavy_check_mark: Janus VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))  
+✅ Manage Janus client connection, session, and plugins  
+✅ Multiple connections in parallel  
+✅ Direct message transactions to correct senders asynchronously  
+✅ Support authentication with shared static secret (API key) and/or stored token  
+✅ Expose Admin/Monitor API client  
+✅ Support Janus plugins:
+  - EchoTest plugin
+  - VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))
+  - VideoRoom plugin
 
 ---
 
 ## Examples
 
-## Demo
+### Simple Connect And Disconnect
+
+```python
+import asyncio
+from janus_client import JanusSession, JanusEchoTestPlugin, JanusVideoRoomPlugin
+
+# Protocol will be derived from base_url
+base_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+# OR
+base_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+
+session = JanusSession(base_url=base_url)
+
+plugin_handle = JanusEchoTestPlugin()
+
+# Attach to Janus session
+await plugin_handle.attach(session=session)
+
+# Destroy plugin handle
+await plugin_handle_1.destroy()
+```
+
+This will connect create a plugin handle and then destroy it. Notice
+that we don't need to call connect or disconnect explicitly. It's managed
+internally.
+
+Make Video Calls
+----------------
+
+```python
+import asyncio
+from janus_client import JanusSession, JanusVideoCallPlugin
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
+async def main():
+    # Create session
+    session = JanusSession(
+        base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+    )
+
+    # Create plugin
+    plugin_handle = JanusVideoCallPlugin()
+
+    # Attach to Janus session
+    await plugin_handle.attach(session=session)
+
+    # Prepare username and media stream
+    username = "testusernamein"
+    username_out = "testusernameout"
+
+    player = MediaPlayer(
+        "desktop",
+        format="gdigrab",
+        options={
+            "video_size": "640x480",
+            "framerate": "30",
+            "offset_x": "20",
+            "offset_y": "30",
+        },
+    )
+    recorder = MediaRecorder("./videocall_record_out.mp4")
+
+    # Register myself as testusernameout
+    result = await plugin_handle.register(username=username_out)
+
+    # Call testusernamein
+    result = await plugin_handle.call(
+        username=username, player=player, recorder=recorder
+    )
+
+    # Wait awhile then hangup
+    await asyncio.sleep(30)
+
+    result = await plugin_handle.hangup()
+
+    # Destroy plugin
+    await plugin_handle.destroy()
+
+    # Destroy session
+    await session.destroy()
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+```
+
+This example will register to the VideoCall plugin using username `testusernameout`.
+It will then call the user registered using the username `testusernamein`. A portion
+of the screen will be captured and sent in the call media stream. The incoming
+media stream will be saved into `videocall_record_out.mp4` file.
+
+<!-- ## Demo
 
 Use [test_ffmpeg.py](./test_ffmpeg.py) to try streaming a portion of monitor display to Janus videoroom demo.
 
@@ -121,8 +155,8 @@ Delay of 0.175s
 
 Server ping:
 
-![image](https://github.com/josephlim94/janus_gst_client_py/assets/5723232/e08c3f2d-d12e-4aa3-8c81-3539be4b0304)
+![image](https://github.com/josephlim94/janus_gst_client_py/assets/5723232/e08c3f2d-d12e-4aa3-8c81-3539be4b0304) -->
 
 ## Documentation
 
-:construction: Under construction :construction:
+https://janus-client-in-python.readthedocs.io/

@@ -14,7 +14,6 @@ Welcome to Janus Client
    :maxdepth: 2
    :caption: Contents:
 
-
 Key Features
 ============
 
@@ -37,36 +36,100 @@ Library Installation
 Getting Started
 ===============
 
-Client example
---------------
+Simple Connect And Disconnect
+-----------------------------
 
 .. code-block:: python
 
-  import aiohttp
-  import asyncio
+   import asyncio
+   from janus_client import JanusSession, JanusEchoTestPlugin, JanusVideoRoomPlugin
 
-  async def main():
+   # Protocol will be derived from base_url
+   base_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+   # OR
+   base_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
 
-      async with aiohttp.ClientSession() as session:
-          async with session.get('http://python.org') as response:
+   session = JanusSession(base_url=base_url)
 
-              print("Status:", response.status)
-              print("Content-type:", response.headers['content-type'])
+   plugin_handle = JanusEchoTestPlugin()
 
-              html = await response.text()
-              print("Body:", html[:15], "...")
+   # Attach to Janus session
+   await plugin_handle.attach(session=session)
 
-  asyncio.run(main())
+   # Destroy plugin handle
+   await plugin_handle_1.destroy()
 
-This prints:
+This will connect create a plugin handle and then destroy it. Notice
+that we don't need to call connect or disconnect explicitly. It's managed
+internally.
 
-.. code-block:: text
+Make Video Calls
+----------------
 
-    Status: 200
-    Content-type: text/html; charset=utf-8
-    Body: <!doctype html> ...
+.. code-block:: python
 
-Coming from :term:`requests` ? Read :ref:`why we need so many lines <aiohttp-request-lifecycle>`.
+   import asyncio
+   from janus_client import JanusSession, JanusVideoCallPlugin
+   from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
+   async def main():
+      # Create session
+      session = JanusSession(
+         base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+      )
+
+      # Create plugin
+      plugin_handle = JanusVideoCallPlugin()
+
+      # Attach to Janus session
+      await plugin_handle.attach(session=session)
+
+      # Prepare username and media stream
+      username = "testusernamein"
+      username_out = "testusernameout"
+
+      player = MediaPlayer(
+         "desktop",
+         format="gdigrab",
+         options={
+               "video_size": "640x480",
+               "framerate": "30",
+               "offset_x": "20",
+               "offset_y": "30",
+         },
+      )
+      recorder = MediaRecorder("./videocall_record_out.mp4")
+
+      # Register myself as testusernameout
+      result = await plugin_handle.register(username=username_out)
+
+      # Call testusernamein
+      result = await plugin_handle.call(
+         username=username, player=player, recorder=recorder
+      )
+
+      # Wait awhile then hangup
+      await asyncio.sleep(30)
+
+      result = await plugin_handle.hangup()
+
+      # Destroy plugin
+      await plugin_handle.destroy()
+
+      # Destroy session
+      await session.destroy()
+
+
+   if __name__ == "__main__":
+      try:
+         asyncio.run(main())
+      except KeyboardInterrupt:
+         pass
+
+This example will register to the VideoCall plugin using username `testusernameout`.
+It will then call the user registered using the username `testusernamein`. A portion
+of the screen will be captured and sent in the call media stream. The incoming
+media stream will be saved into `videocall_record_out.mp4` file.
 
 Table Of Contents
 ==================
