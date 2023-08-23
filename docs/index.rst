@@ -3,46 +3,78 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Janus Client's documentation!
+Welcome to Janus Client
 ==================================================
+
+`Janus`_ WebRTC gateway Python asyncio client.
+
+.. _JANUS: https://github.com/meetecho/janus-gateway
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
 
+Key Features
+============
 
-Indices and tables
-==================
+- Supports HTTP/s and WebSockets communication with Janus.
+- Supports Janus plugin:
+   - EchoTest Plugin
+   - VideoCall Plugin
+   - VideoRoom Plugin
+- Extendable Transport class and Plugin class
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. _aiohttp-installation:
 
-Transport
+Library Installation
+====================
+
+.. code-block:: bash
+
+   $ pip install janus-client
+
+Getting Started
 ===============
 
-.. autoclass:: janus_client.JanusTransport
-   :members: _connect, _disconnect, _send, info, ping
-   :special-members: __init__
+Client example
+--------------
 
-Session
-=======
+.. code-block:: python
 
-.. autoclass:: janus_client.JanusSession
-   :members: create, destroy, send, attach_plugin, detach_plugin
+  import aiohttp
+  import asyncio
 
-Plugin Handle
-=============
+  async def main():
 
-Base Class
-----------
+      async with aiohttp.ClientSession() as session:
+          async with session.get('http://python.org') as response:
 
-.. autoclass:: janus_client.JanusPlugin
-   :members: attach, destroy, send, handle_async_response, trickle
+              print("Status:", response.status)
+              print("Content-type:", response.headers['content-type'])
 
-VideoRoom Plugin
-----------------
+              html = await response.text()
+              print("Body:", html[:15], "...")
 
-.. autoclass:: janus_client.JanusVideoRoomPlugin
-   :members:
+  asyncio.run(main())
+
+This prints:
+
+.. code-block:: text
+
+    Status: 200
+    Content-type: text/html; charset=utf-8
+    Body: <!doctype html> ...
+
+Coming from :term:`requests` ? Read :ref:`why we need so many lines <aiohttp-request-lifecycle>`.
+
+Table Of Contents
+==================
+
+.. toctree::
+   :name: mastertoc
+   :maxdepth: 2
+
+   session
+   plugin
+   transport
