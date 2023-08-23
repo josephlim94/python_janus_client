@@ -135,7 +135,7 @@ class BaseTestClass:
                 os.remove(output_filename_out)
 
             async def on_incoming_call(plugin: JanusVideoCallPlugin, jsep: dict):
-                player = MediaPlayer("./Into.the.Wild.2007.mp4")
+                player = MediaPlayer("../Into.the.Wild.2007.mp4")
                 # player = MediaPlayer(
                 #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
                 # )
@@ -174,7 +174,7 @@ class BaseTestClass:
             player = MediaPlayer(
                 "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
             )
-            # player = MediaPlayer("./Into.the.Wild.2007.mp4")
+            # player = MediaPlayer("../Into.the.Wild.2007.mp4")
             recorder = MediaRecorder(output_filename_out)
 
             call_result = await plugin_handle_out.call(
