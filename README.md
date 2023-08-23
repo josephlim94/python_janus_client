@@ -1,6 +1,9 @@
 # Python Janus Client
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) ![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg) [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest) ![UT Coverage](https://img.shields.io/badge/coverage-80%25-green)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![Development Stage](https://img.shields.io/badge/Stage-ALPHA-orange.svg)
+[![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest)
+![Code Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
 
 
 [Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
