@@ -78,8 +78,7 @@ This will create a plugin handle and then destroy it.
 
 Notice that we don't need to call connect or disconnect explicitly. It's managed internally.
 
-Make Video Calls
-----------------
+### Make Video Calls
 
 ```python
 import asyncio
