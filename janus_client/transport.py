@@ -45,9 +45,11 @@ class JanusTransport(ABC):
         pass
 
     async def info(self) -> Dict:
-        """Get info of Janus server. Only useful for HTTP protocol I think"""
-        logger.info("Server info only available with HTTP REST API")
-        return {}
+        """Get info of Janus server. Will be overridden for HTTP."""
+        message_transaction = await self.send({"janus": "info"})
+        response = await message_transaction.get()
+        await message_transaction.done()
+        return response
 
     async def ping(self) -> Dict:
         message_transaction = await self.send(
