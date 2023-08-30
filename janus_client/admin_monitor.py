@@ -131,6 +131,8 @@ class JanusAdminMonitorClient:
         )
         return response["loops"]
 
+    # Configuration related requests
+
     async def get_settings(self) -> Dict:
         """
         Gets the current value for the settings that can be modified at
@@ -141,6 +143,28 @@ class JanusAdminMonitorClient:
             matcher={"janus": "success", "status": {}},
         )
         return response["status"]
+
+    async def set_session_timeout(self, session_timeout: int) -> Dict:
+        """
+        Change global session timeout value in Janus.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_session_timeout", "timeout": session_timeout},
+            matcher={"janus": "success", "timeout": None},
+        )
+        return response["timeout"]
+
+    async def set_log_level(self, log_level: int) -> Dict:
+        """
+        Change the log level in Janus.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_log_level", "level": log_level},
+            matcher={"janus": "success", "level": None},
+        )
+        return response["level"]
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}

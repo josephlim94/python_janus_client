@@ -61,26 +61,48 @@ class BaseTestClass:
             await self.asyncSetUp()
 
             response = await self.admin_client.get_settings()
+            # Need to make sure this doesn't change on test server
             self.assertEqual(response["log_colors"], False)
 
             await self.asyncTearDown()
 
-        # @async_test
-        # async def test_session(self):
-        #     await self.asyncSetUp()
+        @async_test
+        async def test_set_session_timeout(self):
+            await self.asyncSetUp()
 
-        #     session = JanusSession(transport=self.transport)
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
 
-        #     message_transaction = await session.send(
-        #         {"janus": "keepalive"},
-        #     )
-        #     response = await message_transaction.get({"janus": "ack"})
-        #     await message_transaction.done()
-        #     self.assertEqual(response["janus"], "ack")
+            response = await self.admin_client.set_session_timeout(
+                settings["session_timeout"] + 1
+            )
+            self.assertEqual(response, settings["session_timeout"] + 1)
 
-        #     await session.destroy()
+            response = await self.admin_client.set_session_timeout(
+                settings["session_timeout"]
+            )
+            self.assertEqual(response, settings["session_timeout"])
 
-        #     await self.asyncTearDown()
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_set_log_level(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_log_level(
+                settings["log_level"] + 1
+            )
+            self.assertEqual(response, settings["log_level"] + 1)
+
+            response = await self.admin_client.set_log_level(
+                settings["log_level"]
+            )
+            self.assertEqual(response, settings["log_level"])
+
+            await self.asyncTearDown()
 
 
 class TestTransportHttps(BaseTestClass.TestClass):
