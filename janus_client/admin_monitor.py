@@ -1,7 +1,7 @@
 import asyncio
 import json
 import uuid
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 import logging
 
 from .transport import JanusTransport
@@ -29,8 +29,8 @@ logger = logging.getLogger(__name__)
 
 
 class JanusAdminMonitorClient:
-    transport: JanusTransport
-    admin_secret: str
+    __transport: JanusTransport
+    __admin_secret: str
 
     def __init__(
         self,
@@ -39,24 +39,24 @@ class JanusAdminMonitorClient:
         api_secret: str = None,
         token: str = None,
     ):
-        self.transport = JanusTransport.create_transport(
+        self.__transport = JanusTransport.create_transport(
             base_url=base_url,
             api_secret=api_secret,
             token=token,
             config={"subprotocol": "janus-admin-protocol"},
         )
-        self.admin_secret = admin_secret
+        self.__admin_secret = admin_secret
 
     def __str__(self):
-        return f"Admin/Monitor ({self.transport.base_url}) {self}"
+        return f"Admin/Monitor ({self.__transport.base_url}) {self}"
 
     async def connect(self) -> None:
         """Initialize resources"""
-        await self.transport.connect()
+        await self.__transport.connect()
 
     async def disconnect(self) -> None:
         """Release resources"""
-        await self.transport.disconnect()
+        await self.__transport.disconnect()
 
     async def send_wrapper(
         self,
@@ -64,6 +64,7 @@ class JanusAdminMonitorClient:
         matcher: dict = {},
         jsep: dict = {},
         timeout: Union[float, None] = None,
+        authorize: bool = True,
     ) -> dict:
         def function_matcher(message: dict):
             return is_subset(message, matcher) or is_subset(
@@ -73,7 +74,7 @@ class JanusAdminMonitorClient:
                     "error": {
                         "code": None,
                         "reason": None,
-                    }
+                    },
                 },
             )
 
@@ -81,7 +82,10 @@ class JanusAdminMonitorClient:
         if jsep:
             full_message = {**message, "jsep": jsep}
 
-        message_transaction = await self.transport.send(
+        if authorize:
+            full_message["admin_secret"] = self.__admin_secret
+
+        message_transaction = await self.__transport.send(
             message=full_message,
         )
         response = await message_transaction.get(
@@ -97,6 +101,7 @@ class JanusAdminMonitorClient:
         return await self.send_wrapper(
             message={"janus": "ping"},
             matcher={"janus": "pong"},
+            authorize=False,
             timeout=15,
         )
 
@@ -106,12 +111,20 @@ class JanusAdminMonitorClient:
         Doesn't require admin secret.
         """
 
-        if isinstance(self.transport, JanusTransportHTTP):
-            return await self.transport.info()
+        if isinstance(self.__transport, JanusTransportHTTP):
+            return await self.__transport.info()
         else:
             return await self.send_wrapper(
-                message={"janus": "info"}, matcher={"janus": "server_info"}
+                message={"janus": "info"},
+                matcher={"janus": "server_info"},
+                authorize=False,
             )
+
+    async def loops_info(self) -> List:
+        response = await self.send_wrapper(
+            message={"janus": "loops_info"}, matcher={"janus": "success"}
+        )
+        return response["loops"]
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}

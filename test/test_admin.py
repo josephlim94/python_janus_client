@@ -47,6 +47,15 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_loops_info(self):
+            await self.asyncSetUp()
+
+            response = await self.admin_client.loops_info()
+            self.assertLessEqual(response, [])
+
+            await self.asyncTearDown()
+
         # @async_test
         # async def test_session(self):
         #     await self.asyncSetUp()
