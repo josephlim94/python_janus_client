@@ -266,8 +266,13 @@ class BaseTestClass:
             tokens = await self.admin_client.list_tokens()
             self.assertListEqual(tokens, [])
 
-            token = await self.admin_client.add_token(token="123123")
-            self.assertEqual(token, "123123")
+            token_test = "123123"
+
+            token = await self.admin_client.add_token(token=token_test)
+            self.assertEqual(token, token_test)
+
+            response = await self.admin_client.remove_token(token=token_test)
+            self.assertTrue(response)
 
             await self.asyncTearDown()
 

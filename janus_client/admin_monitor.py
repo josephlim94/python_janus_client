@@ -280,6 +280,10 @@ class JanusAdminMonitorClient:
         """
         Add a valid token
         (only available if you enabled the Stored token based authentication mechanism)
+
+        Ok to add the same token repeatedly.
+        Plugin permissions provided in input will be added to existing permissions.
+        Providing empty plugin permissions will allow access to all plugins.
         """
 
         success_matcher = {"janus": "success", "data": {"plugins": None}}
@@ -296,6 +300,27 @@ class JanusAdminMonitorClient:
             raise Exception("Fail to add token")
 
         return token
+
+    async def remove_token(self, token: str) -> bool:
+        """
+        Remove a token
+        (only available if you enabled the Stored token based authentication mechanism)
+
+        Will fail if the token is not already added.
+        """
+        success_matcher = {"janus": "success"}
+        response = await self.send_wrapper(
+            message={
+                "janus": "remove_token",
+                "token": token,
+            },
+            matcher=success_matcher,
+        )
+
+        if not is_subset(response, success_matcher):
+            raise Exception("Fail to remove token")
+
+        return True
 
     async def allow_token(self, token: str, plugins: list):
         # if not plugins:
@@ -314,12 +339,5 @@ class JanusAdminMonitorClient:
             "janus": "disallow_token",
             "token": token,
             "plugins": plugins,
-        }
-        return await self.send(payload)
-
-    async def remove_token(self, token: str):
-        payload = {
-            "janus": "remove_token",
-            "token": token,
         }
         return await self.send(payload)
