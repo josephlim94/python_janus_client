@@ -193,6 +193,25 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_set_min_nack_queue(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_min_nack_queue(
+                settings["min_nack_queue"] + 1
+            )
+            self.assertEqual(response, settings["min_nack_queue"] + 1)
+
+            response = await self.admin_client.set_min_nack_queue(
+                settings["min_nack_queue"]
+            )
+            self.assertEqual(response, settings["min_nack_queue"])
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"

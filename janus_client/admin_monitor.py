@@ -144,7 +144,7 @@ class JanusAdminMonitorClient:
         )
         return response["status"]
 
-    async def set_session_timeout(self, session_timeout: int) -> Dict:
+    async def set_session_timeout(self, session_timeout: int) -> int:
         """
         Change global session timeout value in Janus.
         Returns the value that it is set to.
@@ -155,7 +155,7 @@ class JanusAdminMonitorClient:
         )
         return response["timeout"]
 
-    async def set_log_level(self, log_level: int) -> Dict:
+    async def set_log_level(self, log_level: int) -> int:
         """
         Change the log level in Janus.
         Returns the value that it is set to.
@@ -166,7 +166,7 @@ class JanusAdminMonitorClient:
         )
         return response["level"]
 
-    async def set_log_timestamps(self, log_timestamps: bool) -> Dict:
+    async def set_log_timestamps(self, log_timestamps: bool) -> bool:
         """
         Selectively enable/disable adding a timestamp to all log lines
         Janus writes on the console and/or to file.
@@ -178,7 +178,7 @@ class JanusAdminMonitorClient:
         )
         return response["log_timestamps"]
 
-    async def set_log_colors(self, log_colors: bool) -> Dict:
+    async def set_log_colors(self, log_colors: bool) -> bool:
         """
         Selectively enable/disable using colors in all log lines
         Janus writes on the console and/or to file.
@@ -190,7 +190,7 @@ class JanusAdminMonitorClient:
         )
         return response["log_colors"]
 
-    async def set_locking_debug(self, locking_debug: bool) -> Dict:
+    async def set_locking_debug(self, locking_debug: bool) -> bool:
         """
         Selectively enable/disable a live debugging of the locks in
         Janus on the fly (useful if you're experiencing deadlocks
@@ -203,7 +203,7 @@ class JanusAdminMonitorClient:
         )
         return response["locking_debug"]
 
-    async def set_refcount_debug(self, refcount_debug: bool) -> Dict:
+    async def set_refcount_debug(self, refcount_debug: bool) -> bool:
         """
         Selectively enable/disable a live debugging of the reference
         counters in Janus on the fly (useful if you're experiencing
@@ -216,7 +216,7 @@ class JanusAdminMonitorClient:
         )
         return response["refcount_debug"]
 
-    async def set_libnice_debug(self, libnice_debug: bool) -> Dict:
+    async def set_libnice_debug(self, libnice_debug: bool) -> bool:
         """
         Selectively enable/disable libnice debugging.
         Returns the value that it is set to.
@@ -226,6 +226,17 @@ class JanusAdminMonitorClient:
             matcher={"janus": "success", "libnice_debug": None},
         )
         return response["libnice_debug"]
+
+    async def set_min_nack_queue(self, min_nack_queue: int) -> int:
+        """
+        Change the value of the min NACK queue window.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_min_nack_queue", "min_nack_queue": min_nack_queue},
+            matcher={"janus": "success", "min_nack_queue": None},
+        )
+        return response["min_nack_queue"]
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
