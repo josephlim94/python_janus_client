@@ -150,7 +150,7 @@ class JanusTransport(ABC):
 
         # Authentication
         if self.__api_secret is not None:
-            message["api_secret"] = self.__api_secret
+            message["apisecret"] = self.__api_secret
         if self.__token is not None:
             message["token"] = self.__token
 
