@@ -166,6 +166,18 @@ class JanusAdminMonitorClient:
         )
         return response["level"]
 
+    async def set_log_timestamps(self, log_timestamps: bool) -> Dict:
+        """
+        Selectively enable/disable adding a timestamp to all log lines
+        Janus writes on the console and/or to file.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_log_timestamps", "timestamps": log_timestamps},
+            matcher={"janus": "success", "log_timestamps": None},
+        )
+        return response["log_timestamps"]
+
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
         if plugins:

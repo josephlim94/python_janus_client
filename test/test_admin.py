@@ -104,6 +104,25 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_set_log_timestamps(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_log_timestamps(
+                not settings["log_timestamps"]
+            )
+            self.assertEqual(response, not settings["log_timestamps"])
+
+            response = await self.admin_client.set_log_timestamps(
+                settings["log_timestamps"]
+            )
+            self.assertEqual(response, settings["log_timestamps"])
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
