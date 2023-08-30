@@ -2,10 +2,12 @@ import asyncio
 import json
 import uuid
 from typing import Dict, Any
+import logging
 
 import websockets
+from .transport import JanusTransport
+from .transport_http import JanusTransportHTTP
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -27,66 +29,38 @@ logger = logging.getLogger(__name__)
 
 
 class JanusAdminMonitorClient:
-    def __init__(self, uri: str, admin_secret: str):
-        self.ws: websockets.WebSocketClientProtocol
-        self.uri = uri
-        self.admin_secret = admin_secret
-        self.transactions: Dict[str, asyncio.Queue] = dict()
+    transport: JanusTransport
+    admin_secret: str
 
-    async def connect(self, **kwargs: Any) -> None:
-        logger.info(f"Connecting to: {self.uri}")
-        # self.ws = await websockets.connect(self.uri, ssl=ssl_context)
-        self.ws = await websockets.connect(
-            self.uri,
-            subprotocols=[websockets.Subprotocol("janus-admin-protocol")],
-            **kwargs,
+    def __init__(
+        self,
+        base_url: str,
+        admin_secret: str,
+        api_secret: str = None,
+        token: str = None,
+    ):
+        self.transport = JanusTransport.create_transport(
+            base_url=base_url,
+            api_secret=api_secret,
+            token=token,
         )
-        self.receive_message_task = asyncio.create_task(self.receive_message())
-        logger.info("Connected")
+        self.admin_secret = admin_secret
 
-    async def disconnect(self):
-        logger.info("Disconnecting")
-        self.receive_message_task.cancel()
-        await self.ws.close()
+    def __str__(self):
+        return f"Admin/Monitor ({self.transport.base_url}) {self}"
 
-    async def receive_message(self):
-        assert self.ws
-        async for message_raw in self.ws:
-            response = json.loads(message_raw)
-            # WARNING: receive_message task will break with logger.infoing exception
-            #   when entering here without a transaction in response.
-            #   It happens when the asynchronous event is not recognized in
-            #   self.is_async_response()
-            # TODO: Find out how to logger.info exceptions in created tasks
-            if response["transaction"] in self.transactions:
-                await self.transactions[response["transaction"]].put(response)
+    async def connect(self) -> None:
+        """Initialize resources"""
+        await self.transport.connect()
 
-    async def send(self, message: dict, authenticate: bool = True) -> dict:
-        # Create transaction
-        transaction_id = uuid.uuid4().hex
-        message["transaction"] = transaction_id
-        # Transaction ID must be in the dict to receive response
-        self.transactions[transaction_id] = asyncio.Queue()
+    async def disconnect(self) -> None:
+        """Release resources"""
+        await self.transport.disconnect()
 
-        # Authentication
-        if authenticate:
-            message["admin_secret"] = self.admin_secret
-
-        # Send the message
-        logger.info(json.dumps(message))
-        await self.ws.send(json.dumps(message))
-
-        # Wait for response
-        # Assumption: there will be one and only one synchronous reply for a transaction.
-        #   Other replies with the same transaction ID are asynchronous.
-        response = await self.transactions[transaction_id].get()
-        logger.info(f"Transaction reply: {response}")
-
-        # Transaction complete, delete it
-        del self.transactions[transaction_id]
-        return response
-
-    async def info(self):
+    async def info(self) -> Dict:
+        """Get server info. Gets the same info as transport info API."""
+        if isinstance(self.transport, JanusTransportHTTP):
+            return await self.transport.info()
         # Doesn't require admin secret
         message = {"janus": "info"}
         return await self.send(message, authenticate=False)
