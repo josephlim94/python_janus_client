@@ -18,7 +18,7 @@ class BaseTestClass:
         async def asyncSetUp(self) -> None:
             self.admin_client = JanusAdminMonitorClient(
                 base_url=self.server_url,
-                admin_secret="janusoverlord",
+                admin_secret=self.admin_secret,
             )
             await self.admin_client.connect()
 
@@ -253,7 +253,9 @@ class BaseTestClass:
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
+    admin_secret = "janusoverlord"
 
 
 class TestTransportWebsocketSecure(BaseTestClass.TestClass):
     server_url = "wss://janusmy.josephgetmyip.com/janusadminbasews/admin"
+    admin_secret = "janusoverlord"
