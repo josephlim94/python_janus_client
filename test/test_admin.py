@@ -260,7 +260,7 @@ class BaseTestClass:
             await self.asyncTearDown()
 
         @async_test
-        async def test_add_and_remove_tokens(self):
+        async def test_add_and_remove_token(self):
             await self.asyncSetUp()
 
             tokens = await self.admin_client.list_tokens()
@@ -270,6 +270,32 @@ class BaseTestClass:
 
             token = await self.admin_client.add_token(token=token_test)
             self.assertEqual(token, token_test)
+
+            response = await self.admin_client.remove_token(token=token_test)
+            self.assertTrue(response)
+
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_allow_token(self):
+            await self.asyncSetUp()
+
+            tokens = await self.admin_client.list_tokens()
+            self.assertListEqual(tokens, [])
+
+            token_test = "123123"
+
+            token = await self.admin_client.add_token(
+                token=token_test, plugins=["janus.plugin.echotest"]
+            )
+            self.assertEqual(token, token_test)
+
+            plugin_permissions = ['janus.plugin.echotest', 'janus.plugin.streaming']
+            response = await self.admin_client.allow_token(
+                token=token_test,
+                plugins=plugin_permissions,
+            )
+            self.assertListEqual(response, plugin_permissions)
 
             response = await self.admin_client.remove_token(token=token_test)
             self.assertTrue(response)
