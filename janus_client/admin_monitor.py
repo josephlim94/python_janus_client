@@ -1,7 +1,5 @@
-import asyncio
-import json
 import uuid
-from typing import Dict, Any, Union, List
+from typing import Dict, Union, List
 import logging
 
 from .transport import JanusTransport
@@ -29,6 +27,10 @@ logger = logging.getLogger(__name__)
 
 
 class JanusAdminMonitorClient:
+    """
+    An Admin/Monitor API that can be used to ask Janus for more specific information related to sessions and handles.
+    """
+
     __transport: JanusTransport
     __admin_secret: str
 
@@ -52,10 +54,12 @@ class JanusAdminMonitorClient:
 
     async def connect(self) -> None:
         """Initialize resources"""
+
         await self.__transport.connect()
 
     async def disconnect(self) -> None:
         """Release resources"""
+
         await self.__transport.disconnect()
 
     async def send_wrapper(
@@ -98,6 +102,7 @@ class JanusAdminMonitorClient:
 
     async def ping(self) -> Dict:
         """A simple ping/pong mechanism with server. Doesn't require admin secret."""
+
         return await self.send_wrapper(
             message={"janus": "ping"},
             matcher={"janus": "pong"},
@@ -138,6 +143,7 @@ class JanusAdminMonitorClient:
         Gets the current value for the settings that can be modified at
         runtime via the Admin API.
         """
+
         response = await self.send_wrapper(
             message={"janus": "get_status"},
             matcher={"janus": "success", "status": {}},
@@ -149,6 +155,7 @@ class JanusAdminMonitorClient:
         Change global session timeout value in Janus.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_session_timeout", "timeout": session_timeout},
             matcher={"janus": "success", "timeout": None},
@@ -160,6 +167,7 @@ class JanusAdminMonitorClient:
         Change the log level in Janus.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_log_level", "level": log_level},
             matcher={"janus": "success", "level": None},
@@ -172,6 +180,7 @@ class JanusAdminMonitorClient:
         Janus writes on the console and/or to file.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_log_timestamps", "timestamps": log_timestamps},
             matcher={"janus": "success", "log_timestamps": None},
@@ -184,6 +193,7 @@ class JanusAdminMonitorClient:
         Janus writes on the console and/or to file.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_log_colors", "colors": log_colors},
             matcher={"janus": "success", "log_colors": None},
@@ -197,6 +207,7 @@ class JanusAdminMonitorClient:
         and want to investigate them).
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_locking_debug", "debug": locking_debug},
             matcher={"janus": "success", "locking_debug": None},
@@ -210,6 +221,7 @@ class JanusAdminMonitorClient:
         memory leaks in the Janus structures and want to investigate them).
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_refcount_debug", "debug": refcount_debug},
             matcher={"janus": "success", "refcount_debug": None},
@@ -221,6 +233,7 @@ class JanusAdminMonitorClient:
         Selectively enable/disable libnice debugging.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_libnice_debug", "debug": libnice_debug},
             matcher={"janus": "success", "libnice_debug": None},
@@ -232,6 +245,7 @@ class JanusAdminMonitorClient:
         Change the value of the min NACK queue window.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_min_nack_queue", "min_nack_queue": min_nack_queue},
             matcher={"janus": "success", "min_nack_queue": None},
@@ -243,6 +257,7 @@ class JanusAdminMonitorClient:
         Change the value of the no-media timer property.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={"janus": "set_no_media_timer", "no_media_timer": no_media_timer},
             matcher={"janus": "success", "no_media_timer": None},
@@ -254,6 +269,7 @@ class JanusAdminMonitorClient:
         Change the value of the slowlink-threshold property.
         Returns the value that it is set to.
         """
+
         response = await self.send_wrapper(
             message={
                 "janus": "set_slowlink_threshold",
