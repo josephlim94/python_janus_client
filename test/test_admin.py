@@ -212,6 +212,25 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_set_no_media_timer(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_no_media_timer(
+                settings["no_media_timer"] + 1
+            )
+            self.assertEqual(response, settings["no_media_timer"] + 1)
+
+            response = await self.admin_client.set_no_media_timer(
+                settings["no_media_timer"]
+            )
+            self.assertEqual(response, settings["no_media_timer"])
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"

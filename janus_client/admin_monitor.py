@@ -238,6 +238,17 @@ class JanusAdminMonitorClient:
         )
         return response["min_nack_queue"]
 
+    async def set_no_media_timer(self, no_media_timer: int) -> int:
+        """
+        Change the value of the no-media timer property.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_no_media_timer", "no_media_timer": no_media_timer},
+            matcher={"janus": "success", "no_media_timer": None},
+        )
+        return response["no_media_timer"]
+
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
         if plugins:
