@@ -263,11 +263,33 @@ class JanusAdminMonitorClient:
         )
         return response["slowlink_threshold"]
 
+    # Token related requests
+
+    async def list_tokens(self) -> List:
+        """
+        List the existing tokens
+        (only available if you enabled the Stored token based authentication mechanism);
+        """
+        response = await self.send_wrapper(
+            message={"janus": "list_tokens"},
+            matcher={"janus": "success", "data": {"tokens": None}},
+        )
+        return response["data"]["tokens"]
+
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
-        payload: dict = {"janus": "add_token", "token": token}
-        if plugins:
-            payload["plugins"] = plugins
-        return await self.send(payload)
+        """
+        Add a valid token
+        (only available if you enabled the Stored token based authentication mechanism)
+        """
+        response = await self.send_wrapper(
+            message={
+                "janus": "add_token",
+                "token": token,
+                "plugins": plugins,
+            },
+            matcher={"janus": "success", "token": None},
+        )
+        return response["token"]
 
     async def allow_token(self, token: str, plugins: list):
         # if not plugins:
@@ -288,11 +310,6 @@ class JanusAdminMonitorClient:
             "plugins": plugins,
         }
         return await self.send(payload)
-
-    async def list_tokens(self):
-        payload = {"janus": "list_tokens"}
-        result = await self.send(payload)
-        return result["data"]["tokens"]
 
     async def remove_token(self, token: str):
         payload = {
