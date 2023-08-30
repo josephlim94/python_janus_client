@@ -64,7 +64,7 @@ class BaseTestClass:
                 os.remove(output_filename)
 
             await plugin_handle.start(
-                play_from="../Into.the.Wild.2007.mp4", record_to=output_filename
+                play_from="./Into.the.Wild.2007.mp4", record_to=output_filename
             )
 
             response = await session.transport.ping()
