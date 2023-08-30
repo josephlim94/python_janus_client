@@ -1,12 +1,12 @@
 import asyncio
 import json
 import uuid
-from typing import Dict, Any
+from typing import Dict, Any, Union
 import logging
 
-import websockets
 from .transport import JanusTransport
 from .transport_http import JanusTransportHTTP
+from .message_transaction import is_subset
 
 
 logger = logging.getLogger(__name__)
@@ -43,9 +43,7 @@ class JanusAdminMonitorClient:
             base_url=base_url,
             api_secret=api_secret,
             token=token,
-            config={
-                "subprotocol": "janus-admin-protocol"
-            }
+            config={"subprotocol": "janus-admin-protocol"},
         )
         self.admin_secret = admin_secret
 
@@ -60,24 +58,60 @@ class JanusAdminMonitorClient:
         """Release resources"""
         await self.transport.disconnect()
 
-    async def ping(self) -> Dict:
-        """A simple ping/pong mechanism with server. Doesn't require admin secret."""
+    async def send_wrapper(
+        self,
+        message: dict,
+        matcher: dict = {},
+        jsep: dict = {},
+        timeout: Union[float, None] = None,
+    ) -> dict:
+        def function_matcher(message: dict):
+            return is_subset(message, matcher) or is_subset(
+                message,
+                {
+                    "janus": "error",
+                    "error": {
+                        "code": None,
+                        "reason": None,
+                    }
+                },
+            )
+
+        full_message = message
+        if jsep:
+            full_message = {**message, "jsep": jsep}
+
         message_transaction = await self.transport.send(
-            {"janus": "ping"},
+            message=full_message,
         )
-        response = await message_transaction.get(matcher={"janus": "pong"}, timeout=15)
+        response = await message_transaction.get(
+            matcher=function_matcher,
+            timeout=timeout,
+        )
         await message_transaction.done()
+
         return response
 
+    async def ping(self) -> Dict:
+        """A simple ping/pong mechanism with server. Doesn't require admin secret."""
+        return await self.send_wrapper(
+            message={"janus": "ping"},
+            matcher={"janus": "pong"},
+            timeout=15,
+        )
+
     async def info(self) -> Dict:
-        """Get server info. Gets the same info as transport info API. Doesn't require admin secret."""
+        """
+        Get server info. Gets the same info as transport info API.
+        Doesn't require admin secret.
+        """
+
         if isinstance(self.transport, JanusTransportHTTP):
             return await self.transport.info()
         else:
-            message_transaction = await self.transport.send({"janus": "info"})
-            response = await message_transaction.get()
-            await message_transaction.done()
-            return response
+            return await self.send_wrapper(
+                message={"janus": "info"}, matcher={"janus": "server_info"}
+            )
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
