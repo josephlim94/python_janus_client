@@ -178,6 +178,18 @@ class JanusAdminMonitorClient:
         )
         return response["log_timestamps"]
 
+    async def set_log_colors(self, log_colors: bool) -> Dict:
+        """
+        Selectively enable/disable using colors in all log lines
+        Janus writes on the console and/or to file.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_log_colors", "colors": log_colors},
+            matcher={"janus": "success", "log_colors": None},
+        )
+        return response["log_colors"]
+
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
         if plugins:
