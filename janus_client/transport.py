@@ -68,7 +68,7 @@ class JanusTransport(ABC):
         """Override this method to get session destroyed event"""
         pass
 
-    def __init__(self, base_url: str, api_secret: str = None, token: str = None):
+    def __init__(self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict):
         """Create connection instance
 
         :param base_url: Janus server address
@@ -227,7 +227,7 @@ class JanusTransport(ABC):
 
     @staticmethod
     def create_transport(
-        base_url: str, api_secret: str = None, token: str = None
+        base_url: str, api_secret: str = None, token: str = None, config: Dict = {}
     ) -> "JanusTransport":
         # Get matching results
         matching_results = []
@@ -251,5 +251,5 @@ class JanusTransport(ABC):
             if result:
                 transport_protocol = JanusTransport.__transport_implementation[index][1]
                 return transport_protocol(
-                    base_url=base_url, api_secret=api_secret, token=token
+                    base_url=base_url, api_secret=api_secret, token=token, **config
                 )

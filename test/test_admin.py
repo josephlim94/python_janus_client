@@ -70,4 +70,4 @@ class TestTransportHttps(BaseTestClass.TestClass):
 
 
 class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-    server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+    server_url = "wss://janusmy.josephgetmyip.com/janusadminbasews/admin"

@@ -43,6 +43,9 @@ class JanusAdminMonitorClient:
             base_url=base_url,
             api_secret=api_secret,
             token=token,
+            config={
+                "subprotocol": "janus-admin-protocol"
+            }
         )
         self.admin_secret = admin_secret
 

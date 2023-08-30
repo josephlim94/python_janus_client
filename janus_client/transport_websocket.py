@@ -19,11 +19,16 @@ class JanusTransportWebsocket(JanusTransport):
     """
 
     ws: websockets.WebSocketClientProtocol
+    subprotocol: str
 
-    def __init__(self, **kwargs: Any):
+    def __init__(self, **kwargs: dict):
         super().__init__(**kwargs)
 
         self._connected = False
+        if "subprotocol" in kwargs:
+            self.subprotocol = kwargs["subprotocol"]
+        else:
+            self.subprotocol = "janus-protocol"
 
     async def _connect(self, **kwargs: Any) -> None:
         """Connect to server
@@ -35,7 +40,7 @@ class JanusTransportWebsocket(JanusTransport):
 
         self.ws = await websockets.connect(
             self.base_url,
-            subprotocols=[websockets.Subprotocol("janus-protocol")],
+            subprotocols=[websockets.Subprotocol(self.subprotocol)],
             **kwargs,
         )
         self.receive_message_task = asyncio.create_task(self.receive_message())

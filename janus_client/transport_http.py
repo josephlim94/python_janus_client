@@ -22,7 +22,7 @@ class JanusTransportHTTP(JanusTransport):
 
     __receive_response_task_map: Dict[int, ReceiverTask]
 
-    def __init__(self, base_url: str, api_secret: str = None, token: str = None):
+    def __init__(self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict):
         super().__init__(base_url=base_url, api_secret=api_secret, token=token)
 
         self.__receive_response_task_map = dict()
