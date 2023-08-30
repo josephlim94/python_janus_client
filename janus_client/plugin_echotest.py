@@ -1,4 +1,4 @@
-# import asyncio
+import asyncio
 import logging
 
 from .plugin_base import JanusPlugin
@@ -14,6 +14,12 @@ class JanusEchoTestPlugin(JanusPlugin):
     name = "janus.plugin.echotest"
     __pc: RTCPeerConnection
     __recorder: MediaRecorder
+    __webrtcup_event: asyncio.Event
+
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.__webrtcup_event = asyncio.Event()
 
     async def on_receive(self, response: dict):
         if "jsep" in response:
@@ -26,6 +32,9 @@ class JanusEchoTestPlugin(JanusPlugin):
                 # It's ok to start multiple times, only the track that
                 # has not been started will start
                 await self.__recorder.start()
+
+        if janus_code == "webrtcup":
+            self.__webrtcup_event.set()
 
         if janus_code == "event":
             plugin_data = response["plugindata"]["data"]
@@ -50,6 +59,10 @@ class JanusEchoTestPlugin(JanusPlugin):
 
             if "errorcode" in plugin_data:
                 logger.error(f"Plugin Error: {response}")
+
+    async def wait_webrtcup(self) -> None:
+        await self.__webrtcup_event.wait()
+        self.__webrtcup_event.clear()
 
     async def on_receive_jsep(self, jsep: dict):
         if self.__pc and self.__pc.signalingState != "closed":
