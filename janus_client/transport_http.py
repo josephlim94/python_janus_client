@@ -21,11 +21,18 @@ class JanusTransportHTTP(JanusTransport):
     """Janus transport through HTTP"""
 
     __receive_response_task_map: Dict[int, ReceiverTask]
+    __api_secret: str
+    __token: str
 
-    def __init__(self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict):
+    def __init__(
+        self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict
+    ):
         super().__init__(base_url=base_url, api_secret=api_secret, token=token)
 
         self.__receive_response_task_map = dict()
+        # HTTP transport needs these for long polling
+        self.__api_secret = api_secret
+        self.__token = token
 
     async def _connect(self):
         pass
@@ -95,10 +102,17 @@ class JanusTransportHTTP(JanusTransport):
     async def session_receive_response(
         self, session_id: str, destroyed_event: asyncio.Event
     ) -> None:
+        url_params = {}
+        if self.__api_secret:
+            url_params["apisecret"] = self.__api_secret
+        if self.__token:
+            url_params["token"] = self.__token
+
         async with aiohttp.ClientSession() as http_session:
             while not destroyed_event.is_set():
                 async with http_session.get(
                     url=self.__build_url(session_id=session_id),
+                    params=url_params,
                 ) as response:
                     # Maybe session is destroyed during http request
                     if destroyed_event.is_set():
