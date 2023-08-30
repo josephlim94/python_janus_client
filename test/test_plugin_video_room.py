@@ -286,7 +286,7 @@ class BaseTestClass:
             # player = MediaPlayer(
             #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
             # )
-            player = MediaPlayer("../Into.the.Wild.2007.mp4")
+            player = MediaPlayer("./Into.the.Wild.2007.mp4")
             response = await plugin.publish(player=player)
             self.assertTrue(response)
 
