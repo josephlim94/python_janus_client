@@ -9,13 +9,17 @@ format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
 
+ut_api_secret = "janusrocks"
+
 
 class BaseTestClass:
     class TestClass(unittest.TestCase):
         server_url: str
 
         async def asyncSetUp(self) -> None:
-            self.transport = JanusTransport.create_transport(base_url=self.server_url)
+            self.transport = JanusTransport.create_transport(
+                base_url=self.server_url, api_secret=ut_api_secret
+            )
             await self.transport.connect()
 
         async def asyncTearDown(self) -> None:
@@ -36,7 +40,7 @@ class BaseTestClass:
 
             room_id = 1234
 
-            session = JanusSession(base_url=self.server_url)
+            session = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
 
             plugin = JanusVideoRoomPlugin()
 
@@ -131,9 +135,9 @@ class BaseTestClass:
 
             await self.asyncSetUp()
 
-            session_1 = JanusSession(base_url=self.server_url)
-            session_2 = JanusSession(base_url=self.server_url)
-            session_3 = JanusSession(base_url=self.server_url)
+            session_1 = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
+            session_2 = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
+            session_3 = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
 
             message_transaction_list = await asyncio.gather(
                 session_1.send(
@@ -327,9 +331,9 @@ class BaseTestClass:
                     plugin_3.destroy(),
                 )
 
-            session_1 = JanusSession(base_url=self.server_url)
-            session_2 = JanusSession(base_url=self.server_url)
-            session_3 = JanusSession(base_url=self.server_url)
+            session_1 = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
+            session_2 = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
+            session_3 = JanusSession(base_url=self.server_url, api_secret=ut_api_secret)
 
             message_transaction_list = await asyncio.gather(
                 session_1.send(

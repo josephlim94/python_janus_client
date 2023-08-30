@@ -15,7 +15,9 @@ class BaseTestClass:
         server_url: str
 
         async def asyncSetUp(self) -> None:
-            self.transport = JanusTransport.create_transport(base_url=self.server_url)
+            self.transport = JanusTransport.create_transport(
+                base_url=self.server_url, api_secret="janusrocks"
+            )
             await self.transport.connect()
 
         async def asyncTearDown(self) -> None:

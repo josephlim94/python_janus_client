@@ -21,7 +21,9 @@ class BaseTestClass:
         server_url: str
 
         async def asyncSetUp(self) -> None:
-            self.transport = JanusTransport.create_transport(base_url=self.server_url)
+            self.transport = JanusTransport.create_transport(
+                base_url=self.server_url, api_secret="janusrocks"
+            )
             await self.transport.connect()
 
         async def asyncTearDown(self) -> None:
@@ -66,6 +68,8 @@ class BaseTestClass:
             await plugin_handle.start(
                 play_from="./Into.the.Wild.2007.mp4", record_to=output_filename
             )
+
+            await plugin_handle.wait_webrtcup()
 
             response = await session.transport.ping()
             self.assertEqual(response["janus"], "pong")
