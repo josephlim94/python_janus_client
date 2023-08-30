@@ -63,7 +63,7 @@ class JanusAdminMonitorClient:
         message: dict,
         matcher: dict = {},
         jsep: dict = {},
-        timeout: Union[float, None] = None,
+        timeout: Union[float, None] = 15,
         authorize: bool = True,
     ) -> dict:
         def function_matcher(message: dict):
@@ -102,7 +102,6 @@ class JanusAdminMonitorClient:
             message={"janus": "ping"},
             matcher={"janus": "pong"},
             authorize=False,
-            timeout=15,
         )
 
     async def info(self) -> Dict:
@@ -121,10 +120,27 @@ class JanusAdminMonitorClient:
             )
 
     async def loops_info(self) -> List:
+        """
+        Returns a summary of how many handles each static event loop is
+        currently responsible for, in case static event loops are
+        in use (returns an empty array otherwise).
+        """
+
         response = await self.send_wrapper(
             message={"janus": "loops_info"}, matcher={"janus": "success"}
         )
         return response["loops"]
+
+    async def get_settings(self) -> Dict:
+        """
+        Gets the current value for the settings that can be modified at
+        runtime via the Admin API.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "get_status"},
+            matcher={"janus": "success", "status": {}},
+        )
+        return response["status"]
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}

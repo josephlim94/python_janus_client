@@ -52,7 +52,16 @@ class BaseTestClass:
             await self.asyncSetUp()
 
             response = await self.admin_client.loops_info()
-            self.assertLessEqual(response, [])
+            self.assertListEqual(response, [])
+
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_get_settings(self):
+            await self.asyncSetUp()
+
+            response = await self.admin_client.get_settings()
+            self.assertEqual(response["log_colors"], False)
 
             await self.asyncTearDown()
 
