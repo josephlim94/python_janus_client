@@ -249,6 +249,20 @@ class JanusAdminMonitorClient:
         )
         return response["no_media_timer"]
 
+    async def set_slowlink_threshold(self, slowlink_threshold: int) -> int:
+        """
+        Change the value of the slowlink-threshold property.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={
+                "janus": "set_slowlink_threshold",
+                "slowlink_threshold": slowlink_threshold,
+            },
+            matcher={"janus": "success", "slowlink_threshold": None},
+        )
+        return response["slowlink_threshold"]
+
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
         if plugins:

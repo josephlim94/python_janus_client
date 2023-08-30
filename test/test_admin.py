@@ -231,6 +231,25 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_set_slowlink_threshold(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_slowlink_threshold(
+                settings["slowlink_threshold"] + 1
+            )
+            self.assertEqual(response, settings["slowlink_threshold"] + 1)
+
+            response = await self.admin_client.set_slowlink_threshold(
+                settings["slowlink_threshold"]
+            )
+            self.assertEqual(response, settings["slowlink_threshold"])
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
