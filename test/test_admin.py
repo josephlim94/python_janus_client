@@ -92,14 +92,10 @@ class BaseTestClass:
             settings = await self.admin_client.get_settings()
             self.assertEqual(settings["log_colors"], False)
 
-            response = await self.admin_client.set_log_level(
-                settings["log_level"] + 1
-            )
+            response = await self.admin_client.set_log_level(settings["log_level"] + 1)
             self.assertEqual(response, settings["log_level"] + 1)
 
-            response = await self.admin_client.set_log_level(
-                settings["log_level"]
-            )
+            response = await self.admin_client.set_log_level(settings["log_level"])
             self.assertEqual(response, settings["log_level"])
 
             await self.asyncTearDown()
@@ -135,9 +131,7 @@ class BaseTestClass:
             )
             self.assertEqual(response, not settings["log_colors"])
 
-            response = await self.admin_client.set_log_colors(
-                settings["log_colors"]
-            )
+            response = await self.admin_client.set_log_colors(settings["log_colors"])
             self.assertEqual(response, settings["log_colors"])
 
             await self.asyncTearDown()
@@ -177,6 +171,25 @@ class BaseTestClass:
                 settings["refcount_debug"]
             )
             self.assertEqual(response, settings["refcount_debug"])
+
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_set_libnice_debug(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_libnice_debug(
+                not settings["libnice_debug"]
+            )
+            self.assertEqual(response, not settings["libnice_debug"])
+
+            response = await self.admin_client.set_libnice_debug(
+                settings["libnice_debug"]
+            )
+            self.assertEqual(response, settings["libnice_debug"])
 
             await self.asyncTearDown()
 

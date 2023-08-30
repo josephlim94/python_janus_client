@@ -216,6 +216,17 @@ class JanusAdminMonitorClient:
         )
         return response["refcount_debug"]
 
+    async def set_libnice_debug(self, libnice_debug: bool) -> Dict:
+        """
+        Selectively enable/disable libnice debugging.
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_libnice_debug", "debug": libnice_debug},
+            matcher={"janus": "success", "libnice_debug": None},
+        )
+        return response["libnice_debug"]
+
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
         if plugins:
