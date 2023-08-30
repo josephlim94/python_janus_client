@@ -28,14 +28,14 @@ class BaseTestClass:
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
             await asyncio.sleep(0.250)
 
-        # @async_test
-        # async def test_sanity(self):
-        #     await self.asyncSetUp()
+        @async_test
+        async def test_sanity(self):
+            await self.asyncSetUp()
 
-        #     response = await self.transport.ping()
-        #     self.assertEqual(response["janus"], "pong")
+            response = await self.admin_client.ping()
+            self.assertEqual(response["janus"], "pong")
 
-        #     await self.asyncTearDown()
+            await self.asyncTearDown()
 
         @async_test
         async def test_info(self):
