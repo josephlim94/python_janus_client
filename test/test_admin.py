@@ -259,6 +259,18 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_add_and_remove_tokens(self):
+            await self.asyncSetUp()
+
+            tokens = await self.admin_client.list_tokens()
+            self.assertListEqual(tokens, [])
+
+            token = await self.admin_client.add_token(token="123123")
+            self.assertEqual(token, "123123")
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"

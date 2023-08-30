@@ -276,20 +276,26 @@ class JanusAdminMonitorClient:
         )
         return response["data"]["tokens"]
 
-    async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
+    async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []) -> str:
         """
         Add a valid token
         (only available if you enabled the Stored token based authentication mechanism)
         """
+
+        success_matcher = {"janus": "success", "data": {"plugins": None}}
         response = await self.send_wrapper(
             message={
                 "janus": "add_token",
                 "token": token,
                 "plugins": plugins,
             },
-            matcher={"janus": "success", "token": None},
+            matcher=success_matcher,
         )
-        return response["token"]
+
+        if not is_subset(response, success_matcher):
+            raise Exception("Fail to add token")
+
+        return token
 
     async def allow_token(self, token: str, plugins: list):
         # if not plugins:
