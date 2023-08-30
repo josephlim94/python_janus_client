@@ -69,5 +69,5 @@ class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
 
 
-# class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-#     server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+class TestTransportWebsocketSecure(BaseTestClass.TestClass):
+    server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"

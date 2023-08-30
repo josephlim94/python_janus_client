@@ -58,7 +58,7 @@ class JanusAdminMonitorClient:
         await self.transport.disconnect()
 
     async def ping(self) -> Dict:
-        """A simple ping/pong mechanism with server"""
+        """A simple ping/pong mechanism with server. Doesn't require admin secret."""
         message_transaction = await self.transport.send(
             {"janus": "ping"},
         )
@@ -67,12 +67,14 @@ class JanusAdminMonitorClient:
         return response
 
     async def info(self) -> Dict:
-        """Get server info. Gets the same info as transport info API."""
+        """Get server info. Gets the same info as transport info API. Doesn't require admin secret."""
         if isinstance(self.transport, JanusTransportHTTP):
             return await self.transport.info()
-        # Doesn't require admin secret
-        message = {"janus": "info"}
-        return await self.send(message, authenticate=False)
+        else:
+            message_transaction = await self.transport.send({"janus": "info"})
+            response = await message_transaction.get()
+            await message_transaction.done()
+            return response
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}
