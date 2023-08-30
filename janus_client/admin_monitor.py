@@ -194,7 +194,7 @@ class JanusAdminMonitorClient:
         """
         Selectively enable/disable a live debugging of the locks in
         Janus on the fly (useful if you're experiencing deadlocks
-        and want to investigate them)
+        and want to investigate them).
         Returns the value that it is set to.
         """
         response = await self.send_wrapper(
@@ -202,6 +202,19 @@ class JanusAdminMonitorClient:
             matcher={"janus": "success", "locking_debug": None},
         )
         return response["locking_debug"]
+
+    async def set_refcount_debug(self, refcount_debug: bool) -> Dict:
+        """
+        Selectively enable/disable a live debugging of the reference
+        counters in Janus on the fly (useful if you're experiencing
+        memory leaks in the Janus structures and want to investigate them).
+        Returns the value that it is set to.
+        """
+        response = await self.send_wrapper(
+            message={"janus": "set_refcount_debug", "debug": refcount_debug},
+            matcher={"janus": "success", "refcount_debug": None},
+        )
+        return response["refcount_debug"]
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []):
         payload: dict = {"janus": "add_token", "token": token}

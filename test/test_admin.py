@@ -161,6 +161,25 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_set_refcount_debug(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_refcount_debug(
+                not settings["refcount_debug"]
+            )
+            self.assertEqual(response, not settings["refcount_debug"])
+
+            response = await self.admin_client.set_refcount_debug(
+                settings["refcount_debug"]
+            )
+            self.assertEqual(response, settings["refcount_debug"])
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
