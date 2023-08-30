@@ -329,8 +329,10 @@ class JanusAdminMonitorClient:
         Give a token access to a plugin
         (only available if you enabled the Stored token based authentication mechanism)
 
-        Ok to add the same token repeatedly.
+        Ok to allow the same token permissions repeatedly.
         Plugin permissions provided in input will be added to existing permissions.
+        Empty permission list is not accepted.
+        Invalid plugin permissions are not accepted.
         """
 
         if not plugins:
@@ -352,11 +354,30 @@ class JanusAdminMonitorClient:
         return response["data"]["plugins"]
 
     async def disallow_token(self, token: str, plugins: list):
-        # if not plugins:
-        #     raise Exception("plugins should be non-empty array")
-        payload = {
-            "janus": "disallow_token",
-            "token": token,
-            "plugins": plugins,
-        }
-        return await self.send(payload)
+        """
+        Remove a token access from a plugin
+        (only available if you enabled the Stored token based authentication mechanism)
+
+        Ok to disallow the same token permissions repeatedly.
+        Plugin permissions provided in input will be removed from existing permissions.
+        Empty permission list is not accepted.
+        Invalid plugin permissions are not accepted.
+        """
+
+        if not plugins:
+            raise Exception("plugins should be non-empty array")
+
+        success_matcher = {"janus": "success", "data": {"plugins": None}}
+        response = await self.send_wrapper(
+            message={
+                "janus": "disallow_token",
+                "token": token,
+                "plugins": plugins,
+            },
+            matcher=success_matcher,
+        )
+
+        if not is_subset(response, success_matcher):
+            raise Exception("Fail to disallow token")
+
+        return response["data"]["plugins"]
