@@ -142,6 +142,25 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_set_locking_debug(self):
+            await self.asyncSetUp()
+
+            settings = await self.admin_client.get_settings()
+            self.assertEqual(settings["log_colors"], False)
+
+            response = await self.admin_client.set_locking_debug(
+                not settings["locking_debug"]
+            )
+            self.assertEqual(response, not settings["locking_debug"])
+
+            response = await self.admin_client.set_locking_debug(
+                settings["locking_debug"]
+            )
+            self.assertEqual(response, settings["locking_debug"])
+
+            await self.asyncTearDown()
+
 
 class TestTransportHttps(BaseTestClass.TestClass):
     server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
