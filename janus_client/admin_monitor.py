@@ -23,6 +23,13 @@ logger = logging.getLogger(__name__)
 #         #admin_wss_ip = "192.168.0.1"           # Whether we should bind this server to a specific IP address only
 #         #admin_ws_acl = "127.,192.168.0."       # Only allow requests coming from this comma separated list of addresses
 # }
+
+When it comes to authentication:
+- If stored-token auth (token) is enabled, all requests will require auth.
+  At this point, the token can only be created through admin add token API.
+- Admin API uses it's own auth method (admin_secret)
+- If shared static token auth (api_secret) is enabled, all requests can choose to use this
+  auth instead of token auth.
 """
 
 

@@ -39,10 +39,9 @@ FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, 
   - Websocket
   - HTTP
 - Manage Janus client connection, session, and plugins
-- Multiple connections in parallel
-- Direct message transactions to correct senders asynchronously
+- Direct message transactions to correct senders asynchronously, allowing multiple connections in parallel
 - Support authentication with shared static secret (API key) and/or stored token
-- Support Admin/Monitor API
+- Support Admin/Monitor API:
   - Generic requests
   - Configuration related requests
   - Token related requests
