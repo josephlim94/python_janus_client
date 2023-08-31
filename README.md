@@ -4,7 +4,7 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/janus-client)
 [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest)
-![Code Coverage](https://img.shields.io/badge/coverage-91%25-brightgreen)
+![Code Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
 
 
 [Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
@@ -42,7 +42,10 @@ FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, 
 - Multiple connections in parallel
 - Direct message transactions to correct senders asynchronously
 - Support authentication with shared static secret (API key) and/or stored token
-- Expose Admin/Monitor API client
+- Support Admin/Monitor API
+  - Generic requests
+  - Configuration related requests
+  - Token related requests
 - Support Janus plugins:
   - EchoTest plugin
   - VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))
