@@ -322,6 +322,7 @@ class BaseTestClass:
                 plugin_subscribe.attach(session=session),
             )
 
+            # Janus demo uses room_id = 1234
             room_id = 12345
 
             response = await plugin_publish.destroy_room(room_id)
