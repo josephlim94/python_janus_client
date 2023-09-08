@@ -16,3 +16,6 @@ docs/_build/*
 # Code coverage
 .coverage
 *.mp4
+
+# pyenv
+.python-version

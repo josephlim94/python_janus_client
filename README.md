@@ -17,6 +17,8 @@
 pip install janus-client
 ```
 
+> **_NOTE:_**  MacBook Air M1 macOS Ventura requires Python >=3.8
+
 ---
 
 ## Description
