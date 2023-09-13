@@ -68,7 +68,9 @@ class JanusTransport(ABC):
         """Override this method to get session destroyed event"""
         pass
 
-    def __init__(self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict):
+    def __init__(
+        self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict
+    ):
         """Create connection instance
 
         :param base_url: Janus server address
@@ -211,7 +213,10 @@ class JanusTransport(ABC):
 
     # Don't call this from client object, call destroy from session instead
     async def destroy_session(self, session_id: int) -> None:
-        del self.__sessions[session_id]
+        if session_id in self.__sessions:
+            del self.__sessions[session_id]
+        else:
+            logger.warning(f"Session ID not found: {session_id}")
 
         await self.dispatch_session_destroyed(session_id=session_id)
 
