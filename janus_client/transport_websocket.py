@@ -61,7 +61,6 @@ class JanusTransportWebsocket(JanusTransport):
     async def _disconnect(self) -> None:
         logger.info("Disconnecting")
         self.receive_message_task.cancel()
-        # This wait might not be useful, but leaving it here
         await asyncio.wait([self.receive_message_task])
         await self.ws.close()
         self.connected = False
