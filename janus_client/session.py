@@ -1,6 +1,7 @@
 import asyncio
 from typing import Dict, TYPE_CHECKING
 import logging
+import traceback
 
 from .transport import JanusTransport
 from .message_transaction import MessageTransaction
@@ -49,6 +50,18 @@ class JanusSession:
     def __str__(self):
         return f"Session ({self.__id}) {self}"
 
+    # Async context manager only manages the transport connection
+    async def __aenter__(self):
+        await self.transport.connect()
+
+        return self
+
+    async def __aexit__(self, exc_type, exc_value, exc_tb):
+        if self.created:
+            await self.destroy()
+
+        await self.transport.disconnect()
+
     async def _create(self) -> None:
         if not self.transport.connected:
             await self.transport.connect()
@@ -68,13 +81,27 @@ class JanusSession:
                 self.created = True
 
     async def _destroy(self) -> None:
-        message_transaction = await self.send(
-            {"janus": "destroy"},
-        )
-        await message_transaction.get(matcher={"janus": "success"}, timeout=15)
-        await message_transaction.done()
+        try:
+            message_transaction = await self.send(
+                {"janus": "destroy"},
+            )
+            await message_transaction.get(matcher={"janus": "success"}, timeout=15)
+            await message_transaction.done()
+        except Exception as exception:
+            logger.error(
+                "".join(
+                    traceback.format_exception(
+                        type(exception),
+                        value=exception,
+                        tb=exception.__traceback__,
+                    )
+                )
+            )
+
         self.keepalive_task.cancel()
+
         await self.transport.destroy_session(self.__id)
+
         self.__id = None
 
     async def destroy(self) -> None:
