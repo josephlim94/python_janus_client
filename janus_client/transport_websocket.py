@@ -22,12 +22,16 @@ class JanusTransportWebsocket(JanusTransport):
     subprotocol: str
     connected: bool
     receiving_message: bool
+    receive_message_task: asyncio.Task
+    receive_message_task_started: asyncio.Event
 
     def __init__(self, **kwargs: dict):
         super().__init__(**kwargs)
 
         self.connected = False
         self.receiving_message = False
+        self.receive_message_task = None
+        self.receive_message_task_started = asyncio.Event()
 
         if "subprotocol" in kwargs:
             self.subprotocol = kwargs["subprotocol"]
@@ -49,6 +53,7 @@ class JanusTransportWebsocket(JanusTransport):
         )
         self.receive_message_task = asyncio.create_task(self.receive_message())
         self.receive_message_task.add_done_callback(self.receive_message_done_cb)
+        await self.receive_message_task_started.wait()
 
         self.connected = True
         logger.info("Connected")
@@ -88,6 +93,7 @@ class JanusTransportWebsocket(JanusTransport):
 
     async def receive_message(self) -> None:
         self.receiving_message = True
+        self.receive_message_task_started.set()
 
         if not self.ws:
             raise Exception("Not connected to server.")
