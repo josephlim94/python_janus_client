@@ -266,44 +266,45 @@ class BaseTestClass:
             """Test "listparticipants" API."""
             await self.asyncSetUp()
 
-            session = JanusSession(transport=self.transport)
+            async with JanusSession(transport=self.transport) as session:
 
-            plugin = JanusVideoRoomPlugin()
+                plugin = JanusVideoRoomPlugin()
 
-            await plugin.attach(session=session)
+                await plugin.attach(session=session)
 
-            room_id = 12345
+                room_id = 12345
 
-            response = await plugin.destroy_room(room_id)
-            self.assertFalse(response)
+                response = await plugin.destroy_room(room_id)
+                self.assertFalse(response)
 
-            response = await plugin.create_room(room_id)
-            self.assertTrue(response)
+                response = await plugin.create_room(room_id)
+                self.assertTrue(response)
 
-            response = await plugin.join(
-                room_id=room_id, display_name="Test video room"
-            )
-            self.assertTrue(response)
+                response = await plugin.join(
+                    room_id=room_id, display_name="Test video room"
+                )
+                self.assertTrue(response)
 
-            # player = MediaPlayer(
-            #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
-            # )
-            player = MediaPlayer("./Into.the.Wild.2007.mp4")
-            response = await plugin.publish(player=player)
-            self.assertTrue(response)
+                # player = MediaPlayer(
+                #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
+                # )
+                player = MediaPlayer("./Into.the.Wild.2007.mp4")
+                response = await plugin.publish(player=player)
+                self.assertTrue(response)
 
-            await asyncio.sleep(15)
+                await asyncio.sleep(15)
 
-            response = await plugin.unpublish()
-            self.assertTrue(response)
+                response = await plugin.unpublish()
+                self.assertTrue(response)
 
-            response = await plugin.leave()
-            self.assertTrue(response)
+                response = await plugin.leave()
+                self.assertTrue(response)
 
-            response = await plugin.destroy_room(room_id)
-            self.assertTrue(response)
+                response = await plugin.destroy_room(room_id)
+                self.assertTrue(response)
 
-            await session.destroy()
+                # Don't need to destroy if using context manager, but still good to do it
+                await session.destroy()
 
             await self.asyncTearDown()
 
