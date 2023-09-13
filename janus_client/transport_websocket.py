@@ -20,11 +20,15 @@ class JanusTransportWebsocket(JanusTransport):
 
     ws: websockets.WebSocketClientProtocol
     subprotocol: str
+    connected: bool
+    receiving_message: bool
 
     def __init__(self, **kwargs: dict):
         super().__init__(**kwargs)
 
-        self._connected = False
+        self.connected = False
+        self.receiving_message = False
+
         if "subprotocol" in kwargs:
             self.subprotocol = kwargs["subprotocol"]
         else:
@@ -59,6 +63,7 @@ class JanusTransportWebsocket(JanusTransport):
         logger.info("Disconnected")
 
     def receive_message_done_cb(self, task: asyncio.Task, context=None) -> None:
+        self.receiving_message = False
         try:
             # Check if any exceptions are raised
             # If it's CancelledError or InvalidStateError exception then they will be raised
@@ -82,6 +87,8 @@ class JanusTransportWebsocket(JanusTransport):
         self.connected = False
 
     async def receive_message(self) -> None:
+        self.receiving_message = True
+
         if not self.ws:
             raise Exception("Not connected to server.")
 
@@ -96,6 +103,9 @@ class JanusTransportWebsocket(JanusTransport):
     ) -> None:
         if not self.connected:
             raise Exception("Must connect before any communication.")
+
+        if not self.receiving_message:
+            raise Exception("Websocket not receiving message")
 
         await self.ws.send(json.dumps(message))
 
