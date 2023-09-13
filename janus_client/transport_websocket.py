@@ -68,7 +68,7 @@ class JanusTransportWebsocket(JanusTransport):
                 logger.error(
                     "".join(
                         traceback.format_exception(
-                            etype=type(exception),
+                            type(exception),
                             value=exception,
                             tb=exception.__traceback__,
                         )
