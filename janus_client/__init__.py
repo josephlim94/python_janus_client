@@ -11,5 +11,7 @@ from .transport import JanusTransport
 from .transport_http import JanusTransportHTTP
 from .transport_websocket import JanusTransportWebsocket
 
+from .media import MediaKind, MediaStreamTrack, MediaPlayer
+
 import logging
 logging.getLogger("janus_client").addHandler(logging.NullHandler())

@@ -92,7 +92,10 @@ class JanusPlugin(ABC):
         }
 
     async def on_receive_jsep(self, jsep: dict):
-        if self._pc and self._pc.signalingState != "closed":
+        if self._pc:
+            if self._pc.signalingState == "closed":
+                raise Exception("Received JSEP when PeerConnection is closed")
+
             await self._pc.setRemoteDescription(
                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
             )

@@ -3,12 +3,13 @@ import logging
 import asyncio
 import os
 
-from aiortc.contrib.media import MediaPlayer, MediaRecorder
+from aiortc.contrib.media import MediaRecorder
 
 from janus_client import (
     JanusTransport,
     JanusSession,
     JanusVideoRoomPlugin,
+    MediaPlayer,
 )
 from test.util import async_test
 
@@ -289,13 +290,15 @@ class BaseTestClass:
                 #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
                 # )
                 player = MediaPlayer("./Into.the.Wild.2007.mp4")
-                response = await plugin.publish(player=player)
+                response = await plugin.publish(stream_track=player.stream_tracks)
                 self.assertTrue(response)
 
                 await asyncio.sleep(15)
 
                 response = await plugin.unpublish()
                 self.assertTrue(response)
+
+                player.stop()
 
                 response = await plugin.leave()
                 self.assertTrue(response)

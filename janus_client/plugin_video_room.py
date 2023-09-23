@@ -5,11 +5,13 @@ from typing import List
 from aiortc import (
     RTCPeerConnection,
     RTCSessionDescription,
-    VideoStreamTrack,
-    MediaStreamTrack,
+    # VideoStreamTrack,
+    # MediaStreamTrack,
 )
-from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
+# from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
+from .media import PlayerStreamTrack
 from .plugin_base import JanusPlugin
 from .message_transaction import is_subset
 
@@ -32,8 +34,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
     """
 
     name = "janus.plugin.videoroom"  #: Plugin name
-    __player: MediaPlayer
-    __recorder: MediaRecorder
+    # __player: MediaPlayer
+    # __recorder: MediaRecorder
 
     # def __init__(self, *args, **kwargs):
     #     super().__init__(*args, **kwargs)
@@ -45,10 +47,11 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         if janus_code == "media":
             if response["receiving"]:
-                # It's ok to start multiple times, only the track that
-                # has not been started will start
-                if self.__recorder:
-                    await self.__recorder.start()
+                # # It's ok to start multiple times, only the track that
+                # # has not been started will start
+                # if self.__recorder:
+                #     await self.__recorder.start()
+                pass
 
         if janus_code == "event":
             logger.info(f"Event response: {response}")
@@ -495,40 +498,26 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def create_pc(
         self,
-        player: MediaPlayer = None,
-        recorder: MediaRecorder = None,
+        stream_track: List[PlayerStreamTrack] = [],
         jsep: dict = {},
     ) -> RTCPeerConnection:
         pc = RTCPeerConnection()
 
-        # configure media
-        if player:
-            if player.audio:
-                pc.addTrack(player.audio)
+        for track in stream_track:
+            pc.addTrack(track=track)
 
-            if player.video:
-                pc.addTrack(player.video)
-            else:
-                # Add dummy video track because aiortc cannot open
-                # PC without at least 1 media stream
-                pc.addTrack(VideoStreamTrack())
-        else:
-            # Add dummy video track because aiortc cannot open
-            # PC without at least 1 media stream
-            pc.addTrack(VideoStreamTrack())
+        # # Must configure on track event before setRemoteDescription
+        # if recorder:
 
-        # Must configure on track event before setRemoteDescription
-        if recorder:
+        #     @pc.on("track")
+        #     async def on_track(track: MediaStreamTrack):
+        #         logger.info("Track %s received" % track.kind)
+        #         if track.kind == "video":
+        #             recorder.addTrack(track)
+        #         if track.kind == "audio":
+        #             recorder.addTrack(track)
 
-            @pc.on("track")
-            async def on_track(track: MediaStreamTrack):
-                logger.info("Track %s received" % track.kind)
-                if track.kind == "video":
-                    recorder.addTrack(track)
-                if track.kind == "audio":
-                    recorder.addTrack(track)
-
-                await recorder.start()
+        #         await recorder.start()
 
         if jsep:
             await pc.setRemoteDescription(
@@ -539,8 +528,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def publish(
         self,
-        player: MediaPlayer,
-        recorder: MediaRecorder = None,  # Probably no need for recorder in publish
+        stream_track: List[PlayerStreamTrack],
         configuration: dict = {},
     ) -> None:
         """Publish video stream to the room
@@ -548,9 +536,9 @@ class JanusVideoRoomPlugin(JanusPlugin):
         Should already have joined a room before this.
         """
 
-        self._pc = await self.create_pc(player=player, recorder=recorder)
-        self.__player = player
-        self.__recorder = recorder
+        self._pc = await self.create_pc(stream_track=stream_track)
+        # self.__player = player
+        # self.__recorder = recorder
 
         # send offer
         await self._pc.setLocalDescription(await self._pc.createOffer())
@@ -630,7 +618,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def subscribe_and_start(
         self,
         room_id: int,
-        recorder: MediaRecorder,
+        # recorder: MediaRecorder,
         stream: dict,
         use_msid: bool = False,
         autoupdate: bool = True,
@@ -680,8 +668,11 @@ class JanusVideoRoomPlugin(JanusPlugin):
             raise Exception("Fail to subscribe.")
 
         # Successfully attached. Create PeerConnection then start.
-        self._pc = await self.create_pc(recorder=recorder, jsep=response["jsep"])
-        self.__recorder = recorder
+        self._pc = await self.create_pc(
+            # recorder=recorder,
+            jsep=response["jsep"],
+        )
+        # self.__recorder = recorder
         await self._pc.setLocalDescription(await self._pc.createAnswer())
 
         return await self.start(
