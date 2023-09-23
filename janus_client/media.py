@@ -210,6 +210,8 @@ def stream_media(
     if send_video_frame_coroutine:
         send_video_frame_coroutine.result()
 
+    container.close()
+
 
 class MediaPlayer:
     """
@@ -356,5 +358,3 @@ class MediaPlayer:
         # Cannot join here because it will block the event loop and the
         # thread won't exit because it's trying to put a frame into async queue
         # self.__stream_media_thread.join()
-
-        self.__container.close()
