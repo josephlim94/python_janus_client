@@ -93,9 +93,6 @@ class PlayerStreamTrack(MediaStreamTrack):
         except asyncio.QueueEmpty:
             return
 
-    # def stop(self):
-    #     super().stop()
-
 
 def stream_media(
     event_loop: asyncio.AbstractEventLoop,

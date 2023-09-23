@@ -235,7 +235,7 @@ class BaseTestClass:
 
         @async_test
         async def test_join_and_leave(self):
-            """Test "listparticipants" API."""
+            """Test "join" API."""
             await self.asyncSetUp()
 
             session = JanusSession(transport=self.transport)
@@ -264,11 +264,11 @@ class BaseTestClass:
 
         @async_test
         async def test_publish_and_unpublish(self):
-            """Test "listparticipants" API."""
+            """Test publish and then unpublish media."""
+
             await self.asyncSetUp()
 
             async with JanusSession(transport=self.transport) as session:
-
                 plugin = JanusVideoRoomPlugin()
 
                 await plugin.attach(session=session)
@@ -313,7 +313,7 @@ class BaseTestClass:
 
         @async_test
         async def test_publish_and_subscribe(self):
-            """Test "listparticipants" API."""
+            """Test publish and then subscribe to the same media."""
             await self.asyncSetUp()
 
             session = JanusSession(transport=self.transport)
@@ -349,7 +349,7 @@ class BaseTestClass:
             #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
             # )
             player = MediaPlayer("./Into.the.Wild.2007.mp4")
-            response = await plugin_publish.publish(player=player)
+            response = await plugin_publish.publish(stream_track=player.stream_tracks)
             self.assertTrue(response)
 
             await asyncio.sleep(10)
@@ -361,9 +361,19 @@ class BaseTestClass:
             if os.path.exists(output_filename_out):
                 os.remove(output_filename_out)
             recorder = MediaRecorder(output_filename_out)
+
+            async def on_track_created(track):
+                logger.info("Track %s received" % track.kind)
+                if track.kind == "video":
+                    recorder.addTrack(track)
+                if track.kind == "audio":
+                    recorder.addTrack(track)
+
+                await recorder.start()
+
             response = await plugin_subscribe.subscribe_and_start(
                 room_id=room_id,
-                recorder=recorder,
+                on_track_created=on_track_created,
                 stream={"feed": participants[0]["id"]},
             )
             self.assertTrue(response)
@@ -373,8 +383,12 @@ class BaseTestClass:
             response = await plugin_subscribe.unsubscribe()
             self.assertTrue(response)
 
+            await recorder.stop()
+
             response = await plugin_publish.unpublish()
             self.assertTrue(response)
+
+            player.stop()
 
             response = await plugin_publish.leave()
             self.assertTrue(response)

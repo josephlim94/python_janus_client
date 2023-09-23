@@ -6,7 +6,7 @@ from aiortc import (
     RTCPeerConnection,
     RTCSessionDescription,
     # VideoStreamTrack,
-    # MediaStreamTrack,
+    MediaStreamTrack,
 )
 
 # from aiortc.contrib.media import MediaPlayer, MediaRecorder
@@ -26,19 +26,50 @@ class AllowedAction(Enum):
 
 
 class JanusVideoRoomPlugin(JanusPlugin):
-    """Janus VideoRoom plugin implementation
+    """
+    Janus VideoRoom plugin implementation
 
     Implements API to interact with VideoRoom plugin.
 
-    Each plugin object is expected to have only 1 PeerConnection
+    Each plugin object is expected to have only 1 PeerConnection.
+
+    Each VideoRoom plugin instance is expected to have one of the following
+    three uses:
+    - Administration
+    - Publisher
+    - Subscriber
+
+    An instance meant for administration can be used as publisher or subscriber, but
+    usually there isn't a reason to share. Just create another instance. On the
+    other hand, a publisher instance cannot subscribe to a stream and vice versa.
     """
 
     name = "janus.plugin.videoroom"  #: Plugin name
-    # __player: MediaPlayer
-    # __recorder: MediaRecorder
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
+    class State:
+        STREAMING_OUT_MEDIA = "streaming_out_media"
+        STREAMING_IN_MEDIA = "streaming_in_media"
+        IDLE = "idle"
+
+    __state: State
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.__state = self.State.IDLE
+
+    # __on_record_start = lambda: None
+    # __on_track_created = lambda: None
+    async def __on_media_receive():
+        """
+        This method will be called when the PC receives media.
+        It can be used to start a recorder.
+        It may be called multiple times with no input.
+        """
+        raise NotImplementedError()
+
+    async def __on_track_created(track: MediaStreamTrack):
+        raise NotImplementedError()
 
     async def on_receive(self, response: dict):
         """Handle asynchronous messages"""
@@ -47,11 +78,12 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         if janus_code == "media":
             if response["receiving"]:
-                # # It's ok to start multiple times, only the track that
-                # # has not been started will start
-                # if self.__recorder:
-                #     await self.__recorder.start()
-                pass
+                # It's ok to start multiple times, only the track that
+                # has not been started will start
+                if self.__state == self.State.STREAMING_IN_MEDIA:
+                    self.__on_media_receive()
+                elif self.__state == self.State.IDLE:
+                    raise Exception("Media streaming when idle")
 
         if janus_code == "event":
             logger.info(f"Event response: {response}")
@@ -506,7 +538,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
         for track in stream_track:
             pc.addTrack(track=track)
 
-        # # Must configure on track event before setRemoteDescription
+        # Must configure on track event before setRemoteDescription
+        pc.on("track")(self.__on_track_created)
         # if recorder:
 
         #     @pc.on("track")
@@ -537,11 +570,10 @@ class JanusVideoRoomPlugin(JanusPlugin):
         """
 
         self._pc = await self.create_pc(stream_track=stream_track)
-        # self.__player = player
-        # self.__recorder = recorder
 
         # send offer
         await self._pc.setLocalDescription(await self._pc.createOffer())
+        self.__state = self.State.STREAMING_OUT_MEDIA
 
         body = {
             "request": "publish",
@@ -592,6 +624,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
         :return: True if successfully unpublished.
         """
 
+        self.__state = self.State.IDLE
+
         success_matcher = {
             "janus": "event",
             "plugindata": {
@@ -618,7 +652,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
     async def subscribe_and_start(
         self,
         room_id: int,
-        # recorder: MediaRecorder,
+        on_track_created,
         stream: dict,
         use_msid: bool = False,
         autoupdate: bool = True,
@@ -629,13 +663,16 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         :param room_id: Room ID containing the feed. The same ID that
             you would use to join the room.
-        :param recorder: AIORTC MediaRecorder
+        :param on_track_created: A callback function that will be called when AIORTC PC creates
+            a media track
         :param stream: Configuration of the stream to subscribe to. Minimum should have
             a feed ID.
         :param use_msid: whether subscriptions should include an msid that references the publisher; false by default.
         :param autoupdate: whether a new SDP offer is sent automatically when a subscribed publisher leaves; true by default.
         :param private_id: unique ID of the publisher that originated this request; optional, unless mandated by the room configuration.
         """
+
+        self.__state = self.State.STREAMING_IN_MEDIA
 
         body = {
             "request": "join",
@@ -668,11 +705,10 @@ class JanusVideoRoomPlugin(JanusPlugin):
             raise Exception("Fail to subscribe.")
 
         # Successfully attached. Create PeerConnection then start.
+        self.__on_track_created = on_track_created
         self._pc = await self.create_pc(
-            # recorder=recorder,
             jsep=response["jsep"],
         )
-        # self.__recorder = recorder
         await self._pc.setLocalDescription(await self._pc.createAnswer())
 
         return await self.start(
@@ -681,6 +717,8 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def unsubscribe(self) -> None:
         """Unsubscribe from the feed"""
+
+        self.__state = self.State.IDLE
 
         success_matcher = {
             "janus": "event",
@@ -702,8 +740,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
         )
 
         await self._pc.close()
-        if self.__recorder:
-            await self.__recorder.stop()
 
         return is_subset(response, success_matcher)
 
