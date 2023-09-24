@@ -4,7 +4,6 @@ import asyncio
 from aiortc import (
     RTCPeerConnection,
     RTCSessionDescription,
-    # VideoStreamTrack,
     MediaStreamTrack,
 )
 from aiortc.contrib.media import MediaPlayer, MediaRecorder

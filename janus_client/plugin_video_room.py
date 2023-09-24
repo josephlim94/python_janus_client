@@ -8,7 +8,6 @@ from aiortc import (
     MediaStreamTrack,
 )
 
-from .media import PlayerStreamTrack
 from .plugin_base import JanusPlugin
 from .message_transaction import is_subset
 
@@ -527,7 +526,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def create_pc(
         self,
-        stream_track: List[PlayerStreamTrack] = [],
+        stream_track: List[MediaStreamTrack] = [],
         jsep: dict = {},
     ) -> RTCPeerConnection:
         pc = RTCPeerConnection()
@@ -558,7 +557,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     async def publish(
         self,
-        stream_track: List[PlayerStreamTrack],
+        stream_track: List[MediaStreamTrack],
         configuration: dict = {},
     ) -> None:
         """Publish video stream to the room
