@@ -10,10 +10,6 @@ Easily send and share WebRTC media through `Janus`_ WebRTC server.
 
 .. _JANUS: https://github.com/meetecho/janus-gateway
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
 Key Features
 ============
 
