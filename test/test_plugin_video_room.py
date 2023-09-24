@@ -286,10 +286,10 @@ class BaseTestClass:
                 )
                 self.assertTrue(response)
 
-                # player = MediaPlayer(
-                #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
-                # )
-                player = MediaPlayer("./Into.the.Wild.2007.mp4")
+                # player = MediaPlayer("./Into.the.Wild.2007.mp4")
+                player = MediaPlayer(
+                    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                )
                 response = await plugin.publish(stream_track=player.stream_tracks)
                 self.assertTrue(response)
 
@@ -345,10 +345,10 @@ class BaseTestClass:
             # )
             # self.assertTrue(response)
 
-            # player = MediaPlayer(
-            #     "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
-            # )
-            player = MediaPlayer("./Into.the.Wild.2007.mp4")
+            # player = MediaPlayer("./Into.the.Wild.2007.mp4")
+            player = MediaPlayer(
+                "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+            )
             response = await plugin_publish.publish(stream_track=player.stream_tracks)
             self.assertTrue(response)
 
