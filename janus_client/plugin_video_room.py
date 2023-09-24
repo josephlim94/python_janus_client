@@ -5,11 +5,8 @@ from typing import List
 from aiortc import (
     RTCPeerConnection,
     RTCSessionDescription,
-    # VideoStreamTrack,
     MediaStreamTrack,
 )
-
-# from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
 from .media import PlayerStreamTrack
 from .plugin_base import JanusPlugin
