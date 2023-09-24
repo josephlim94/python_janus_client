@@ -65,8 +65,12 @@ class BaseTestClass:
             if os.path.exists(output_filename):
                 os.remove(output_filename)
 
+            # await plugin_handle.start(
+            #     play_from="./Into.the.Wild.2007.mp4", record_to=output_filename
+            # )
             await plugin_handle.start(
-                play_from="./Into.the.Wild.2007.mp4", record_to=output_filename
+                play_from="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                record_to=output_filename,
             )
 
             await plugin_handle.wait_webrtcup()
