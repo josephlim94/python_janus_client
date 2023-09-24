@@ -4,7 +4,7 @@
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/janus-client)
 [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest)
-![Code Coverage](https://img.shields.io/badge/coverage-95%25-brightgreen)
+![Code Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen)
 
 
 [Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
@@ -17,32 +17,23 @@
 pip install janus-client
 ```
 
+Requires Python >=3.7 <3.11
 > **_NOTE:_**  MacBook Air M1 macOS Ventura requires Python >=3.8
 
 ---
 
 ## Description
 
-This Python client communicates with Janus WebRTC server to use provided services.
+Easily send and share WebRTC media through Janus WebRTC server.
 
-It's using `aiortc` for WebRTC communication and subsequently `PyAV` for media stack.
-
-FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, together with GStreamer support.
-
-## Goals
-
-- Simple interface
-- Minimal dependency/Maximum compatibility
-- Extendable
+This client is using `aiortc` for WebRTC communication and subsequently `PyAV` for media stack.
 
 ## ✅ Features ✅
 
 - Connect to Janus server using:
   - Websocket
   - HTTP
-- Manage Janus client connection, session, and plugins
-- Direct message transactions to correct senders asynchronously, allowing multiple connections in parallel
-- Support authentication with shared static secret (API key) and/or stored token
+- Authentication with shared static secret (API key) and/or stored token
 - Support Admin/Monitor API:
   - Generic requests
   - Configuration related requests
@@ -51,6 +42,9 @@ FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, 
   - EchoTest plugin
   - VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))
   - VideoRoom plugin
+- Simple interface
+- Minimum dependency
+- Extendable Janus transport
 
 ---
 
@@ -166,3 +160,7 @@ Server ping:
 ## Documentation
 
 https://janus-client-in-python.readthedocs.io/
+
+## Experiments
+
+FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, together with GStreamer support.
