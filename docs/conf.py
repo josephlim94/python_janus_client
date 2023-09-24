@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath(".."))
 
 # -- Project information -----------------------------------------------------
 
-project = "Janus Client"
+project = "Python Janus Client"
 copyright = "2021, Lim Meng Kiat"
 author = "Lim Meng Kiat"
 
@@ -59,7 +59,7 @@ html_sidebars = {
 }
 
 html_theme_options = {
-    "description": "Janus WebRTC gateway Python asyncio client",
+    "description": "Easily send and share WebRTC media through Janus WebRTC server.",
     "canonical_url": "https://janus-client-in-python.readthedocs.io/",
     "github_user": "josephlim94",
     "github_repo": "janus_gst_client_py",

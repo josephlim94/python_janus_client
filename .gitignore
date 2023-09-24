@@ -19,3 +19,6 @@ docs/_build/*
 
 # pyenv
 .python-version
+
+# MAC OS X
+.DS_Store

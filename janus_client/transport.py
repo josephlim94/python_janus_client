@@ -226,6 +226,11 @@ class JanusTransport(ABC):
 
     @staticmethod
     def register_transport(protocol_matcher, transport_cls: "JanusTransport") -> None:
+        """
+        Register transport class
+
+        Pass in a regex matcher and it will be used to match base_url to the transport class.
+        """
         JanusTransport.__transport_implementation.append(
             (protocol_matcher, transport_cls)
         )
@@ -234,6 +239,24 @@ class JanusTransport(ABC):
     def create_transport(
         base_url: str, api_secret: str = None, token: str = None, config: Dict = {}
     ) -> "JanusTransport":
+        """Create transport class
+
+        JanusSession will call this to create the transport class automatically
+        using base_url parameter.
+
+        Args:
+            base_url (str): _description_
+            api_secret (str, optional): _description_. Defaults to None.
+            token (str, optional): _description_. Defaults to None.
+            config (Dict, optional): _description_. Defaults to {}.
+
+        Raises:
+            Exception: No transport class found
+            Exception: More than 1 transport class found
+
+        Returns:
+            JanusTransport: Use this object to communicate with Janus server.
+        """
         # Get matching results
         matching_results = []
         for transport_implementation in JanusTransport.__transport_implementation:

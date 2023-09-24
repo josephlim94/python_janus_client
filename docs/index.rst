@@ -3,10 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Janus Client
+Python Janus Client
 ==================================================
 
-`Janus`_ WebRTC gateway Python asyncio client.
+Easily send and share WebRTC media through `Janus`_ WebRTC server.
 
 .. _JANUS: https://github.com/meetecho/janus-gateway
 
@@ -18,6 +18,10 @@ Key Features
 ============
 
 - Supports HTTP/s and WebSockets communication with Janus.
+- Support Admin/Monitor API:
+   - Generic requests
+   - Configuration related requests
+   - Token related requests
 - Supports Janus plugin:
    - EchoTest Plugin
    - VideoCall Plugin
