@@ -1,13 +1,13 @@
-# Python Janus Client
+![Python Janus Client](./logo_3_svg_file.svg "Python Janus Client")
+
+
+[Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
 
 ![PyPI - License](https://img.shields.io/pypi/l/janus-client)
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/janus-client)
 [![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest)
 ![Code Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen)
-
-
-[Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
 
 ---
 
