@@ -1,4 +1,4 @@
-![Python Janus Client](./logo_3_svg_file.svg "Python Janus Client")
+![Python Janus Client](./python_janus_client_logo.svg "Python Janus Client")
 
 
 [Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
