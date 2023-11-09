@@ -61,8 +61,9 @@ html_sidebars = {
 html_theme_options = {
     "description": "Easily send and share WebRTC media through Janus WebRTC server.",
     "canonical_url": "https://janus-client-in-python.readthedocs.io/",
+    "logo": "python_janus_client_icon.svg",
     "github_user": "josephlim94",
-    "github_repo": "janus_gst_client_py",
+    "github_repo": "python_janus_client",
     "github_button": True,
     "github_type": "star",
     "github_banner": True,
