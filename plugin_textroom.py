@@ -14,31 +14,6 @@ from janus_client.message_transaction import is_subset
 logger = logging.getLogger(__name__)
 
 
-# def parse_ice_candidate_string(candidate_string: str) -> RTCIceCandidate:
-#     if not candidate_string.startswith("candidate:"):
-#         raise Exception("String should start with candidate:")
-
-#     data = candidate_string[10:].split(" ")
-#     foundation = data[0]
-#     component_id = int(data[1])
-#     transport = data[2]
-#     priority = int(data[3])
-#     connection_address = data[4]
-#     port = int(data[5])
-#     cand_type = data[6]
-#     candidate_types = data[7]
-
-#     return RTCIceCandidate(
-#         component=component_id,
-#         foundation=foundation,
-#         ip=connection_address,
-#         port=port,
-#         priority=priority,
-#         protocol=transport,
-#         type=f"{cand_type} {candidate_types}",
-#     )
-
-
 class JanusTextRoomPlugin(JanusPlugin):
     """Janus TextRoom plugin implementation"""
 
@@ -63,8 +38,6 @@ class JanusTextRoomPlugin(JanusPlugin):
                 candidate_data, {"sdpMLineIndex": None, "candidate": None}
             ):
                 raise Exception("Invalid candidate data")
-            # print("--- Wait for setLocalDescription ---")
-            # await asyncio.sleep(3)
 
             print(self._pc.iceConnectionState)
             print(self._pc.iceGatheringState)
@@ -149,22 +122,13 @@ class JanusTextRoomPlugin(JanusPlugin):
         )
 
     async def join_room(self, room: int):
-        message = {
-            "request": "list",
-            "textroom": "join",
-            "username": "test_username",
-            "room": room,
-        }
-
-        if self._pc.signalingState == "stable":
-            message["jsep"] = {
-                "sdp": self._pc.localDescription.sdp,
-                "trickle": True,
-                "type": self._pc.localDescription.type,
-            }
-
         return await self.send_wrapper(
-            message=message,
+            message={
+                "request": "list",
+                "textroom": "join",
+                "username": "test_username",
+                "room": room,
+            },
             matcher={
                 "textroom": "success",
                 "participants": [],
@@ -277,14 +241,35 @@ class JanusTextRoomPlugin(JanusPlugin):
         print(self._pc.iceConnectionState)
         print(self._pc.iceGatheringState)
 
-        # print("--- Wait for trickle ---")
-        # await asyncio.sleep(10)
+        print("--- Wait for trickle ---")
+        await asyncio.sleep(5)
+        # for candidate in self.ice_candidates:
+        #     print(candidate)
+        #     await self._pc.addIceCandidate(candidate=candidate)
 
         await self._pc.setLocalDescription(await self._pc.createAnswer())
         print(self._pc.signalingState)
         print(self._pc.connectionState)
         print(self._pc.iceConnectionState)
         print(self._pc.iceGatheringState)
+
+        message_transaction = await self.send(
+            message={
+                "janus": "message",
+                "body": {
+                    "request": "ack",
+                },
+                "jsep": {
+                    "sdp": self._pc.localDescription.sdp,
+                    "trickle": True,
+                    "type": self._pc.localDescription.type,
+                },
+            },
+        )
+        message_response = await message_transaction.get(
+            matcher=function_matcher, timeout=15
+        )
+        await message_transaction.done()
 
         return message_response
 
