@@ -89,9 +89,7 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         return message_response
 
-    async def list(
-        self,
-    ) -> List[dict]:
+    async def list_rooms(self) -> List[dict]:
         """List available rooms."""
 
         response = await self.send_wrapper(
@@ -106,11 +104,34 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         return response["plugindata"]["data"]["list"]
 
-    async def join_room(self, room: int) -> bool:
+    async def join_room(
+        self,
+        room: int,
+        username: str,
+        display_name: str = "",
+        pin: int = -1,
+        token: str = "",
+        history: bool = True,
+    ) -> bool:
         success_matcher = {
             "janus": "success",
             "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
         }
+        message = {
+            "request": "list",
+            "textroom": "join",
+            "room": room,
+            "username": username,
+        }
+        if display_name:
+            message["displayname"] = display_name
+        if pin:
+            message["pin"] = pin
+        if token:
+            message["token"] = token
+        if history:
+            message["history"] = history
+
         response = await self.send_wrapper(
             message={
                 "request": "list",
@@ -126,10 +147,10 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         return is_subset(response, success_matcher)
 
-    async def get_participants_list(self, room: int):
+    async def list_participants(self, room: int):
         """List participants in a specific room"""
 
-        return await self.send_wrapper(
+        response = await self.send_wrapper(
             message={
                 "request": "listparticipants",
                 "room": room,
@@ -139,6 +160,8 @@ class JanusTextRoomPlugin(JanusPlugin):
                 "participants": [],
             },
         )
+
+        return response["plugindata"]["data"]["participants"]
 
     async def message(self, room: int, text: str, ack: bool = True):
         return await self.send_wrapper(

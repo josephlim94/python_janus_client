@@ -43,7 +43,7 @@ class BaseTestClass:
 
             await plugin.attach(session=session)
 
-            room_list = await plugin.list()
+            room_list = await plugin.list_rooms()
             # There will be 1 static room configured in Janus default config
             self.assertTrue(
                 len(list(filter(lambda room: room["room"] == 1234, room_list))) > 0
@@ -65,8 +65,43 @@ class BaseTestClass:
             await plugin.attach(session=session)
 
             # There will be 1 static room configured in Janus default config
-            is_success = await plugin.join_room(room=1234)
+            is_success = await plugin.join_room(room=1234, username="test_username")
             self.assertTrue(is_success)
+
+            await session.destroy()
+
+            await self.asyncTearDown()
+
+        @async_test
+        async def test_list_participants(self):
+            """Test "join" API."""
+            await self.asyncSetUp()
+
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusTextRoomPlugin()
+
+            await plugin.attach(session=session)
+
+            room_id = 1234
+
+            # There will be 1 static room configured in Janus default config
+            is_success = await plugin.join_room(room=room_id, username="test_username")
+            self.assertTrue(is_success)
+
+            participant_list = await plugin.list_participants(room=room_id)
+            self.assertTrue(
+                len(
+                    list(
+                        filter(
+                            lambda participant: participant["username"]
+                            == "test_username",
+                            participant_list,
+                        )
+                    )
+                )
+                > 0
+            )
 
             await session.destroy()
 
