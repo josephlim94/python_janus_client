@@ -11,6 +11,7 @@ from janus_client import (
     JanusVideoRoomPlugin,
     MediaPlayer,
 )
+from janus_client.message_transaction import is_subset
 from test.util import async_test
 
 format = "%(asctime)s: %(message)s"
@@ -355,7 +356,17 @@ class BaseTestClass:
             await asyncio.sleep(10)
 
             participants = await plugin_subscribe.list_participants(room_id=room_id)
-            self.assertEqual(len(participants), 1)
+            publisher_id = None
+            for participant in participants:
+                if is_subset(
+                    participant,
+                    {"display": "Test video room publish", "publisher": True},
+                ):
+                    publisher_id = participant["id"]
+                    break
+            else:
+                self.fail("Publisher not found")
+            self.assertEqual(len(participants), 2)
 
             output_filename_out = "./video_room_record_out.mp4"
             if os.path.exists(output_filename_out):
@@ -374,7 +385,7 @@ class BaseTestClass:
             response = await plugin_subscribe.subscribe_and_start(
                 room_id=room_id,
                 on_track_created=on_track_created,
-                stream={"feed": participants[0]["id"]},
+                stream={"feed": publisher_id},
             )
             self.assertTrue(response)
 
