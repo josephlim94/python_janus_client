@@ -106,8 +106,12 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         return response["plugindata"]["data"]["list"]
 
-    async def join_room(self, room: int):
-        return await self.send_wrapper(
+    async def join_room(self, room: int) -> bool:
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
+        }
+        response = await self.send_wrapper(
             message={
                 "request": "list",
                 "textroom": "join",
@@ -115,10 +119,12 @@ class JanusTextRoomPlugin(JanusPlugin):
                 "room": room,
             },
             matcher={
-                "textroom": "success",
+                "textroom": None,
                 "participants": [],
             },
         )
+
+        return is_subset(response, success_matcher)
 
     async def get_participants_list(self, room: int):
         """List participants in a specific room"""

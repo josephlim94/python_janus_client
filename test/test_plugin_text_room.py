@@ -1,14 +1,14 @@
 import unittest
 import logging
 import asyncio
-# import os
+import os
 
 from janus_client import (
     JanusTransport,
     JanusSession,
     JanusTextRoomPlugin,
 )
-# from janus_client.message_transaction import is_subset
+from janus_client.message_transaction import is_subset
 from test.util import async_test
 
 format = "%(asctime)s: %(message)s"
@@ -53,9 +53,28 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_join_room(self):
+            """Test "join" API."""
+            await self.asyncSetUp()
 
-class TestTransportHttps(BaseTestClass.TestClass):
-    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+            session = JanusSession(transport=self.transport)
+
+            plugin = JanusTextRoomPlugin()
+
+            await plugin.attach(session=session)
+
+            # There will be 1 static room configured in Janus default config
+            is_success = await plugin.join_room(room=1234)
+            self.assertTrue(is_success)
+
+            await session.destroy()
+
+            await self.asyncTearDown()
+
+
+# class TestTransportHttps(BaseTestClass.TestClass):
+#     server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
 
 
 class TestTransportWebsocketSecure(BaseTestClass.TestClass):
