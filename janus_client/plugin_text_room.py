@@ -109,14 +109,10 @@ class JanusTextRoomPlugin(JanusPlugin):
         room: int,
         username: str,
         display_name: str = "",
-        pin: int = -1,
+        pin: str = "",
         token: str = "",
         history: bool = True,
     ) -> bool:
-        success_matcher = {
-            "janus": "success",
-            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
-        }
         message = {
             "request": "list",
             "textroom": "join",
@@ -133,18 +129,17 @@ class JanusTextRoomPlugin(JanusPlugin):
             message["history"] = history
 
         response = await self.send_wrapper(
-            message={
-                "request": "list",
-                "textroom": "join",
-                "username": "test_username",
-                "room": room,
-            },
+            message=message,
             matcher={
                 "textroom": None,
                 "participants": [],
             },
         )
 
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
+        }
         return is_subset(response, success_matcher)
 
     async def list_participants(self, room: int):
