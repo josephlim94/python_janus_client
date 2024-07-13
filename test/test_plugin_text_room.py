@@ -39,7 +39,11 @@ class BaseTestClass:
             )
             await self.transport.connect()
 
+            self.session = JanusSession(transport=self.transport)
+
         async def asyncTearDown(self) -> None:
+            await self.session.destroy()
+
             await self.transport.disconnect()
             # https://docs.aiohttp.org/en/stable/client_advanced.html#graceful-shutdown
             # Working around to avoid "Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000024A04C60280>"
@@ -50,19 +54,15 @@ class BaseTestClass:
             """Test "list" API."""
             await self.asyncSetUp()
 
-            session = JanusSession(transport=self.transport)
-
             plugin = JanusTextRoomPlugin()
 
-            await plugin.attach(session=session)
+            await plugin.attach(session=self.session)
 
             room_list = await plugin.list_rooms()
             # There will be 1 static room configured in Janus default config
             self.assertTrue(
                 len(list(filter(lambda room: room["room"] == 1234, room_list))) > 0
             )
-
-            await session.destroy()
 
             await self.asyncTearDown()
 
@@ -71,17 +71,13 @@ class BaseTestClass:
             """Test "join" API."""
             await self.asyncSetUp()
 
-            session = JanusSession(transport=self.transport)
-
             plugin = JanusTextRoomPlugin()
 
-            await plugin.attach(session=session)
+            await plugin.attach(session=self.session)
 
             # There will be 1 static room configured in Janus default config
             is_success = await plugin.join_room(room=1234, username="test_username")
             self.assertTrue(is_success)
-
-            await session.destroy()
 
             await self.asyncTearDown()
 
@@ -90,11 +86,9 @@ class BaseTestClass:
             """Test "join" API."""
             await self.asyncSetUp()
 
-            session = JanusSession(transport=self.transport)
-
             plugin = JanusTextRoomPlugin()
 
-            await plugin.attach(session=session)
+            await plugin.attach(session=self.session)
 
             room_id = 1234
 
@@ -116,31 +110,25 @@ class BaseTestClass:
                 > 0
             )
 
-            await session.destroy()
-
             await self.asyncTearDown()
 
         @async_test_auto
         async def test_message(self):
             """Test "message" API."""
-            session = JanusSession(transport=self.transport)
+            plugin = JanusTextRoomPlugin()
 
-            try:
-                plugin = JanusTextRoomPlugin()
+            await plugin.attach(session=self.session)
 
-                await plugin.attach(session=session)
+            room_id = 1234
 
-                room_id = 1234
+            # There will be 1 static room configured in Janus default config
+            is_success = await plugin.join_room(room=room_id, username="test_username")
+            self.assertTrue(is_success)
 
-                # There will be 1 static room configured in Janus default config
-                is_success = await plugin.join_room(room=room_id, username="test_username")
-                self.assertTrue(is_success)
-
-                message_response = await plugin.message(room=room_id, text="test message")
-                self.assertTrue(message_response)
-
-            finally:
-                await session.destroy()
+            message_response = await plugin.message_room(
+                room=room_id, text="test message"
+            )
+            self.assertTrue(message_response)
 
 
 # class TestTransportHttps(BaseTestClass.TestClass):
