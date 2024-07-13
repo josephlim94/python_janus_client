@@ -13,7 +13,19 @@ logger = logging.getLogger(__name__)
 
 
 class JanusTextRoomPlugin(JanusPlugin):
-    """Janus TextRoom plugin implementation"""
+    """Janus TextRoom plugin implementation
+
+    When sending a request through Janus API, it needs to have "'request': 'list'"
+    in the request accompanied by the real request such as "'textroom': 'join'".
+    Except for the 'list' request itself. This is because the 'request' parameter is
+    mandatory.
+
+    After joining a room, you can send messages using the `message()` API, but
+    you can only receive messages on a RTCDataChannel. To create a RTCDataChannel, use
+    the `setup()` API.
+
+    When sending a message, the message will always be echoed back.
+    """
 
     name = "janus.plugin.textroom"
     data_channel: RTCDataChannel
@@ -70,6 +82,18 @@ class JanusTextRoomPlugin(JanusPlugin):
                         },
                     },
                 )
+                or is_subset(
+                    response,
+                    {
+                        "janus": "success",
+                        "plugindata": {
+                            "plugin": self.name,
+                            "data": {
+                                "textroom": "error",
+                            },
+                        },
+                    },
+                )
                 or is_subset(response, {"janus": "error", "error": {}})
             )
 
@@ -86,6 +110,18 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         if is_subset(message_response, {"janus": "error", "error": {}}):
             raise Exception(f"Janus error: {message_response}")
+
+        if is_subset(
+            message_response,
+            {
+                "plugindata": {
+                    "data": {
+                        "textroom": "error",
+                    },
+                },
+            },
+        ):
+            raise Exception(f"Plugin error: {message_response['plugindata']['data']}")
 
         return message_response
 
@@ -142,7 +178,7 @@ class JanusTextRoomPlugin(JanusPlugin):
         }
         return is_subset(response, success_matcher)
 
-    async def list_participants(self, room: int):
+    async def list_participants(self, room: int) -> List[dict]:
         """List participants in a specific room"""
 
         response = await self.send_wrapper(
@@ -158,8 +194,14 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         return response["plugindata"]["data"]["participants"]
 
-    async def message(self, room: int, text: str, ack: bool = True):
-        return await self.send_wrapper(
+    async def message(self, room: int, text: str, ack: bool = True) -> bool:
+        """Send a text message to a room.
+
+        If the room is not joined, then it will throw an error.
+
+        If ack is false, an error event will be returned.
+        """
+        response = await self.send_wrapper(
             message={
                 "request": "list",
                 "textroom": "message",
@@ -171,6 +213,12 @@ class JanusTextRoomPlugin(JanusPlugin):
                 "textroom": "success",
             },
         )
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
+        }
+        return is_subset(response, success_matcher)
 
     async def leave(self, room: int):
         return await self.send_wrapper(

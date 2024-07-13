@@ -16,6 +16,19 @@ logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
 
 
+def async_test_auto(coro):
+    @async_test
+    async def wrapper(*args, **kwargs):
+        await args[0].asyncSetUp()
+
+        try:
+            return await coro(*args, **kwargs)
+        finally:
+            await args[0].asyncTearDown()
+
+    return wrapper
+
+
 class BaseTestClass:
     class TestClass(unittest.TestCase):
         server_url: str
@@ -106,6 +119,28 @@ class BaseTestClass:
             await session.destroy()
 
             await self.asyncTearDown()
+
+        @async_test_auto
+        async def test_message(self):
+            """Test "message" API."""
+            session = JanusSession(transport=self.transport)
+
+            try:
+                plugin = JanusTextRoomPlugin()
+
+                await plugin.attach(session=session)
+
+                room_id = 1234
+
+                # There will be 1 static room configured in Janus default config
+                is_success = await plugin.join_room(room=room_id, username="test_username")
+                self.assertTrue(is_success)
+
+                message_response = await plugin.message(room=room_id, text="test message")
+                self.assertTrue(message_response)
+
+            finally:
+                await session.destroy()
 
 
 # class TestTransportHttps(BaseTestClass.TestClass):
