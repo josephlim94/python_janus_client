@@ -100,6 +100,33 @@ class JanusPlugin(ABC):
                 RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
             )
 
+    # async def send_trickle_candidates(self, candidates) -> None:
+    #     return await self.send_wrapper(
+    #         message={
+    #             "janus": "trickle",
+    #             "candidates": candidates,
+    #         },
+    #         matcher={"janus": "ack"},
+    #     )
+
+    # async def send_trickle(self, candidate) -> None:
+    #     return await self.send_wrapper(
+    #         message={
+    #             "janus": "trickle",
+    #             "candidate": candidate,
+    #         },
+    #         matcher={"janus": "ack"},
+    #     )
+
+    # async def send_trickle_completed(self) -> None:
+    #     return await self.send_wrapper(
+    #         message={
+    #             "janus": "trickle",
+    #             "candidate": {"completed": True},
+    #         },
+    #         matcher={"janus": "ack"},
+    #     )
+
     async def trickle(self, sdpMLineIndex, candidate):
         """Send WebRTC candidates to Janus
 

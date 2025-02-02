@@ -125,127 +125,6 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         return message_response
 
-    async def list_rooms(self) -> List[dict]:
-        """List available rooms."""
-
-        response = await self.send_wrapper(
-            message={
-                "request": "list",
-            },
-            matcher={
-                "textroom": "success",
-                "list": [],
-            },
-        )
-
-        return response["plugindata"]["data"]["list"]
-
-    async def join_room(
-        self,
-        room: int,
-        username: str,
-        display_name: str = "",
-        pin: str = "",
-        token: str = "",
-        history: bool = True,
-    ) -> bool:
-        message = {
-            "request": "list",
-            "textroom": "join",
-            "room": room,
-            "username": username,
-        }
-        if display_name:
-            message["displayname"] = display_name
-        if pin:
-            message["pin"] = pin
-        if token:
-            message["token"] = token
-        if history:
-            message["history"] = history
-
-        response = await self.send_wrapper(
-            message=message,
-            matcher={
-                "textroom": None,
-                "participants": [],
-            },
-        )
-
-        success_matcher = {
-            "janus": "success",
-            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
-        }
-        return is_subset(response, success_matcher)
-
-    async def list_participants(self, room: int) -> List[dict]:
-        """List participants in a specific room"""
-
-        response = await self.send_wrapper(
-            message={
-                "request": "listparticipants",
-                "room": room,
-            },
-            matcher={
-                "room": room,
-                "participants": [],
-            },
-        )
-
-        return response["plugindata"]["data"]["participants"]
-
-    async def message(self, room: int, text: str, ack: bool = True) -> bool:
-        """Send a text message to a room.
-
-        If the room is not joined, then it will throw an error.
-
-        If ack is false, an error event will be returned.
-        """
-        response = await self.send_wrapper(
-            message={
-                "request": "list",
-                "textroom": "message",
-                "room": room,
-                "text": text,
-                "ack": ack,
-            },
-            matcher={
-                "textroom": "success",
-            },
-        )
-
-        success_matcher = {
-            "janus": "success",
-            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
-        }
-        return is_subset(response, success_matcher)
-
-    async def leave(self, room: int):
-        return await self.send_wrapper(
-            message={
-                "request": "list",
-                "textroom": "leave",
-                "room": room,
-            },
-            matcher={
-                "textroom": "success",
-            },
-        )
-
-    async def announcement(self, room: int, text: str) -> dict:
-        return await self.send_wrapper(
-            message={
-                "request": "list",
-                "textroom": "announcement",
-                "room": room,
-                "secret": "adminpwd",
-                "text": text,
-            },
-            matcher={
-                "textroom": "success",
-            },
-        )
-
     async def setup(self) -> dict:
         def function_matcher(response: dict):
             return is_subset(
@@ -332,7 +211,7 @@ class JanusTextRoomPlugin(JanusPlugin):
                 },
                 "jsep": {
                     "sdp": self._pc.localDescription.sdp,
-                    "trickle": True,
+                    # "trickle": True,
                     "type": self._pc.localDescription.type,
                 },
             },
@@ -343,6 +222,127 @@ class JanusTextRoomPlugin(JanusPlugin):
         await message_transaction.done()
 
         return message_response
+
+    async def list_rooms(self) -> List[dict]:
+        """List available rooms."""
+
+        response = await self.send_wrapper(
+            message={
+                "request": "list",
+            },
+            matcher={
+                "textroom": "success",
+                "list": [],
+            },
+        )
+
+        return response["plugindata"]["data"]["list"]
+
+    async def join_room(
+        self,
+        room: int,
+        username: str,
+        display_name: str = "",
+        pin: str = "",
+        token: str = "",
+        history: bool = True,
+    ) -> bool:
+        message = {
+            "request": "list",
+            "textroom": "join",
+            "room": room,
+            "username": username,
+        }
+        if display_name:
+            message["displayname"] = display_name
+        if pin:
+            message["pin"] = pin
+        if token:
+            message["token"] = token
+        if history:
+            message["history"] = history
+
+        response = await self.send_wrapper(
+            message=message,
+            matcher={
+                "textroom": None,
+                "participants": [],
+            },
+        )
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
+        }
+        return is_subset(response, success_matcher)
+
+    async def list_participants(self, room: int) -> List[dict]:
+        """List participants in a specific room"""
+
+        response = await self.send_wrapper(
+            message={
+                "request": "listparticipants",
+                "room": room,
+            },
+            matcher={
+                "room": room,
+                "participants": [],
+            },
+        )
+
+        return response["plugindata"]["data"]["participants"]
+
+    async def message_room(self, room: int, text: str, ack: bool = True) -> bool:
+        """Send a text message to a room.
+
+        If the room is not joined, then it will throw an error.
+
+        If ack is false, an error event will be returned.
+        """
+        response = await self.send_wrapper(
+            message={
+                "request": "list",
+                "textroom": "message",
+                "room": room,
+                "text": text,
+                "ack": ack,
+            },
+            matcher={
+                "textroom": "success",
+            },
+        )
+
+        success_matcher = {
+            "janus": "success",
+            "plugindata": {"plugin": self.name, "data": {"textroom": "success"}},
+        }
+        return is_subset(response, success_matcher)
+
+    async def leave(self, room: int):
+        return await self.send_wrapper(
+            message={
+                "request": "list",
+                "textroom": "leave",
+                "room": room,
+            },
+            matcher={
+                "textroom": "success",
+            },
+        )
+
+    async def announcement(self, room: int, text: str) -> dict:
+        return await self.send_wrapper(
+            message={
+                "request": "list",
+                "textroom": "announcement",
+                "room": room,
+                "secret": "adminpwd",
+                "text": text,
+            },
+            matcher={
+                "textroom": "success",
+            },
+        )
 
 
 # async def main():
