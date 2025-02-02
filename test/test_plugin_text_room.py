@@ -130,9 +130,18 @@ class BaseTestClass:
             )
             self.assertTrue(message_response)
 
+        @async_test_auto
+        async def test_setup(self):
+            """Test "setup" API."""
+            plugin = JanusTextRoomPlugin()
 
-# class TestTransportHttps(BaseTestClass.TestClass):
-#     server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+            await plugin.attach(session=self.session)
+
+            await plugin.setup()
+
+
+class TestTransportHttps(BaseTestClass.TestClass):
+    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
 
 
 class TestTransportWebsocketSecure(BaseTestClass.TestClass):
