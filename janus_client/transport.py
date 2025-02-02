@@ -201,6 +201,11 @@ class JanusTransport(ABC):
         response = await message_transaction.get()
         await message_transaction.done()
 
+        if "janus" in response and response["janus"] != "success":
+            raise Exception(
+                f"Create session fail: {response['error'] if 'error' in response else '(EMPTY)'}"
+            )
+
         # Extract session ID
         session_id = int(response["data"]["id"])
 

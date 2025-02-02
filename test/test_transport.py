@@ -62,6 +62,30 @@ class BaseTestClass:
 
             await self.asyncTearDown()
 
+        @async_test
+        async def test_session_fail_auth(self):
+            session = JanusSession(
+                base_url=self.server_url,
+            )
+            with self.assertRaisesRegex(Exception, "Create session fail: {'code': 403"):
+                await session.create()
+            await session.transport.disconnect()
+            
+            session = JanusSession(
+                base_url=self.server_url,
+                api_secret="janusrockxxxxx",
+            )
+            with self.assertRaisesRegex(Exception, "Create session fail: {'code': 403"):
+                await session.create()
+            await session.transport.disconnect()
+
+            session = JanusSession(
+                base_url=self.server_url,
+                api_secret="janusrocks",
+            )
+            await session.create()
+            await session.destroy()
+
 
 # class TestTransportHttp(BaseTestClass.TestClass):
 #     server_url = "http://janusmy.josephgetmyip.com/janusbase/janus"
