@@ -1,7 +1,8 @@
 import asyncio
 import logging
 
-from janus_client import JanusSession, JanusVideoRoomPlugin
+from janus_client import JanusSession
+from janus_client.experiments.plugin_video_room_ffmpeg import JanusVideoRoomPlugin
 import ffmpeg
 
 format = "%(asctime)s: %(message)s"
