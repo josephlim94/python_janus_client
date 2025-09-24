@@ -161,6 +161,46 @@ Server ping:
 
 https://janus-client-in-python.readthedocs.io/
 
+### Documentation Development
+
+This project uses [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) for documentation.
+
+#### Setup
+
+Install development dependencies:
+
+```bash
+poetry install --with dev
+```
+
+#### Local Development
+
+To serve the documentation locally with live reload:
+
+```bash
+poetry run mkdocs serve
+```
+
+The documentation will be available at http://127.0.0.1:8000/
+
+#### Building Documentation
+
+To build the documentation for production:
+
+```bash
+poetry run mkdocs build
+```
+
+The built documentation will be in the `site/` directory.
+
+#### Documentation Structure
+
+- `docs/index.md` - Main documentation page
+- `docs/session.md` - Session API documentation
+- `docs/plugins.md` - Plugin API documentation
+- `docs/transport.md` - Transport API documentation
+- `mkdocs.yml` - MkDocs configuration file
+
 ## Experiments
 
 FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, together with GStreamer support.
