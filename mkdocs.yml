@@ -1,6 +1,6 @@
 site_name: Python Janus Client
 site_description: Easily send and share WebRTC media through Janus WebRTC server.
-site_url: https://janus-client-in-python.readthedocs.io/
+site_url: https://josephlim94.github.io/python_janus_client/
 repo_url: https://github.com/josephlim94/python_janus_client
 repo_name: josephlim94/python_janus_client
 
