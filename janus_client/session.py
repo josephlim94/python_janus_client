@@ -1,5 +1,5 @@
 import asyncio
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, Optional, TYPE_CHECKING
 import logging
 import traceback
 
@@ -14,14 +14,24 @@ logger = logging.getLogger(__name__)
 
 
 class PluginAttachFail(Exception):
+    """Exception raised when plugin attachment fails.
+
+    Args:
+        response: The error response from Janus server.
+    """
+
     def __init__(self, response: dict) -> None:
         super().__init__(f"Fail to attach plugin: {response['error']}")
 
 
 class JanusSession:
-    """Janus session instance"""
+    """Janus session for managing WebRTC connections and plugins.
 
-    __id: int
+    A session represents a connection to the Janus server and manages
+    plugin handles and message routing.
+    """
+
+    __id: Optional[int]
     transport: JanusTransport
     __create_lock: asyncio.Lock
     created: bool
@@ -29,10 +39,18 @@ class JanusSession:
     def __init__(
         self,
         base_url: str = "",
-        api_secret: str = None,
-        token: str = None,
-        transport: JanusTransport = None,
-    ):
+        api_secret: Optional[str] = None,
+        token: Optional[str] = None,
+        transport: Optional[JanusTransport] = None,
+    ) -> None:
+        """Initialize a new Janus session.
+
+        Args:
+            base_url: Base URL for the Janus server.
+            api_secret: Optional API secret for authentication.
+            token: Optional token for authentication.
+            transport: Optional custom transport instance.
+        """
         self.__id = None
         self.__create_lock = asyncio.Lock()
         self.created = False
@@ -47,19 +65,19 @@ class JanusSession:
                 token=token,
             )
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """Return string representation of the session."""
         return f"Session ({self.__id}) {self}"
 
-    # Async context manager only manages the transport connection
-    async def __aenter__(self):
+    async def __aenter__(self) -> "JanusSession":
+        """Enter async context manager and connect transport."""
         await self.transport.connect()
-
         return self
 
-    async def __aexit__(self, exc_type, exc_value, exc_tb):
+    async def __aexit__(self, exc_type, exc_value, exc_tb) -> None:
+        """Exit async context manager and clean up resources."""
         if self.created:
             await self.destroy()
-
         await self.transport.disconnect()
 
     async def _create(self) -> None:
@@ -73,11 +91,10 @@ class JanusSession:
         self.created = True
 
     async def create(self) -> None:
-        """Initialize resources"""
+        """Initialize session resources and start keepalive."""
         async with self.__create_lock:
             if not self.created:
                 await self._create()
-
                 self.created = True
 
     async def _destroy(self) -> None:
@@ -100,20 +117,22 @@ class JanusSession:
 
         self.keepalive_task.cancel()
 
+        if self.__id is None:
+            raise Exception("Session not properly initialized")
+
         await self.transport.destroy_session(self.__id)
 
         self.__id = None
 
     async def destroy(self) -> None:
-        """Release resources
+        """Release session resources and stop keepalive.
 
-        | Should be called when you don't need the session anymore.
-        | Plugins from this session should be destroyed before this.
+        Should be called when the session is no longer needed.
+        All plugins should be destroyed before calling this method.
         """
         async with self.__create_lock:
             if self.created:
                 await self._destroy()
-
                 self.created = False
 
     def __sanitize_message(self, message: dict) -> None:
@@ -126,12 +145,27 @@ class JanusSession:
     async def send(
         self,
         message: dict,
-        handle_id: int = None,
+        handle_id: Optional[int] = None,
     ) -> MessageTransaction:
+        """Send a message through this session.
+
+        Args:
+            message: The message to send to Janus.
+            handle_id: Optional plugin handle ID for plugin-specific messages.
+
+        Returns:
+            MessageTransaction for tracking the response.
+
+        Raises:
+            Exception: If session is not properly initialized.
+        """
         self.__sanitize_message(message=message)
 
         if not self.created:
             await self.create()
+
+        if self.__id is None:
+            raise Exception("Session not properly initialized")
 
         return await self.transport.send(
             message,
@@ -139,9 +173,12 @@ class JanusSession:
             handle_id=handle_id,
         )
 
-    # TODO: This is not required if using HTTP REST API, though it
-    #       doesn't hurt to still send it.
     async def keepalive(self) -> None:
+        """Send periodic keepalive messages to maintain the session.
+
+        Sends keepalive messages every 30 seconds to prevent the session
+        from timing out due to inactivity.
+        """
         # Reference: https://janus.conf.meetecho.com/docs/rest.html
         # A Janus session is kept alive as long as there's no inactivity for 60 seconds
         while True:
@@ -149,7 +186,15 @@ class JanusSession:
             message_transaction = await self.send({"janus": "keepalive"})
             await message_transaction.done()
 
-    async def on_receive(self, response: dict):
+    async def on_receive(self, response: dict) -> None:
+        """Handle incoming messages from Janus.
+
+        Routes messages to the appropriate plugin handle or processes
+        session-level messages.
+
+        Args:
+            response: The response message from Janus.
+        """
         if "sender" not in response:
             # This is response for self
             logger.info(f"Async event for session: {response}")
@@ -167,9 +212,19 @@ class JanusSession:
         await self.plugin_handles[plugin_id].on_receive(response)
 
     async def attach_plugin(self, plugin: "JanusPlugin") -> int:
-        """Create plugin handle for the given plugin type
+        """Attach a plugin to this session.
 
-        :param plugin: Plugin instance with janus_client.JanusPlugin as base class
+        Creates a plugin handle on the Janus server and registers it
+        with this session for message routing.
+
+        Args:
+            plugin: The plugin instance to attach.
+
+        Returns:
+            The plugin handle ID assigned by Janus.
+
+        Raises:
+            PluginAttachFail: If the plugin attachment fails.
         """
 
         def matcher(res):
@@ -192,5 +247,16 @@ class JanusSession:
 
         return handle_id
 
-    def detach_plugin(self, plugin_handle: "JanusPlugin"):
+    def detach_plugin(self, plugin_handle: "JanusPlugin") -> None:
+        """Remove a plugin handle from this session.
+
+        Args:
+            plugin_handle: The plugin handle to remove.
+
+        Raises:
+            KeyError: If plugin handle is not found in session.
+        """
+        if plugin_handle.id is None:
+            raise Exception("Plugin not properly initialized")
+
         del self.plugin_handles[plugin_handle.id]

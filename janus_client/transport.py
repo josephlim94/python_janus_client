@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import TYPE_CHECKING, List, Dict, Callable
+from typing import TYPE_CHECKING, List, Dict, Callable, Optional
 import logging
 
 # import uuid
@@ -24,8 +24,8 @@ class JanusTransport(ABC):
     __transport_implementation: List[tuple] = []
 
     __base_url: str
-    __api_secret: str
-    __token: str
+    __api_secret: Optional[str]
+    __token: Optional[str]
     __message_transaction: Dict[str, MessageTransaction]
     __sessions: Dict[int, "JanusSession"]
     __connect_lock: asyncio.Lock
@@ -43,14 +43,12 @@ class JanusTransport(ABC):
 
     @abstractmethod
     async def _connect(self) -> None:
-        """Establish connection to the Janus server.
-        """
+        """Establish connection to the Janus server."""
         pass
 
     @abstractmethod
     async def _disconnect(self) -> None:
-        """Close the connection to the Janus server.
-        """
+        """Close the connection to the Janus server."""
         pass
 
     async def info(self) -> Dict:
@@ -103,7 +101,11 @@ class JanusTransport(ABC):
         pass
 
     def __init__(
-        self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict
+        self,
+        base_url: str,
+        api_secret: Optional[str] = None,
+        token: Optional[str] = None,
+        **kwargs: dict,
     ):
         """Initialize a new Janus transport instance.
 
@@ -149,8 +151,7 @@ class JanusTransport(ABC):
                 self.connected = True
 
     async def disconnect(self) -> None:
-        """Close connection and release resources.
-        """
+        """Close connection and release resources."""
         async with self.__connect_lock:
             if self.connected:
                 await self._disconnect()
@@ -170,8 +171,8 @@ class JanusTransport(ABC):
     async def send(
         self,
         message: Dict,
-        session_id: int = None,
-        handle_id: int = None,
+        session_id: Optional[int] = None,
+        handle_id: Optional[int] = None,
     ) -> MessageTransaction:
         """Send a message to the Janus server.
 
@@ -307,7 +308,9 @@ class JanusTransport(ABC):
             await self.disconnect()
 
     @staticmethod
-    def register_transport(protocol_matcher: Callable, transport_cls: "JanusTransport") -> None:
+    def register_transport(
+        protocol_matcher: Callable, transport_cls: "JanusTransport"
+    ) -> None:
         """Register a transport implementation for automatic selection.
 
         Args:
@@ -322,7 +325,10 @@ class JanusTransport(ABC):
 
     @staticmethod
     def create_transport(
-        base_url: str, api_secret: str = None, token: str = None, config: Dict = {}
+        base_url: str,
+        api_secret: Optional[str] = None,
+        token: Optional[str] = None,
+        config: Dict = {},
     ) -> "JanusTransport":
         """Create an appropriate transport instance based on the URL protocol.
 
@@ -370,3 +376,5 @@ class JanusTransport(ABC):
                 return transport_protocol(
                     base_url=base_url, api_secret=api_secret, token=token, **config
                 )
+
+        raise Exception("No protocol matched")

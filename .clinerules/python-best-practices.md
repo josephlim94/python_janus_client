@@ -132,9 +132,11 @@ async def test_plugin_attach():
 ## Documentation Requirements
 
 ### Docstrings
-- **Format:** Use Google-style docstrings
-- **Required:** All public classes, methods, and functions
-- **Parameters:** Document all parameters with types
+- **Format:** Use Google-style docstrings exclusively
+- **Required:** All public classes, methods, and functions must have docstrings
+- **Conciseness:** Keep documentation as concise as possible while being clear
+- **No Implementation Details:** Focus on what the function does, not how it does it
+- **Parameters:** Document all parameters with types and brief descriptions
 - **Returns:** Document return values and types
 - **Raises:** Document exceptions that may be raised
 - **Example:**
@@ -155,6 +157,15 @@ async def join_room(self, room_id: int, username: str, pin: Optional[str] = None
         TimeoutError: If operation times out
     """
 ```
+
+### Documentation Style Guidelines
+- **Concise Descriptions:** Use clear, brief descriptions that focus on purpose and behavior
+- **Avoid Implementation Details:** Don't document internal algorithms, data structures, or implementation specifics
+- **User-Focused:** Write from the perspective of someone using the API, not implementing it
+- **Consistent Terminology:** Use consistent terms throughout the codebase
+- **Examples:** Include usage examples for complex functions when helpful
+- **Bad Example:** "This method iterates through the internal session dictionary and calls the transport's send method with a JSON-serialized message"
+- **Good Example:** "Send a message to the Janus server and return a transaction for tracking the response"
 
 ### Code Comments
 - **Complex Logic:** Comment complex algorithms or WebRTC-specific code
