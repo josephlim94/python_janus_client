@@ -15,9 +15,10 @@ logger = logging.getLogger(__name__)
 
 
 class JanusTransport(ABC):
-    """Janus transport protocol interface
+    """Janus transport protocol interface for managing sessions and transactions.
 
-    Manage Sessions and Transactions
+    Attributes:
+        connected: Boolean indicating if the transport is currently connected.
     """
 
     __transport_implementation: List[tuple] = []
@@ -33,25 +34,50 @@ class JanusTransport(ABC):
 
     @abstractmethod
     async def _send(self, message: Dict) -> None:
-        """Really sends the message. Doesn't return a response"""
+        """Send a message to the Janus server.
+
+        Args:
+            message: JSON serializable dictionary containing the message to send.
+        """
         pass
 
     @abstractmethod
     async def _connect(self) -> None:
+        """Establish connection to the Janus server.
+        """
         pass
 
     @abstractmethod
     async def _disconnect(self) -> None:
+        """Close the connection to the Janus server.
+        """
         pass
 
     async def info(self) -> Dict:
-        """Get info of Janus server. Will be overridden for HTTP."""
+        """Get information about the Janus server.
+
+        Returns:
+            Dictionary containing server information including version,
+            name, supported plugins, and other server details.
+
+        Note:
+            This method may be overridden by specific transport implementations
+            (e.g., HTTP transport) to provide transport-specific behavior.
+        """
         message_transaction = await self.send({"janus": "info"})
         response = await message_transaction.get()
         await message_transaction.done()
         return response
 
     async def ping(self) -> Dict:
+        """Send a ping request to the Janus server.
+
+        Returns:
+            Dictionary containing the pong response from the server.
+
+        Raises:
+            asyncio.TimeoutError: If no pong response is received within 15 seconds.
+        """
         message_transaction = await self.send(
             {"janus": "ping"},
             # response_handler=lambda res: res if res["janus"] == "pong" else None,
@@ -61,21 +87,34 @@ class JanusTransport(ABC):
         return response
 
     async def dispatch_session_created(self, session_id: int) -> None:
-        """Override this method to get session created event"""
+        """Handle session creation event.
+
+        Args:
+            session_id: The unique identifier of the newly created session.
+        """
         pass
 
     async def dispatch_session_destroyed(self, session_id: int) -> None:
-        """Override this method to get session destroyed event"""
+        """Handle session destruction event.
+
+        Args:
+            session_id: The unique identifier of the destroyed session.
+        """
         pass
 
     def __init__(
         self, base_url: str, api_secret: str = None, token: str = None, **kwargs: dict
     ):
-        """Create connection instance
+        """Initialize a new Janus transport instance.
 
-        :param base_url: Janus server address
-        :param api_secret: (optional) API key for shared static secret authentication
-        :param token: (optional) Token for shared token based authentication
+        Args:
+            base_url: The base URL of the Janus server (e.g., 'ws://localhost:8188').
+                Trailing slashes will be automatically removed.
+            api_secret: Optional API secret for shared static secret authentication.
+                If provided, will be included in all requests to the server.
+            token: Optional token for shared token-based authentication.
+                If provided, will be included in all requests to the server.
+            **kwargs: Additional keyword arguments passed to transport implementations.
         """
 
         self.__base_url = base_url.rstrip("/")
@@ -98,7 +137,11 @@ class JanusTransport(ABC):
     #     await self.__transactions[transaction_id].put(response)
 
     async def connect(self) -> None:
-        """Initialize resources"""
+        """Establish connection to the Janus server.
+
+        Raises:
+            Exception: If connection establishment fails.
+        """
         async with self.__connect_lock:
             if not self.connected:
                 await self._connect()
@@ -106,7 +149,8 @@ class JanusTransport(ABC):
                 self.connected = True
 
     async def disconnect(self) -> None:
-        """Release resources"""
+        """Close connection and release resources.
+        """
         async with self.__connect_lock:
             if self.connected:
                 await self._disconnect()
@@ -129,12 +173,22 @@ class JanusTransport(ABC):
         session_id: int = None,
         handle_id: int = None,
     ) -> MessageTransaction:
-        """Send message to server
+        """Send a message to the Janus server.
 
-        :param message: JSON serializable dictionary to send
+        Args:
+            message: JSON serializable dictionary containing the message to send.
+                Must include a 'janus' field specifying the message type.
+            session_id: Optional session ID to include in the message for
+                session-specific requests.
+            handle_id: Optional handle ID to include in the message for
+                plugin-specific requests.
 
-        :returns: Synchronous response from Janus server
+        Returns:
+            MessageTransaction object that can be used to wait for and retrieve
+            the server's response to this message.
 
+        Raises:
+            Exception: If the message is missing the required 'janus' field.
         """
 
         self.__sanitize_message(message=message)
@@ -170,6 +224,11 @@ class JanusTransport(ABC):
         return message_transaction
 
     async def receive(self, response: dict) -> None:
+        """Process an incoming response from the Janus server.
+
+        Args:
+            response: Dictionary containing the response from the Janus server.
+        """
         logger.info(f"Received: {response}")
         # First try transaction handlers
         if "transaction" in response:
@@ -195,7 +254,17 @@ class JanusTransport(ABC):
             logger.info(f"Response dropped: {response}")
 
     async def create_session(self, session: "JanusSession") -> int:
-        """Create Janus Session"""
+        """Create a new Janus session.
+
+        Args:
+            session: The JanusSession object to associate with the new session ID.
+
+        Returns:
+            The unique session ID assigned by the Janus server.
+
+        Raises:
+            Exception: If session creation fails or the server returns an error.
+        """
 
         message_transaction = await self.send({"janus": "create"})
         response = await message_transaction.get()
@@ -216,8 +285,16 @@ class JanusTransport(ABC):
 
         return session_id
 
-    # Don't call this from client object, call destroy from session instead
     async def destroy_session(self, session_id: int) -> None:
+        """Destroy a Janus session and clean up resources.
+
+        Args:
+            session_id: The unique identifier of the session to destroy.
+
+        Note:
+            This method should not be called directly from client code.
+            Use the destroy() method on the JanusSession object instead.
+        """
         if session_id in self.__sessions:
             del self.__sessions[session_id]
         else:
@@ -231,10 +308,13 @@ class JanusTransport(ABC):
 
     @staticmethod
     def register_transport(protocol_matcher, transport_cls: "JanusTransport") -> None:
-        """
-        Register transport class
+        """Register a transport implementation for automatic selection.
 
-        Pass in a regex matcher and it will be used to match base_url to the transport class.
+        Args:
+            protocol_matcher: A callable that takes a base_url string and returns
+                True if this transport can handle that URL protocol.
+            transport_cls: The JanusTransport subclass to register for the
+                matching protocol.
         """
         JanusTransport.__transport_implementation.append(
             (protocol_matcher, transport_cls)
@@ -244,23 +324,27 @@ class JanusTransport(ABC):
     def create_transport(
         base_url: str, api_secret: str = None, token: str = None, config: Dict = {}
     ) -> "JanusTransport":
-        """Create transport class
+        """Create an appropriate transport instance based on the URL protocol.
 
-        JanusSession will call this to create the transport class automatically
-        using base_url parameter.
+        Automatically selects and instantiates the correct transport implementation
+        based on the base_url protocol. This method is typically called by
+        JanusSession to create the transport automatically.
 
         Args:
-            base_url (str): _description_
-            api_secret (str, optional): _description_. Defaults to None.
-            token (str, optional): _description_. Defaults to None.
-            config (Dict, optional): _description_. Defaults to {}.
-
-        Raises:
-            Exception: No transport class found
-            Exception: More than 1 transport class found
+            base_url: The base URL of the Janus server. The protocol (ws://, wss://,
+                http://, https://) determines which transport implementation is used.
+            api_secret: Optional API secret for shared static secret authentication.
+            token: Optional token for shared token-based authentication.
+            config: Additional configuration parameters to pass to the transport
+                constructor.
 
         Returns:
-            JanusTransport: Use this object to communicate with Janus server.
+            An instance of the appropriate JanusTransport subclass for communicating
+            with the Janus server.
+
+        Raises:
+            Exception: If no transport implementation matches the URL protocol.
+            Exception: If multiple transport implementations match the URL protocol.
         """
         # Get matching results
         matching_results = []

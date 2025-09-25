@@ -2,11 +2,7 @@
 
 Transport classes handle the actual communication with the Janus server. The transport method is automatically detected using regex patterns on the base_url parameter passed to the Session object.
 
-The transport layer provides an abstraction over different communication protocols (HTTP, WebSocket) and handles connection management, message routing, and error recovery.
-
 ## Base Transport Class
-
-All transport implementations inherit from the base `JanusTransport` class, which defines the common interface and functionality.
 
 ::: janus_client.transport.JanusTransport
     options:
