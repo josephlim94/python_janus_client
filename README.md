@@ -6,7 +6,6 @@
 ![PyPI - License](https://img.shields.io/pypi/l/janus-client)
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/janus-client)
-[![Documentation Status](https://readthedocs.org/projects/janus-client-in-python/badge/?version=latest)](https://janus-client-in-python.readthedocs.io/en/latest/?badge=latest)
 ![Code Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen)
 
 ---
@@ -159,11 +158,9 @@ Server ping:
 
 ## Documentation
 
-https://janus-client-in-python.readthedocs.io/
+The project documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) and deployed to GitHub Pages.
 
 ### Documentation Development
-
-This project uses [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) for documentation.
 
 #### Setup
 
