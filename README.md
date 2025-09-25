@@ -185,10 +185,18 @@ The documentation will be available at http://127.0.0.1:8000/
 To build the documentation for production:
 
 ```bash
-poetry run mkdocs build
+poetry run python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict
 ```
 
 The built documentation will be in the `site/` directory.
+
+**Important:** Always use the `--strict` flag when building documentation to catch warnings as errors. This ensures documentation quality and prevents deployment of documentation with issues.
+
+For local development without strict mode:
+
+```bash
+poetry run mkdocs build
+```
 
 #### Documentation Structure
 

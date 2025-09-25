@@ -50,7 +50,7 @@ jobs:
 
       - name: Build documentation
         run: |
-          poetry run mkdocs build --clean --strict
+          poetry run python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict
 
       - name: Setup Pages
         if: github.ref == 'refs/heads/master'

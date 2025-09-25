@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
-from typing import TYPE_CHECKING, List, Dict
+from typing import TYPE_CHECKING, List, Dict, Callable
 import logging
 
 # import uuid
@@ -307,7 +307,7 @@ class JanusTransport(ABC):
             await self.disconnect()
 
     @staticmethod
-    def register_transport(protocol_matcher, transport_cls: "JanusTransport") -> None:
+    def register_transport(protocol_matcher: Callable, transport_cls: "JanusTransport") -> None:
         """Register a transport implementation for automatic selection.
 
         Args:

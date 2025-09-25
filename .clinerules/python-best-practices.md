@@ -182,6 +182,13 @@ async def join_room(self, room_id: int, username: str, pin: Optional[str] = None
 - **Coverage:** Check coverage with `coverage run -m pytest`
 - **Type Checking:** Use `mypy` for static type checking
 
+### Documentation Building
+- **MkDocs Strict Mode:** Always use `--strict` flag when building documentation to catch warnings as errors
+- **Build Command:** Use `poetry run python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict`
+- **Warning Suppression:** The command above suppresses known deprecation warnings from mkdocs-autorefs plugin
+- **Local Testing:** Test documentation builds locally before committing changes
+- **CI/CD:** The GitHub workflow automatically uses strict mode to ensure clean documentation builds
+
 ## WebRTC & Media Specific Guidelines
 
 ### aiortc Integration
