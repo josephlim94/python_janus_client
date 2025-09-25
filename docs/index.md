@@ -6,13 +6,13 @@ Easily send and share WebRTC media through [Janus](https://github.com/meetecho/j
 
 - Supports HTTP/s and WebSockets communication with Janus.
 - Support Admin/Monitor API:
-   - Generic requests
-   - Configuration related requests
-   - Token related requests
+    - Generic requests
+    - Configuration related requests
+    - Token related requests
 - Supports Janus plugin:
-   - EchoTest Plugin
-   - VideoCall Plugin
-   - VideoRoom Plugin
+    - EchoTest Plugin
+    - VideoCall Plugin
+    - VideoRoom Plugin
 - Extendable Transport class and Plugin class
 
 ## Library Installation
@@ -57,58 +57,58 @@ from janus_client import JanusSession, JanusVideoCallPlugin
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
 async def main():
-   # Create session
-   session = JanusSession(
-      base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
-   )
+    # Create session
+    session = JanusSession(
+        base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+    )
 
-   # Create plugin
-   plugin_handle = JanusVideoCallPlugin()
+    # Create plugin
+    plugin_handle = JanusVideoCallPlugin()
 
-   # Attach to Janus session
-   await plugin_handle.attach(session=session)
+    # Attach to Janus session
+    await plugin_handle.attach(session=session)
 
-   # Prepare username and media stream
-   username = "testusernamein"
-   username_out = "testusernameout"
+    # Prepare username and media stream
+    username = "testusernamein"
+    username_out = "testusernameout"
 
-   player = MediaPlayer(
-      "desktop",
-      format="gdigrab",
-      options={
+    player = MediaPlayer(
+        "desktop",
+        format="gdigrab",
+        options={
             "video_size": "640x480",
             "framerate": "30",
             "offset_x": "20",
             "offset_y": "30",
-      },
-   )
-   recorder = MediaRecorder("./videocall_record_out.mp4")
+        },
+    )
+    recorder = MediaRecorder("./videocall_record_out.mp4")
 
-   # Register myself as testusernameout
-   result = await plugin_handle.register(username=username_out)
+    # Register myself as testusernameout
+    result = await plugin_handle.register(username=username_out)
 
-   # Call testusernamein
-   result = await plugin_handle.call(
-      username=username, player=player, recorder=recorder
-   )
+    # Call testusernamein
+    result = await plugin_handle.call(
+        username=username, player=player, recorder=recorder
+    )
 
-   # Wait awhile then hangup
-   await asyncio.sleep(30)
+    # Wait awhile then hangup
+    await asyncio.sleep(30)
 
-   result = await plugin_handle.hangup()
+    result = await plugin_handle.hangup()
 
-   # Destroy plugin
-   await plugin_handle.destroy()
+    # Destroy plugin
+    await plugin_handle.destroy()
 
-   # Destroy session
-   await session.destroy()
+    # Destroy session
+    await session.destroy()
 
 
 if __name__ == "__main__":
-   try:
-      asyncio.run(main())
-   except KeyboardInterrupt:
-      pass
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
 ```
 
 This example will register to the VideoCall plugin using username `testusernameout`. It will then call the user registered using the username `testusernamein`.
