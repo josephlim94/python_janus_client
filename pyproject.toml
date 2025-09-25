@@ -29,7 +29,10 @@ aiohttp = "^3.8.5"
 
 [tool.poetry.group.dev.dependencies]
 coverage = "^7.2.7"
-mkdocs-material = "^9.5.0"
+mkdocs-material = "^9.6.20"
+mkdocstrings = "^0.23.0"
+mkdocstrings-python = "^1.7.5"
+griffe = "^0.38.0"
 
 [build-system]
 requires = ["poetry-core"]

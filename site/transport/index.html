@@ -48,6 +48,8 @@
       
     
     
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -258,7 +260,7 @@
   
   
     <li class="md-tabs__item">
-      <a href="../session.md" class="md-tabs__link">
+      <a href="../session/" class="md-tabs__link">
         
   
   
@@ -384,7 +386,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../session.md" class="md-nav__link">
+      <a href="../session/" class="md-nav__link">
         
   
   
@@ -478,120 +480,47 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#base-class" class="md-nav__link">
+  <a href="#base-transport-class" class="md-nav__link">
     <span class="md-ellipsis">
-      Base Class
+      Base Transport Class
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Base Class">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;JanusTransport
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" JanusTransport">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#janustransport" class="md-nav__link">
+  <a href="#janus_client.transport.JanusTransport-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      JanusTransport
+      Attributes
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JanusTransport">
+    <nav class="md-nav" aria-label="Attributes">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#constructor" class="md-nav__link">
+  <a href="#janus_client.transport.JanusTransport.connected" class="md-nav__link">
     <span class="md-ellipsis">
-      Constructor
+      &nbsp;connected
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
+  <a href="#janus_client.transport.JanusTransport.base_url" class="md-nav__link">
     <span class="md-ellipsis">
-      Methods
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_connect" class="md-nav__link">
-    <span class="md-ellipsis">
-      _connect()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_disconnect" class="md-nav__link">
-    <span class="md-ellipsis">
-      _disconnect()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_sendmessage" class="md-nav__link">
-    <span class="md-ellipsis">
-      _send(message)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#info" class="md-nav__link">
-    <span class="md-ellipsis">
-      info()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ping" class="md-nav__link">
-    <span class="md-ellipsis">
-      ping()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dispatch_session_createdsession" class="md-nav__link">
-    <span class="md-ellipsis">
-      dispatch_session_created(session)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dispatch_session_destroyedsession" class="md-nav__link">
-    <span class="md-ellipsis">
-      dispatch_session_destroyed(session)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register_transporttransport_class" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_transport(transport_class)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create_transportbase_url-kwargs" class="md-nav__link">
-    <span class="md-ellipsis">
-      create_transport(base_url, **kwargs)
+      &nbsp;base_url
     </span>
   </a>
   
@@ -599,6 +528,124 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.info" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;ping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.dispatch_session_created" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_created
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.dispatch_session_destroyed" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_destroyed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.send" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;send
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.receive" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.create_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.destroy_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;destroy_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.register_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;register_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.create_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_transport
+    </span>
+  </a>
   
 </li>
         
@@ -619,41 +666,41 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="HTTP Transport">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#janustransporthttp" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP" class="md-nav__link">
     <span class="md-ellipsis">
-      JanusTransportHTTP
+      &nbsp;JanusTransportHTTP
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JanusTransportHTTP">
+    <nav class="md-nav" aria-label=" JanusTransportHTTP">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#janus_client.transport_http.JanusTransportHTTP-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.connected" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connected
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#url-format" class="md-nav__link">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.base_url" class="md-nav__link">
     <span class="md-ellipsis">
-      URL Format
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#usage-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage Example
+      &nbsp;base_url
     </span>
   </a>
   
@@ -661,6 +708,165 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;ping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.send" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;send
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.receive" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.create_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.destroy_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;destroy_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.register_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;register_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.create_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.info" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.session_receive_response_done_cb" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;session_receive_response_done_cb
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.session_receive_response" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;session_receive_response
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.dispatch_session_created" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_created
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.dispatch_session_destroyed" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_destroyed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Transport Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Transport Usage
+    </span>
+  </a>
   
 </li>
         
@@ -676,41 +882,86 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="WebSocket Transport">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#janustransportwebsocket" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket" class="md-nav__link">
     <span class="md-ellipsis">
-      JanusTransportWebsocket
+      &nbsp;JanusTransportWebsocket
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JanusTransportWebsocket">
+    <nav class="md-nav" aria-label=" JanusTransportWebsocket">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#features_1" class="md-nav__link">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.base_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;base_url
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#url-format_1" class="md-nav__link">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.ws" class="md-nav__link">
     <span class="md-ellipsis">
-      URL Format
+      &nbsp;ws
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#usage-example_1" class="md-nav__link">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.subprotocol" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage Example
+      &nbsp;subprotocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.connected" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connected
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receiving_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receiving_message
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message_task
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task_started" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message_task_started
     </span>
   </a>
   
@@ -718,6 +969,165 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.info" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;ping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_created" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_created
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_destroyed" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_destroyed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.send" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;send
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.create_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.destroy_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;destroy_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.register_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;register_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.create_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_done_cb" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message_done_cb
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket-transport-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Transport Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket-transport-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Transport Usage
+    </span>
+  </a>
   
 </li>
         
@@ -733,6 +1143,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Transport Selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transport-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transport Registration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -745,20 +1170,170 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
+  <a href="#transport-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      Error Handling
+      Transport Configuration
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
+  <a href="#error-handling-and-recovery" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration Options
+      Error Handling and Recovery
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Error Handling and Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Timeouts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-reconnection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Reconnection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-vs-websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP vs WebSocket
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-pooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pooling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-transport-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Transport Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Transport Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enable Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-connection-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Connection State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Analysis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transport-protocol-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transport Protocol Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transport Protocol Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Transport Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket-transport-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Transport Protocol
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -797,120 +1372,47 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#base-class" class="md-nav__link">
+  <a href="#base-transport-class" class="md-nav__link">
     <span class="md-ellipsis">
-      Base Class
+      Base Transport Class
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Base Class">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;JanusTransport
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=" JanusTransport">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#janustransport" class="md-nav__link">
+  <a href="#janus_client.transport.JanusTransport-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      JanusTransport
+      Attributes
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JanusTransport">
+    <nav class="md-nav" aria-label="Attributes">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#constructor" class="md-nav__link">
+  <a href="#janus_client.transport.JanusTransport.connected" class="md-nav__link">
     <span class="md-ellipsis">
-      Constructor
+      &nbsp;connected
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#methods" class="md-nav__link">
+  <a href="#janus_client.transport.JanusTransport.base_url" class="md-nav__link">
     <span class="md-ellipsis">
-      Methods
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#_connect" class="md-nav__link">
-    <span class="md-ellipsis">
-      _connect()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_disconnect" class="md-nav__link">
-    <span class="md-ellipsis">
-      _disconnect()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#_sendmessage" class="md-nav__link">
-    <span class="md-ellipsis">
-      _send(message)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#info" class="md-nav__link">
-    <span class="md-ellipsis">
-      info()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#ping" class="md-nav__link">
-    <span class="md-ellipsis">
-      ping()
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dispatch_session_createdsession" class="md-nav__link">
-    <span class="md-ellipsis">
-      dispatch_session_created(session)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#dispatch_session_destroyedsession" class="md-nav__link">
-    <span class="md-ellipsis">
-      dispatch_session_destroyed(session)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#register_transporttransport_class" class="md-nav__link">
-    <span class="md-ellipsis">
-      register_transport(transport_class)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#create_transportbase_url-kwargs" class="md-nav__link">
-    <span class="md-ellipsis">
-      create_transport(base_url, **kwargs)
+      &nbsp;base_url
     </span>
   </a>
   
@@ -918,6 +1420,124 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.info" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;ping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.dispatch_session_created" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_created
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.dispatch_session_destroyed" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_destroyed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.send" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;send
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.receive" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.create_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.destroy_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;destroy_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.register_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;register_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport.JanusTransport.create_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_transport
+    </span>
+  </a>
   
 </li>
         
@@ -938,41 +1558,41 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="HTTP Transport">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#janustransporthttp" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP" class="md-nav__link">
     <span class="md-ellipsis">
-      JanusTransportHTTP
+      &nbsp;JanusTransportHTTP
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JanusTransportHTTP">
+    <nav class="md-nav" aria-label=" JanusTransportHTTP">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#features" class="md-nav__link">
+  <a href="#janus_client.transport_http.JanusTransportHTTP-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.connected" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connected
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#url-format" class="md-nav__link">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.base_url" class="md-nav__link">
     <span class="md-ellipsis">
-      URL Format
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#usage-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      Usage Example
+      &nbsp;base_url
     </span>
   </a>
   
@@ -980,6 +1600,165 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;ping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.send" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;send
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.receive" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.create_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.destroy_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;destroy_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.register_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;register_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.create_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.info" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.session_receive_response_done_cb" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;session_receive_response_done_cb
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.session_receive_response" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;session_receive_response
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.dispatch_session_created" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_created
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_http.JanusTransportHTTP.dispatch_session_destroyed" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_destroyed
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Transport Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Transport Usage
+    </span>
+  </a>
   
 </li>
         
@@ -995,41 +1774,86 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="WebSocket Transport">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#janustransportwebsocket" class="md-nav__link">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket" class="md-nav__link">
     <span class="md-ellipsis">
-      JanusTransportWebsocket
+      &nbsp;JanusTransportWebsocket
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="JanusTransportWebsocket">
+    <nav class="md-nav" aria-label=" JanusTransportWebsocket">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#features_1" class="md-nav__link">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket-attributes" class="md-nav__link">
     <span class="md-ellipsis">
-      Features
+      Attributes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Attributes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.base_url" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;base_url
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#url-format_1" class="md-nav__link">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.ws" class="md-nav__link">
     <span class="md-ellipsis">
-      URL Format
+      &nbsp;ws
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#usage-example_1" class="md-nav__link">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.subprotocol" class="md-nav__link">
     <span class="md-ellipsis">
-      Usage Example
+      &nbsp;subprotocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.connected" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connected
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receiving_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receiving_message
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message_task
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task_started" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message_task_started
     </span>
   </a>
   
@@ -1037,6 +1861,165 @@
         
       </ul>
     </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.info" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;info
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.ping" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;ping
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_created" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_created
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_destroyed" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;dispatch_session_destroyed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;connect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.disconnect" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;disconnect
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.send" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;send
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.create_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.destroy_session" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;destroy_session
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.register_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;register_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.create_transport" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;create_transport
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_done_cb" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message_done_cb
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message" class="md-nav__link">
+    <span class="md-ellipsis">
+      &nbsp;receive_message
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket-transport-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Transport Features
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket-transport-usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Transport Usage
+    </span>
+  </a>
   
 </li>
         
@@ -1052,6 +2035,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Transport Selection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#transport-registration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transport Registration
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1064,20 +2062,170 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
+  <a href="#transport-configuration" class="md-nav__link">
     <span class="md-ellipsis">
-      Error Handling
+      Transport Configuration
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration-options" class="md-nav__link">
+  <a href="#error-handling-and-recovery" class="md-nav__link">
     <span class="md-ellipsis">
-      Configuration Options
+      Error Handling and Recovery
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Error Handling and Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#connection-failures" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Failures
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-timeouts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Timeouts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-reconnection" class="md-nav__link">
+    <span class="md-ellipsis">
+      Automatic Reconnection
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Performance Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-vs-websocket" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP vs WebSocket
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connection-pooling" class="md-nav__link">
+    <span class="md-ellipsis">
+      Connection Pooling
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resource Management
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#debugging-transport-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      Debugging Transport Issues
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Debugging Transport Issues">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enable-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      Enable Logging
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#monitor-connection-state" class="md-nav__link">
+    <span class="md-ellipsis">
+      Monitor Connection State
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Network Analysis
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#transport-protocol-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      Transport Protocol Details
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Transport Protocol Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#http-transport-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      HTTP Transport Protocol
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#websocket-transport-protocol" class="md-nav__link">
+    <span class="md-ellipsis">
+      WebSocket Transport Protocol
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1114,208 +2262,2038 @@
 
 
 <h1 id="transport">Transport<a class="headerlink" href="#transport" title="Permanent link">&para;</a></h1>
-<p>Transport method is detected using regex on base_url parameter passed to Session object.</p>
-<h2 id="base-class">Base Class<a class="headerlink" href="#base-class" title="Permanent link">&para;</a></h2>
-<h3 id="janustransport"><code>JanusTransport</code><a class="headerlink" href="#janustransport" title="Permanent link">&para;</a></h3>
-<p>Base class for all transport implementations. Transport classes handle the actual communication with the Janus server.</p>
-<h4 id="constructor">Constructor<a class="headerlink" href="#constructor" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">JanusTransport</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<p>Transport classes handle the actual communication with the Janus server. The transport method is automatically detected using regex patterns on the base_url parameter passed to the Session object.</p>
+<p>The transport layer provides an abstraction over different communication protocols (HTTP, WebSocket) and handles connection management, message routing, and error recovery.</p>
+<h2 id="base-transport-class">Base Transport Class<a class="headerlink" href="#base-transport-class" title="Permanent link">&para;</a></h2>
+<p>All transport implementations inherit from the base <code>JanusTransport</code> class, which defines the common interface and functionality.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="janus_client.transport.JanusTransport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">janus_client.transport.JanusTransport</span>
+
+
+<a href="#janus_client.transport.JanusTransport" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">JanusTransport</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span> <span class="n">api_secret</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span>
 </span></code></pre></div>
-<p><strong>Parameters:</strong>
-- <code>base_url</code> (str): The base URL of the Janus server
-- <code>**kwargs</code>: Additional transport-specific configuration options</p>
-<h4 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h4>
-<h5 id="_connect"><code>_connect()</code><a class="headerlink" href="#_connect" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">_connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+  
+      <p>Janus transport protocol interface</p>
+<p>Manage Sessions and Transactions</p>
+  
+      <p>Create connection instance</p>
+<p>:param base_url: Janus server address
+:param api_secret: (optional) API key for shared static secret authentication
+:param token: (optional) Token for shared token based authentication</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+<h3 id="janus_client.transport.JanusTransport-attributes">Attributes<a href="#janus_client.transport.JanusTransport-attributes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.connected" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">connected</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.connected" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">connected</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span>
 </span></code></pre></div>
-<p>Establish connection to the Janus server. This is an abstract method that must be implemented by subclasses.</p>
-<h5 id="_disconnect"><code>_disconnect()</code><a class="headerlink" href="#_disconnect" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">_disconnect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+
+  <div class="doc doc-contents ">
+  
+      <p>Must set this property when connected or disconnected</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.base_url" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">base_url</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.base_url" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span>
 </span></code></pre></div>
-<p>Close the connection to the Janus server. This is an abstract method that must be implemented by subclasses.</p>
-<h5 id="_sendmessage"><code>_send(message)</code><a class="headerlink" href="#_sendmessage" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<h3 id="janus_client.transport.JanusTransport-functions">Functions<a href="#janus_client.transport.JanusTransport-functions" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.info" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">info</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.info" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Dict">Dict</span></span>
 </span></code></pre></div>
-<p>Send a message to the Janus server. This is an abstract method that must be implemented by subclasses.</p>
-<p><strong>Parameters:</strong>
-- <code>message</code> (Dict[str, Any]): The message to send</p>
-<h5 id="info"><code>info()</code><a class="headerlink" href="#info" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+
+  <div class="doc doc-contents ">
+  
+      <p>Get info of Janus server. Will be overridden for HTTP.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.ping" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">ping</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.ping" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Dict">Dict</span></span>
 </span></code></pre></div>
-<p>Get server information from Janus.</p>
-<p><strong>Returns:</strong>
-- <code>Dict[str, Any]</code>: Server information response</p>
-<h5 id="ping"><code>ping()</code><a class="headerlink" href="#ping" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.dispatch_session_created" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">dispatch_session_created</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.dispatch_session_created" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dispatch_session_created</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
-<p>Send a ping to the Janus server to check connectivity.</p>
-<p><strong>Returns:</strong>
-- <code>Dict[str, Any]</code>: Ping response</p>
-<h5 id="dispatch_session_createdsession"><code>dispatch_session_created(session)</code><a class="headerlink" href="#dispatch_session_createdsession" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span> <span class="nf">dispatch_session_created</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">JanusSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+
+  <div class="doc doc-contents ">
+  
+      <p>Override this method to get session created event</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.dispatch_session_destroyed" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">dispatch_session_destroyed</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.dispatch_session_destroyed" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dispatch_session_destroyed</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
-<p>Notify the transport that a session has been created.</p>
-<p><strong>Parameters:</strong>
-- <code>session</code> (JanusSession): The created session</p>
-<h5 id="dispatch_session_destroyedsession"><code>dispatch_session_destroyed(session)</code><a class="headerlink" href="#dispatch_session_destroyedsession" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">def</span> <span class="nf">dispatch_session_destroyed</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n">JanusSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+
+  <div class="doc doc-contents ">
+  
+      <p>Override this method to get session destroyed event</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.connect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">connect</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.connect" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
-<p>Notify the transport that a session has been destroyed.</p>
-<p><strong>Parameters:</strong>
-- <code>session</code> (JanusSession): The destroyed session</p>
-<h5 id="register_transporttransport_class"><code>register_transport(transport_class)</code><a class="headerlink" href="#register_transporttransport_class" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nd">@staticmethod</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">def</span> <span class="nf">register_transport</span><span class="p">(</span><span class="n">transport_class</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">JanusTransport</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize resources</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.disconnect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">disconnect</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.disconnect" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">disconnect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
 </span></code></pre></div>
-<p>Register a transport class for automatic detection.</p>
-<p><strong>Parameters:</strong>
-- <code>transport_class</code> (Type[JanusTransport]): The transport class to register</p>
-<h5 id="create_transportbase_url-kwargs"><code>create_transport(base_url, **kwargs)</code><a class="headerlink" href="#create_transportbase_url-kwargs" title="Permanent link">&para;</a></h5>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nd">@staticmethod</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">def</span> <span class="nf">create_transport</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">JanusTransport</span>
+
+  <div class="doc doc-contents ">
+  
+      <p>Release resources</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.send" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">send</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.send" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="typing.Dict">Dict</span></span><span class="p">,</span> <span class="n">session_id</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">handle_id</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="janus_client.message_transaction.MessageTransaction">MessageTransaction</span></span>
 </span></code></pre></div>
-<p>Create a transport instance based on the base URL.</p>
-<p><strong>Parameters:</strong>
-- <code>base_url</code> (str): The base URL to determine transport type
-- <code>**kwargs</code>: Additional configuration options</p>
-<p><strong>Returns:</strong>
-- <code>JanusTransport</code>: The appropriate transport instance</p>
-<h2 id="http-transport">HTTP Transport<a class="headerlink" href="#http-transport" title="Permanent link">&para;</a></h2>
-<h3 id="janustransporthttp"><code>JanusTransportHTTP</code><a class="headerlink" href="#janustransporthttp" title="Permanent link">&para;</a></h3>
-<p>HTTP/HTTPS transport implementation for communicating with Janus server over HTTP.</p>
-<h4 id="features">Features<a class="headerlink" href="#features" title="Permanent link">&para;</a></h4>
+
+  <div class="doc doc-contents ">
+  
+      <p>Send message to server</p>
+<p>:param message: JSON serializable dictionary to send</p>
+<p>:returns: Synchronous response from Janus server</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.receive" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">receive</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.receive" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.create_session" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">create_session</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.create_session" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">create_session</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.session.JanusSession" href="../session/#janus_client.session.JanusSession">JanusSession</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">int</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create Janus Session</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.destroy_session" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">destroy_session</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.destroy_session" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">destroy_session</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.register_transport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">register_transport</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.register_transport" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">register_transport</span><span class="p">(</span><span class="n">protocol_matcher</span><span class="p">,</span> <span class="n">transport_cls</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Register transport class</p>
+<p>Pass in a regex matcher and it will be used to match base_url to the transport class.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport.JanusTransport.create_transport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">create_transport</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#janus_client.transport.JanusTransport.create_transport" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">create_transport</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span> <span class="n">api_secret</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="typing.Dict">Dict</span></span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create transport class</p>
+<p>JanusSession will call this to create the transport class automatically
+using base_url parameter.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>base_url</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em></p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>api_secret</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>
+                <code><span title="typing.Dict">Dict</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to {}.</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>Exception</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>No transport class found</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+                <code>Exception</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>More than 1 transport class found</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>JanusTransport</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use this object to communicate with Janus server.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div><h2 id="http-transport">HTTP Transport<a class="headerlink" href="#http-transport" title="Permanent link">&para;</a></h2>
+<p>The HTTP transport implementation provides communication with Janus server over HTTP/HTTPS using long polling for receiving messages.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="janus_client.transport_http.JanusTransportHTTP" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">janus_client.transport_http.JanusTransportHTTP</span>
+
+
+<a href="#janus_client.transport_http.JanusTransportHTTP" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">JanusTransportHTTP</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span> <span class="n">api_secret</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></code></p>
+
+  
+      <p>Janus transport through HTTP</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+<h3 id="janus_client.transport_http.JanusTransportHTTP-attributes">Attributes<a href="#janus_client.transport_http.JanusTransportHTTP-attributes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.connected" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">connected</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.connected" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">connected</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Must set this property when connected or disconnected</p>
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.base_url" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">base_url</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.base_url" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<h3 id="janus_client.transport_http.JanusTransportHTTP-functions">Functions<a href="#janus_client.transport_http.JanusTransportHTTP-functions" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.ping" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">ping</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.ping" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Dict">Dict</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.connect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">connect</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.connect" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize resources</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.disconnect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">disconnect</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.disconnect" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">disconnect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Release resources</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.send" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">send</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.send" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="typing.Dict">Dict</span></span><span class="p">,</span> <span class="n">session_id</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">handle_id</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="janus_client.message_transaction.MessageTransaction">MessageTransaction</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Send message to server</p>
+<p>:param message: JSON serializable dictionary to send</p>
+<p>:returns: Synchronous response from Janus server</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.receive" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">receive</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.receive" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.create_session" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">create_session</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.create_session" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">create_session</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.session.JanusSession" href="../session/#janus_client.session.JanusSession">JanusSession</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">int</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create Janus Session</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.destroy_session" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">destroy_session</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.destroy_session" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">destroy_session</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.register_transport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">register_transport</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.register_transport" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">register_transport</span><span class="p">(</span><span class="n">protocol_matcher</span><span class="p">,</span> <span class="n">transport_cls</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Register transport class</p>
+<p>Pass in a regex matcher and it will be used to match base_url to the transport class.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.create_transport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">create_transport</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.create_transport" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">create_transport</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span> <span class="n">api_secret</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="typing.Dict">Dict</span></span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create transport class</p>
+<p>JanusSession will call this to create the transport class automatically
+using base_url parameter.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>base_url</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em></p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>api_secret</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>
+                <code><span title="typing.Dict">Dict</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to {}.</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>Exception</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>No transport class found</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+                <code>Exception</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>More than 1 transport class found</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>JanusTransport</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use this object to communicate with Janus server.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.info" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">info</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.info" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Dict">Dict</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.session_receive_response_done_cb" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">session_receive_response_done_cb</span>
+
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.session_receive_response_done_cb" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">session_receive_response_done_cb</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n"><span title="asyncio.Task">Task</span></span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.session_receive_response" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">session_receive_response</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.session_receive_response" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">session_receive_response</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span> <span class="n">destroyed_event</span><span class="p">:</span> <span class="n"><span title="asyncio.Event">Event</span></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.dispatch_session_created" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">dispatch_session_created</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.dispatch_session_created" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dispatch_session_created</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_http.JanusTransportHTTP.dispatch_session_destroyed" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">dispatch_session_destroyed</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_http.JanusTransportHTTP.dispatch_session_destroyed" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dispatch_session_destroyed</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div><h3 id="http-transport-features">HTTP Transport Features<a class="headerlink" href="#http-transport-features" title="Permanent link">&para;</a></h3>
 <ul>
-<li>Supports both HTTP and HTTPS protocols</li>
-<li>Uses long polling for receiving messages</li>
-<li>Automatic session management</li>
-<li>Connection pooling for efficiency</li>
+<li><strong>Protocol Support</strong>: HTTP and HTTPS</li>
+<li><strong>Long Polling</strong>: Efficient message receiving using long polling</li>
+<li><strong>Connection Pooling</strong>: Reuses HTTP connections for efficiency</li>
+<li><strong>Session Management</strong>: Automatic session lifecycle management</li>
+<li><strong>Error Recovery</strong>: Automatic retry with exponential backoff</li>
 </ul>
-<h4 id="url-format">URL Format<a class="headerlink" href="#url-format" title="Permanent link">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>http://example.com/janus
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>https://example.com/janus
-</span></code></pre></div>
-<h4 id="usage-example">Usage Example<a class="headerlink" href="#usage-example" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">import</span> <span class="nn">asyncio</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kn">from</span> <span class="nn">janus_client</span> <span class="kn">import</span> <span class="n">JanusSession</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>    <span class="c1"># HTTP transport will be automatically selected</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/janus&quot;</span><span class="p">)</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>        <span class="c1"># Transport handles all HTTP communication</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>        <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server info: </span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+<h3 id="http-transport-usage">HTTP Transport Usage<a class="headerlink" href="#http-transport-usage" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">janus_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">JanusSession</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="c1"># HTTP transport will be automatically selected for http/https URLs</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/janus&quot;</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        <span class="c1"># Transport handles all HTTP communication automatically</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server info: </span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>        <span class="c1"># Send a ping to test connectivity</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>        <span class="n">ping_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ping response: </span><span class="si">{</span><span class="n">ping_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </span></code></pre></div>
 <h2 id="websocket-transport">WebSocket Transport<a class="headerlink" href="#websocket-transport" title="Permanent link">&para;</a></h2>
-<h3 id="janustransportwebsocket"><code>JanusTransportWebsocket</code><a class="headerlink" href="#janustransportwebsocket" title="Permanent link">&para;</a></h3>
-<p>WebSocket transport implementation for real-time communication with Janus server.</p>
-<h4 id="features_1">Features<a class="headerlink" href="#features_1" title="Permanent link">&para;</a></h4>
-<ul>
-<li>Full-duplex communication</li>
-<li>Real-time message delivery</li>
-<li>Automatic reconnection handling</li>
-<li>Lower latency than HTTP transport</li>
-</ul>
-<h4 id="url-format_1">URL Format<a class="headerlink" href="#url-format_1" title="Permanent link">&para;</a></h4>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>ws://example.com/janus
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>wss://example.com/janus
+<p>The WebSocket transport implementation provides real-time, full-duplex communication with the Janus server.</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="janus_client.transport_websocket.JanusTransportWebsocket" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-class"></code>          <span class="doc doc-object-name doc-class-name">janus_client.transport_websocket.JanusTransportWebsocket</span>
+
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket" class="headerlink" title="Permanent link">&para;</a></h2>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">JanusTransportWebsocket</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span>
 </span></code></pre></div>
-<h4 id="usage-example_1">Usage Example<a class="headerlink" href="#usage-example_1" title="Permanent link">&para;</a></h4>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">import</span> <span class="nn">asyncio</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="kn">from</span> <span class="nn">janus_client</span> <span class="kn">import</span> <span class="n">JanusSession</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="k">async</span> <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>    <span class="c1"># WebSocket transport will be automatically selected</span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">)</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>        <span class="c1"># Transport handles all WebSocket communication</span>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>        <span class="n">ping_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ping response: </span><span class="si">{</span><span class="n">ping_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
+
+  <div class="doc doc-contents first">
+          <p class="doc doc-class-bases">
+            Bases: <code><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></code></p>
+
+  
+      <p>Janus transport through HTTP</p>
+<p>Manage Sessions and Transactions</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+<h3 id="janus_client.transport_websocket.JanusTransportWebsocket-attributes">Attributes<a href="#janus_client.transport_websocket.JanusTransportWebsocket-attributes" class="headerlink" title="Permanent link">&para;</a></h3>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.base_url" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">base_url</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.base_url" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.ws" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">ws</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.ws" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ws</span><span class="p">:</span> <span class="n"><span title="websockets.WebSocketClientProtocol">WebSocketClientProtocol</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.subprotocol" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">subprotocol</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.subprotocol" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">subprotocol</span><span class="p">:</span> <span class="n">str</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.connected" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">connected</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.connected" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">connected</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.receiving_message" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">receiving_message</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.receiving_message" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receiving_message</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">receive_message_task</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive_message_task</span><span class="p">:</span> <span class="n"><span title="asyncio.Task">Task</span></span> <span class="o">=</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task_started" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-attribute"></code>          <span class="doc doc-object-name doc-attribute-name">receive_message_task_started</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_task_started" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive_message_task_started</span><span class="p">:</span> <span class="n"><span title="asyncio.Event">Event</span></span> <span class="o">=</span> <span class="n"><span title="asyncio.Event">Event</span></span><span class="p">()</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  </div>
+
+</div>
+
+<h3 id="janus_client.transport_websocket.JanusTransportWebsocket-functions">Functions<a href="#janus_client.transport_websocket.JanusTransportWebsocket-functions" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.info" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">info</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.info" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">info</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Dict">Dict</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Get info of Janus server. Will be overridden for HTTP.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.ping" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">ping</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.ping" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n"><span title="typing.Dict">Dict</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_created" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">dispatch_session_created</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_created" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dispatch_session_created</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Override this method to get session created event</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_destroyed" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">dispatch_session_destroyed</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.dispatch_session_destroyed" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">dispatch_session_destroyed</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Override this method to get session destroyed event</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.connect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">connect</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.connect" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">connect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Initialize resources</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.disconnect" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">disconnect</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.disconnect" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">disconnect</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Release resources</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.send" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">send</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.send" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n"><span title="typing.Dict">Dict</span></span><span class="p">,</span> <span class="n">session_id</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">handle_id</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n"><span title="janus_client.message_transaction.MessageTransaction">MessageTransaction</span></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Send message to server</p>
+<p>:param message: JSON serializable dictionary to send</p>
+<p>:returns: Synchronous response from Janus server</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.receive" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">receive</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.create_session" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">create_session</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.create_session" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">create_session</span><span class="p">(</span><span class="n">session</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.session.JanusSession" href="../session/#janus_client.session.JanusSession">JanusSession</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">int</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create Janus Session</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.destroy_session" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">destroy_session</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.destroy_session" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">destroy_session</span><span class="p">(</span><span class="n">session_id</span><span class="p">:</span> <span class="n">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.register_transport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">register_transport</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.register_transport" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">register_transport</span><span class="p">(</span><span class="n">protocol_matcher</span><span class="p">,</span> <span class="n">transport_cls</span><span class="p">:</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Register transport class</p>
+<p>Pass in a regex matcher and it will be used to match base_url to the transport class.</p>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.create_transport" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">create_transport</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.create_transport" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">create_transport</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="n">str</span><span class="p">,</span> <span class="n">api_secret</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="p">:</span> <span class="n"><span title="typing.Dict">Dict</span></span> <span class="o">=</span> <span class="p">{})</span> <span class="o">-&gt;</span> <span class="n"><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+  
+      <p>Create transport class</p>
+<p>JanusSession will call this to create the transport class automatically
+using base_url parameter.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>base_url</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em></p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>api_secret</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>token</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to None.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>config</code></td>
+          <td>
+                <code><span title="typing.Dict">Dict</span></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p><em>description</em>. Defaults to {}.</p>
+            </div>
+          </td>
+          <td>
+                <code>{}</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>Exception</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>No transport class found</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+                <code>Exception</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>More than 1 transport class found</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>JanusTransport</code></td>          <td>
+                <code><a class="autorefs autorefs-internal" title="janus_client.transport.JanusTransport" href="#janus_client.transport.JanusTransport">JanusTransport</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Use this object to communicate with Janus server.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.receive_message_done_cb" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">receive_message_done_cb</span>
+
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message_done_cb" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive_message_done_cb</span><span class="p">(</span><span class="n">task</span><span class="p">:</span> <span class="n"><span title="asyncio.Task">Task</span></span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h4 id="janus_client.transport_websocket.JanusTransportWebsocket.receive_message" class="doc doc-heading">
+<code class="doc-symbol doc-symbol-heading doc-symbol-method"></code>          <span class="doc doc-object-name doc-function-name">receive_message</span>
+
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#janus_client.transport_websocket.JanusTransportWebsocket.receive_message" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">receive_message</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span>
+</span></code></pre></div>
+
+  <div class="doc doc-contents ">
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div><h3 id="websocket-transport-features">WebSocket Transport Features<a class="headerlink" href="#websocket-transport-features" title="Permanent link">&para;</a></h3>
+<ul>
+<li><strong>Full-Duplex Communication</strong>: Real-time bidirectional messaging</li>
+<li><strong>Low Latency</strong>: Direct WebSocket connection for minimal delay</li>
+<li><strong>Automatic Reconnection</strong>: Handles connection drops gracefully</li>
+<li><strong>Message Queuing</strong>: Buffers messages during reconnection</li>
+<li><strong>Keepalive Support</strong>: Built-in ping/pong for connection health</li>
+</ul>
+<h3 id="websocket-transport-usage">WebSocket Transport Usage<a class="headerlink" href="#websocket-transport-usage" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">janus_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">JanusSession</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">main</span><span class="p">():</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="c1"># WebSocket transport will be automatically selected for ws/wss URLs</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">)</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>        <span class="c1"># Transport handles all WebSocket communication automatically</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>        <span class="n">ping_response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Ping response: </span><span class="si">{</span><span class="n">ping_response</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        <span class="c1"># Get server information</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>        <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Server info: </span><span class="si">{</span><span class="n">info</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>    <span class="n">asyncio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">main</span><span class="p">())</span>
 </span></code></pre></div>
 <h2 id="transport-selection">Transport Selection<a class="headerlink" href="#transport-selection" title="Permanent link">&para;</a></h2>
-<p>The transport is automatically selected based on the URL scheme:</p>
+<p>The transport is automatically selected based on the URL scheme provided to the session:</p>
 <table>
 <thead>
 <tr>
 <th>URL Scheme</th>
 <th>Transport Class</th>
+<th>Description</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>http://</code></td>
 <td><code>JanusTransportHTTP</code></td>
+<td>HTTP transport with long polling</td>
 </tr>
 <tr>
 <td><code>https://</code></td>
 <td><code>JanusTransportHTTP</code></td>
+<td>HTTPS transport with long polling</td>
 </tr>
 <tr>
 <td><code>ws://</code></td>
 <td><code>JanusTransportWebsocket</code></td>
+<td>WebSocket transport</td>
 </tr>
 <tr>
 <td><code>wss://</code></td>
 <td><code>JanusTransportWebsocket</code></td>
+<td>Secure WebSocket transport</td>
 </tr>
 </tbody>
 </table>
+<h3 id="transport-registration">Transport Registration<a class="headerlink" href="#transport-registration" title="Permanent link">&para;</a></h3>
+<p>Transport classes are registered using protocol matcher functions:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># HTTP transport registration</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">def</span><span class="w"> </span><span class="nf">protocol_matcher</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>    <span class="k">return</span> <span class="n">base_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">))</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="n">JanusTransport</span><span class="o">.</span><span class="n">register_transport</span><span class="p">(</span><span class="n">protocol_matcher</span><span class="p">,</span> <span class="n">JanusTransportHTTP</span><span class="p">)</span>
+</span></code></pre></div>
 <h2 id="custom-transport-implementation">Custom Transport Implementation<a class="headerlink" href="#custom-transport-implementation" title="Permanent link">&para;</a></h2>
-<p>You can create custom transport implementations by inheriting from <code>JanusTransport</code>:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">from</span> <span class="nn">janus_client</span> <span class="kn">import</span> <span class="n">JanusTransport</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="k">class</span> <span class="nc">MyCustomTransport</span><span class="p">(</span><span class="n">JanusTransport</span><span class="p">):</span>
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>        <span class="c1"># Initialize custom transport</span>
-</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
-</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>        <span class="c1"># Implement connection logic</span>
-</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>        <span class="k">pass</span>
-</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
-</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>        <span class="c1"># Implement disconnection logic</span>
-</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>        <span class="k">pass</span>
-</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>
-</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>        <span class="c1"># Implement message sending</span>
-</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>        <span class="k">pass</span>
-</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>
-</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="c1"># Register the custom transport</span>
-</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="k">def</span> <span class="nf">protocol_matcher</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>    <span class="k">return</span> <span class="n">base_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mycustom://&quot;</span><span class="p">)</span>
-</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>
-</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="c1"># Register with the transport system</span>
-</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="n">JanusTransport</span><span class="o">.</span><span class="n">register_transport</span><span class="p">(</span><span class="n">MyCustomTransport</span><span class="p">)</span>
+<p>You can create custom transport implementations by inheriting from <code>JanusTransport</code> and implementing the required abstract methods:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">janus_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">JanusTransport</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCustomTransport</span><span class="p">(</span><span class="n">JanusTransport</span><span class="p">):</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>        <span class="c1"># Initialize custom transport-specific attributes</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Establish connection to the Janus server.&quot;&quot;&quot;</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>        <span class="c1"># Implement your connection logic here</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connecting to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">base_url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>        <span class="c1"># self._connection = await create_custom_connection(self.base_url)</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the connection to the Janus server.&quot;&quot;&quot;</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>        <span class="c1"># Implement your disconnection logic here</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="p">:</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>            <span class="c1"># await self._connection.close()</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Send a message to the Janus server.&quot;&quot;&quot;</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>        <span class="c1"># Implement your message sending logic here</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="p">:</span>
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>            <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span><span class="s2">&quot;Not connected&quot;</span><span class="p">)</span>
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>        <span class="c1"># await self._connection.send(message)</span>
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="c1"># Protocol matcher function</span>
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="k">def</span><span class="w"> </span><span class="nf">protocol_matcher</span><span class="p">(</span><span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if this transport can handle the URL.&quot;&quot;&quot;</span>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a>    <span class="k">return</span> <span class="n">base_url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;mycustom://&quot;</span><span class="p">)</span>
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a>
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="c1"># Register the custom transport</span>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="n">JanusTransport</span><span class="o">.</span><span class="n">register_transport</span><span class="p">(</span><span class="n">protocol_matcher</span><span class="p">,</span> <span class="n">MyCustomTransport</span><span class="p">)</span>
 </span></code></pre></div>
-<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
-<p>All transport implementations handle common error scenarios:</p>
+<h2 id="transport-configuration">Transport Configuration<a class="headerlink" href="#transport-configuration" title="Permanent link">&para;</a></h2>
+<p>Transport classes accept various configuration options through the session constructor:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">,</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="c1"># Common transport options</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>           <span class="c1"># Request timeout in seconds</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>    <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>          <span class="c1"># Maximum retry attempts</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">retry_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>        <span class="c1"># Initial retry delay in seconds</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">keepalive_interval</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>  <span class="c1"># Keepalive ping interval in seconds</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="c1"># HTTP-specific options</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>    <span class="n">max_connections</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>     <span class="c1"># Maximum HTTP connections in pool</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>    <span class="c1"># WebSocket-specific options</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>    <span class="n">ping_interval</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>       <span class="c1"># WebSocket ping interval</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="n">ping_timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>        <span class="c1"># WebSocket ping timeout</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="error-handling-and-recovery">Error Handling and Recovery<a class="headerlink" href="#error-handling-and-recovery" title="Permanent link">&para;</a></h2>
+<p>All transport implementations provide robust error handling:</p>
+<h3 id="connection-failures">Connection Failures<a class="headerlink" href="#connection-failures" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">asyncio</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">janus_client</span><span class="w"> </span><span class="kn">import</span> <span class="n">JanusSession</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">robust_connection</span><span class="p">():</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">,</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        <span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        <span class="n">retry_delay</span><span class="o">=</span><span class="mf">2.0</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    <span class="p">)</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>            <span class="c1"># Transport will automatically retry on connection failures</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>    <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to connect after retries: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>    <span class="k">except</span> <span class="ne">TimeoutError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Connection timed out: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="network-timeouts">Network Timeouts<a class="headerlink" href="#network-timeouts" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">timeout_handling</span><span class="p">():</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/janus&quot;</span><span class="p">,</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>        <span class="n">timeout</span><span class="o">=</span><span class="mf">10.0</span>  <span class="c1"># 10 second timeout</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="p">)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>        <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>            <span class="c1"># This will timeout if server doesn&#39;t respond within 10 seconds</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>            <span class="n">info</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">info</span><span class="p">()</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimeoutError</span><span class="p">:</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Request timed out&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="automatic-reconnection">Automatic Reconnection<a class="headerlink" href="#automatic-reconnection" title="Permanent link">&para;</a></h3>
+<p>WebSocket transport supports automatic reconnection:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">websocket_with_reconnection</span><span class="p">():</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>        <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">,</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>        <span class="n">max_retries</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>        <span class="c1"># Retry up to 10 times</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>        <span class="n">retry_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>       <span class="c1"># Start with 1 second delay</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>        <span class="n">keepalive_interval</span><span class="o">=</span><span class="mi">30</span>  <span class="c1"># Send keepalive every 30 seconds</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="p">)</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>        <span class="c1"># Connection will be automatically maintained</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>        <span class="c1"># and reconnected if it drops</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>        <span class="n">plugin</span> <span class="o">=</span> <span class="n">JanusEchoTestPlugin</span><span class="p">()</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>        <span class="k">await</span> <span class="n">plugin</span><span class="o">.</span><span class="n">attach</span><span class="p">(</span><span class="n">session</span><span class="p">)</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>        <span class="c1"># Long-running operation</span>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">300</span><span class="p">)</span>  <span class="c1"># 5 minutes</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>        <span class="k">await</span> <span class="n">plugin</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>
+</span></code></pre></div>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="http-vs-websocket">HTTP vs WebSocket<a class="headerlink" href="#http-vs-websocket" title="Permanent link">&para;</a></h3>
+<p><strong>Use HTTP transport when:</strong>
+- Simple request/response patterns
+- Firewall restrictions on WebSocket
+- Stateless operations
+- Lower connection overhead is acceptable</p>
+<p><strong>Use WebSocket transport when:</strong>
+- Real-time communication is required
+- Low latency is important
+- Frequent bidirectional messaging
+- Long-lived connections</p>
+<h3 id="connection-pooling">Connection Pooling<a class="headerlink" href="#connection-pooling" title="Permanent link">&para;</a></h3>
+<p>HTTP transport uses connection pooling for efficiency:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Multiple sessions can share the same connection pool</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">session1</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/janus&quot;</span><span class="p">)</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">session2</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;https://example.com/janus&quot;</span><span class="p">)</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># Both sessions will reuse HTTP connections</span>
+</span></code></pre></div>
+<h3 id="resource-management">Resource Management<a class="headerlink" href="#resource-management" title="Permanent link">&para;</a></h3>
+<p>Always properly close sessions to release transport resources:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Good: Using context manager</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="c1"># Transport resources are automatically cleaned up</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="k">pass</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1"># Also good: Manual cleanup</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">)</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>    <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>    <span class="c1"># Use session</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="k">finally</span><span class="p">:</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>    <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">destroy</span><span class="p">()</span>  <span class="c1"># Ensures transport cleanup</span>
+</span></code></pre></div>
+<h2 id="debugging-transport-issues">Debugging Transport Issues<a class="headerlink" href="#debugging-transport-issues" title="Permanent link">&para;</a></h2>
+<h3 id="enable-logging">Enable Logging<a class="headerlink" href="#enable-logging" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># Enable debug logging for transport layer</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;janus_client.transport&#39;</span><span class="p">)</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="monitor-connection-state">Monitor Connection State<a class="headerlink" href="#monitor-connection-state" title="Permanent link">&para;</a></h3>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">monitor_connection</span><span class="p">():</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>    <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="p">:</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        <span class="c1"># Check if transport is connected</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>            <span class="k">await</span> <span class="n">session</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">ping</span><span class="p">()</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Transport is connected and responsive&quot;</span><span class="p">)</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transport issue: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="network-analysis">Network Analysis<a class="headerlink" href="#network-analysis" title="Permanent link">&para;</a></h3>
+<p>For debugging network issues:</p>
+<ol>
+<li><strong>Check server accessibility</strong>: Verify the Janus server is running and accessible</li>
+<li><strong>Firewall rules</strong>: Ensure WebSocket connections are allowed</li>
+<li><strong>SSL certificates</strong>: Verify HTTPS/WSS certificates are valid</li>
+<li><strong>Network latency</strong>: Test network conditions between client and server</li>
+<li><strong>Server logs</strong>: Check Janus server logs for connection issues</li>
+</ol>
+<h2 id="transport-protocol-details">Transport Protocol Details<a class="headerlink" href="#transport-protocol-details" title="Permanent link">&para;</a></h2>
+<h3 id="http-transport-protocol">HTTP Transport Protocol<a class="headerlink" href="#http-transport-protocol" title="Permanent link">&para;</a></h3>
+<p>The HTTP transport uses the following endpoints:</p>
 <ul>
-<li><strong>Connection failures</strong>: Automatic retry with exponential backoff</li>
-<li><strong>Network timeouts</strong>: Configurable timeout values</li>
-<li><strong>Protocol errors</strong>: Proper error reporting and recovery</li>
-<li><strong>Server disconnections</strong>: Automatic reconnection attempts</li>
+<li><code>GET /janus/info</code> - Server information</li>
+<li><code>POST /janus</code> - Create session</li>
+<li><code>POST /janus/{session_id}</code> - Session operations</li>
+<li><code>GET /janus/{session_id}</code> - Long polling for messages</li>
+<li><code>POST /janus/{session_id}/{handle_id}</code> - Plugin operations</li>
 </ul>
-<h2 id="configuration-options">Configuration Options<a class="headerlink" href="#configuration-options" title="Permanent link">&para;</a></h2>
-<p>Transport classes accept various configuration options:</p>
-<div class="language-python highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="n">session</span> <span class="o">=</span> <span class="n">JanusSession</span><span class="p">(</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>    <span class="n">base_url</span><span class="o">=</span><span class="s2">&quot;wss://example.com/janus&quot;</span><span class="p">,</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>    <span class="c1"># Transport-specific options</span>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>    <span class="n">timeout</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>           <span class="c1"># Request timeout in seconds</span>
-</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>          <span class="c1"># Maximum retry attempts</span>
-</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">retry_delay</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>        <span class="c1"># Initial retry delay</span>
-</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>    <span class="n">keepalive_interval</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>  <span class="c1"># Keepalive ping interval</span>
-</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="p">)</span>
-</span></code></pre></div>
+<h3 id="websocket-transport-protocol">WebSocket Transport Protocol<a class="headerlink" href="#websocket-transport-protocol" title="Permanent link">&para;</a></h3>
+<p>The WebSocket transport uses a single WebSocket connection for all communication:</p>
+<ul>
+<li>Connection: <code>wss://example.com/janus</code></li>
+<li>Protocol: <code>janus-protocol</code></li>
+<li>Messages: JSON-formatted Janus protocol messages</li>
+<li>Keepalive: Automatic ping/pong frames</li>
+</ul>
 
 
 

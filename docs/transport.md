@@ -1,195 +1,59 @@
 # Transport
 
-Transport method is detected using regex on base_url parameter passed to Session object.
+Transport classes handle the actual communication with the Janus server. The transport method is automatically detected using regex patterns on the base_url parameter passed to the Session object.
 
-## Base Class
+The transport layer provides an abstraction over different communication protocols (HTTP, WebSocket) and handles connection management, message routing, and error recovery.
 
-### `JanusTransport`
+## Base Transport Class
 
-Base class for all transport implementations. Transport classes handle the actual communication with the Janus server.
+All transport implementations inherit from the base `JanusTransport` class, which defines the common interface and functionality.
 
-#### Constructor
-
-```python
-JanusTransport(base_url: str, **kwargs)
-```
-
-**Parameters:**
-- `base_url` (str): The base URL of the Janus server
-- `**kwargs`: Additional transport-specific configuration options
-
-#### Methods
-
-##### `_connect()`
-
-```python
-async def _connect() -> None
-```
-
-Establish connection to the Janus server. This is an abstract method that must be implemented by subclasses.
-
-##### `_disconnect()`
-
-```python
-async def _disconnect() -> None
-```
-
-Close the connection to the Janus server. This is an abstract method that must be implemented by subclasses.
-
-##### `_send(message)`
-
-```python
-async def _send(message: Dict[str, Any]) -> None
-```
-
-Send a message to the Janus server. This is an abstract method that must be implemented by subclasses.
-
-**Parameters:**
-- `message` (Dict[str, Any]): The message to send
-
-##### `info()`
-
-```python
-async def info() -> Dict[str, Any]
-```
-
-Get server information from Janus.
-
-**Returns:**
-- `Dict[str, Any]`: Server information response
-
-##### `ping()`
-
-```python
-async def ping() -> Dict[str, Any]
-```
-
-Send a ping to the Janus server to check connectivity.
-
-**Returns:**
-- `Dict[str, Any]`: Ping response
-
-##### `dispatch_session_created(session)`
-
-```python
-def dispatch_session_created(session: JanusSession) -> None
-```
-
-Notify the transport that a session has been created.
-
-**Parameters:**
-- `session` (JanusSession): The created session
-
-##### `dispatch_session_destroyed(session)`
-
-```python
-def dispatch_session_destroyed(session: JanusSession) -> None
-```
-
-Notify the transport that a session has been destroyed.
-
-**Parameters:**
-- `session` (JanusSession): The destroyed session
-
-##### `register_transport(transport_class)`
-
-```python
-@staticmethod
-def register_transport(transport_class: Type[JanusTransport]) -> None
-```
-
-Register a transport class for automatic detection.
-
-**Parameters:**
-- `transport_class` (Type[JanusTransport]): The transport class to register
-
-##### `create_transport(base_url, **kwargs)`
-
-```python
-@staticmethod
-def create_transport(base_url: str, **kwargs) -> JanusTransport
-```
-
-Create a transport instance based on the base URL.
-
-**Parameters:**
-- `base_url` (str): The base URL to determine transport type
-- `**kwargs`: Additional configuration options
-
-**Returns:**
-- `JanusTransport`: The appropriate transport instance
+::: janus_client.transport.JanusTransport
+    options:
+      show_root_heading: true
+      show_source: false
+      members_order: source
+      docstring_section_style: table
+      separate_signature: true
+      show_signature_annotations: true
 
 ## HTTP Transport
 
-### `JanusTransportHTTP`
+The HTTP transport implementation provides communication with Janus server over HTTP/HTTPS using long polling for receiving messages.
 
-HTTP/HTTPS transport implementation for communicating with Janus server over HTTP.
+::: janus_client.transport_http.JanusTransportHTTP
+    options:
+      show_root_heading: true
+      show_source: false
+      members_order: source
+      docstring_section_style: table
+      separate_signature: true
+      show_signature_annotations: true
 
-#### Features
+### HTTP Transport Features
 
-- Supports both HTTP and HTTPS protocols
-- Uses long polling for receiving messages
-- Automatic session management
-- Connection pooling for efficiency
+- **Protocol Support**: HTTP and HTTPS
+- **Long Polling**: Efficient message receiving using long polling
+- **Connection Pooling**: Reuses HTTP connections for efficiency
+- **Session Management**: Automatic session lifecycle management
+- **Error Recovery**: Automatic retry with exponential backoff
 
-#### URL Format
-
-```
-http://example.com/janus
-https://example.com/janus
-```
-
-#### Usage Example
+### HTTP Transport Usage
 
 ```python
 import asyncio
 from janus_client import JanusSession
 
 async def main():
-    # HTTP transport will be automatically selected
+    # HTTP transport will be automatically selected for http/https URLs
     session = JanusSession(base_url="https://example.com/janus")
     
     async with session:
-        # Transport handles all HTTP communication
+        # Transport handles all HTTP communication automatically
         info = await session.transport.info()
         print(f"Server info: {info}")
-
-if __name__ == "__main__":
-    asyncio.run(main())
-```
-
-## WebSocket Transport
-
-### `JanusTransportWebsocket`
-
-WebSocket transport implementation for real-time communication with Janus server.
-
-#### Features
-
-- Full-duplex communication
-- Real-time message delivery
-- Automatic reconnection handling
-- Lower latency than HTTP transport
-
-#### URL Format
-
-```
-ws://example.com/janus
-wss://example.com/janus
-```
-
-#### Usage Example
-
-```python
-import asyncio
-from janus_client import JanusSession
-
-async def main():
-    # WebSocket transport will be automatically selected
-    session = JanusSession(base_url="wss://example.com/janus")
-    
-    async with session:
-        # Transport handles all WebSocket communication
+        
+        # Send a ping to test connectivity
         ping_response = await session.transport.ping()
         print(f"Ping response: {ping_response}")
 
@@ -197,20 +61,76 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+## WebSocket Transport
+
+The WebSocket transport implementation provides real-time, full-duplex communication with the Janus server.
+
+::: janus_client.transport_websocket.JanusTransportWebsocket
+    options:
+      show_root_heading: true
+      show_source: false
+      members_order: source
+      docstring_section_style: table
+      separate_signature: true
+      show_signature_annotations: true
+
+### WebSocket Transport Features
+
+- **Full-Duplex Communication**: Real-time bidirectional messaging
+- **Low Latency**: Direct WebSocket connection for minimal delay
+- **Automatic Reconnection**: Handles connection drops gracefully
+- **Message Queuing**: Buffers messages during reconnection
+- **Keepalive Support**: Built-in ping/pong for connection health
+
+### WebSocket Transport Usage
+
+```python
+import asyncio
+from janus_client import JanusSession
+
+async def main():
+    # WebSocket transport will be automatically selected for ws/wss URLs
+    session = JanusSession(base_url="wss://example.com/janus")
+    
+    async with session:
+        # Transport handles all WebSocket communication automatically
+        ping_response = await session.transport.ping()
+        print(f"Ping response: {ping_response}")
+        
+        # Get server information
+        info = await session.transport.info()
+        print(f"Server info: {info}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
 ## Transport Selection
 
-The transport is automatically selected based on the URL scheme:
+The transport is automatically selected based on the URL scheme provided to the session:
 
-| URL Scheme | Transport Class |
-|------------|----------------|
-| `http://` | `JanusTransportHTTP` |
-| `https://` | `JanusTransportHTTP` |
-| `ws://` | `JanusTransportWebsocket` |
-| `wss://` | `JanusTransportWebsocket` |
+| URL Scheme | Transport Class | Description |
+|------------|----------------|-------------|
+| `http://` | `JanusTransportHTTP` | HTTP transport with long polling |
+| `https://` | `JanusTransportHTTP` | HTTPS transport with long polling |
+| `ws://` | `JanusTransportWebsocket` | WebSocket transport |
+| `wss://` | `JanusTransportWebsocket` | Secure WebSocket transport |
+
+### Transport Registration
+
+Transport classes are registered using protocol matcher functions:
+
+```python
+# HTTP transport registration
+def protocol_matcher(base_url: str) -> bool:
+    return base_url.startswith(("http://", "https://"))
+
+JanusTransport.register_transport(protocol_matcher, JanusTransportHTTP)
+```
 
 ## Custom Transport Implementation
 
-You can create custom transport implementations by inheriting from `JanusTransport`:
+You can create custom transport implementations by inheriting from `JanusTransport` and implementing the required abstract methods:
 
 ```python
 from janus_client import JanusTransport
@@ -219,48 +139,231 @@ from typing import Dict, Any
 class MyCustomTransport(JanusTransport):
     def __init__(self, base_url: str, **kwargs):
         super().__init__(base_url, **kwargs)
-        # Initialize custom transport
+        # Initialize custom transport-specific attributes
+        self._connection = None
     
     async def _connect(self) -> None:
-        # Implement connection logic
-        pass
+        """Establish connection to the Janus server."""
+        # Implement your connection logic here
+        print(f"Connecting to {self.base_url}")
+        # self._connection = await create_custom_connection(self.base_url)
     
     async def _disconnect(self) -> None:
-        # Implement disconnection logic
-        pass
+        """Close the connection to the Janus server."""
+        # Implement your disconnection logic here
+        if self._connection:
+            # await self._connection.close()
+            self._connection = None
     
     async def _send(self, message: Dict[str, Any]) -> None:
-        # Implement message sending
-        pass
+        """Send a message to the Janus server."""
+        # Implement your message sending logic here
+        if not self._connection:
+            raise ConnectionError("Not connected")
+        # await self._connection.send(message)
 
-# Register the custom transport
+# Protocol matcher function
 def protocol_matcher(base_url: str) -> bool:
+    """Check if this transport can handle the URL."""
     return base_url.startswith("mycustom://")
 
-# Register with the transport system
-JanusTransport.register_transport(MyCustomTransport)
+# Register the custom transport
+JanusTransport.register_transport(protocol_matcher, MyCustomTransport)
 ```
 
-## Error Handling
+## Transport Configuration
 
-All transport implementations handle common error scenarios:
-
-- **Connection failures**: Automatic retry with exponential backoff
-- **Network timeouts**: Configurable timeout values
-- **Protocol errors**: Proper error reporting and recovery
-- **Server disconnections**: Automatic reconnection attempts
-
-## Configuration Options
-
-Transport classes accept various configuration options:
+Transport classes accept various configuration options through the session constructor:
 
 ```python
 session = JanusSession(
     base_url="wss://example.com/janus",
-    # Transport-specific options
+    # Common transport options
     timeout=30.0,           # Request timeout in seconds
     max_retries=3,          # Maximum retry attempts
-    retry_delay=1.0,        # Initial retry delay
-    keepalive_interval=30,  # Keepalive ping interval
+    retry_delay=1.0,        # Initial retry delay in seconds
+    keepalive_interval=30,  # Keepalive ping interval in seconds
+    
+    # HTTP-specific options
+    max_connections=10,     # Maximum HTTP connections in pool
+    
+    # WebSocket-specific options
+    ping_interval=20,       # WebSocket ping interval
+    ping_timeout=10,        # WebSocket ping timeout
 )
 ```
+
+## Error Handling and Recovery
+
+All transport implementations provide robust error handling:
+
+### Connection Failures
+
+```python
+import asyncio
+from janus_client import JanusSession
+
+async def robust_connection():
+    session = JanusSession(
+        base_url="wss://example.com/janus",
+        max_retries=5,
+        retry_delay=2.0
+    )
+    
+    try:
+        async with session:
+            # Transport will automatically retry on connection failures
+            await session.transport.ping()
+    except ConnectionError as e:
+        print(f"Failed to connect after retries: {e}")
+    except TimeoutError as e:
+        print(f"Connection timed out: {e}")
+```
+
+### Network Timeouts
+
+```python
+async def timeout_handling():
+    session = JanusSession(
+        base_url="https://example.com/janus",
+        timeout=10.0  # 10 second timeout
+    )
+    
+    try:
+        async with session:
+            # This will timeout if server doesn't respond within 10 seconds
+            info = await session.transport.info()
+    except asyncio.TimeoutError:
+        print("Request timed out")
+```
+
+### Automatic Reconnection
+
+WebSocket transport supports automatic reconnection:
+
+```python
+async def websocket_with_reconnection():
+    session = JanusSession(
+        base_url="wss://example.com/janus",
+        max_retries=10,        # Retry up to 10 times
+        retry_delay=1.0,       # Start with 1 second delay
+        keepalive_interval=30  # Send keepalive every 30 seconds
+    )
+    
+    async with session:
+        # Connection will be automatically maintained
+        # and reconnected if it drops
+        plugin = JanusEchoTestPlugin()
+        await plugin.attach(session)
+        
+        # Long-running operation
+        await asyncio.sleep(300)  # 5 minutes
+        
+        await plugin.destroy()
+```
+
+## Performance Considerations
+
+### HTTP vs WebSocket
+
+**Use HTTP transport when:**
+- Simple request/response patterns
+- Firewall restrictions on WebSocket
+- Stateless operations
+- Lower connection overhead is acceptable
+
+**Use WebSocket transport when:**
+- Real-time communication is required
+- Low latency is important
+- Frequent bidirectional messaging
+- Long-lived connections
+
+### Connection Pooling
+
+HTTP transport uses connection pooling for efficiency:
+
+```python
+# Multiple sessions can share the same connection pool
+session1 = JanusSession(base_url="https://example.com/janus")
+session2 = JanusSession(base_url="https://example.com/janus")
+
+# Both sessions will reuse HTTP connections
+```
+
+### Resource Management
+
+Always properly close sessions to release transport resources:
+
+```python
+# Good: Using context manager
+async with session:
+    # Transport resources are automatically cleaned up
+    pass
+
+# Also good: Manual cleanup
+session = JanusSession(base_url="wss://example.com/janus")
+try:
+    await session.create()
+    # Use session
+finally:
+    await session.destroy()  # Ensures transport cleanup
+```
+
+## Debugging Transport Issues
+
+### Enable Logging
+
+```python
+import logging
+
+# Enable debug logging for transport layer
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger('janus_client.transport')
+logger.setLevel(logging.DEBUG)
+```
+
+### Monitor Connection State
+
+```python
+async def monitor_connection():
+    session = JanusSession(base_url="wss://example.com/janus")
+    
+    async with session:
+        # Check if transport is connected
+        try:
+            await session.transport.ping()
+            print("Transport is connected and responsive")
+        except Exception as e:
+            print(f"Transport issue: {e}")
+```
+
+### Network Analysis
+
+For debugging network issues:
+
+1. **Check server accessibility**: Verify the Janus server is running and accessible
+2. **Firewall rules**: Ensure WebSocket connections are allowed
+3. **SSL certificates**: Verify HTTPS/WSS certificates are valid
+4. **Network latency**: Test network conditions between client and server
+5. **Server logs**: Check Janus server logs for connection issues
+
+## Transport Protocol Details
+
+### HTTP Transport Protocol
+
+The HTTP transport uses the following endpoints:
+
+- `GET /janus/info` - Server information
+- `POST /janus` - Create session
+- `POST /janus/{session_id}` - Session operations
+- `GET /janus/{session_id}` - Long polling for messages
+- `POST /janus/{session_id}/{handle_id}` - Plugin operations
+
+### WebSocket Transport Protocol
+
+The WebSocket transport uses a single WebSocket connection for all communication:
+
+- Connection: `wss://example.com/janus`
+- Protocol: `janus-protocol`
+- Messages: JSON-formatted Janus protocol messages
+- Keepalive: Automatic ping/pong frames
