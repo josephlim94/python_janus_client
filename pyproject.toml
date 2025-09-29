@@ -1,12 +1,13 @@
-[tool.poetry]
+[project]
 name = "janus-client"
 version = "0.7.2"
 description = "Janus WebRTC gateway Python async client."
-authors = ["Joseph Lim <josephlim_94@hotmail.co.uk>"]
-license = "MIT"
+authors = [
+    {name = "Joseph Lim", email = "josephlim_94@hotmail.co.uk"},
+]
+license = {text = "MIT"}
 readme = "README.md"
-packages = [{include = "janus_client"}]
-repository = "https://github.com/josephlim94/janus_gst_client_py"
+requires-python = ">=3.8,<3.14"
 classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Development Status :: 4 - Beta",
@@ -19,21 +20,43 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent"
 ]
+dependencies = [
+    "websockets>=11.0.3",
+    "aiortc>=1.5.0",
+    "aiohttp>=3.8.5",
+]
 
-[tool.poetry.dependencies]
-python = ">=3.8,<3.14"
-websockets = "^11.0.3"
-aiortc = "^1.5.0"
-aiohttp = "^3.8.5"
-
-
-[tool.poetry.group.dev.dependencies]
-coverage = "^7.2.7"
-mkdocs-material = "^9.6.20"
-mkdocstrings = "^0.23.0"
-mkdocstrings-python = "^1.7.5"
-griffe = "^0.38.0"
+[project.urls]
+Repository = "https://github.com/josephlim94/janus_gst_client_py"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["janus_client"]
+
+[project.optional-dependencies]
+dev = [
+    "coverage>=7.2.7",
+    "mkdocs-material>=9.6.20",
+    "mkdocstrings>=0.23.0",
+    "mkdocstrings-python>=1.7.5",
+    "griffe>=0.38.0",
+]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "coverage>=7.2.7",
+    "mkdocs-material>=9.6.20",
+    "mkdocstrings>=0.23.0",
+    "mkdocstrings-python>=1.7.5",
+    "griffe>=0.38.0",
+]
+
+[tool.hatch.envs.default.scripts]
+docs-build = "python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict"
+docs-serve = "mkdocs serve"
+test = "python -m pytest"
+test-cov = "coverage run -m pytest"
+test-cov-report = "coverage report"
