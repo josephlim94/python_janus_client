@@ -10,7 +10,7 @@ from janus_client import (
     JanusSession,
     JanusVideoCallPlugin,
 )
-from test.util import async_test
+from tests.util import async_test
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")

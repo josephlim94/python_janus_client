@@ -3,7 +3,7 @@ import logging
 import asyncio
 
 from janus_client import JanusTransport, JanusSession
-from test.util import async_test
+from tests.util import async_test
 
 format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
@@ -70,7 +70,7 @@ class BaseTestClass:
             with self.assertRaisesRegex(Exception, "Create session fail: {'code': 403"):
                 await session.create()
             await session.transport.disconnect()
-            
+
             session = JanusSession(
                 base_url=self.server_url,
                 api_secret="janusrockxxxxx",
