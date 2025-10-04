@@ -298,6 +298,10 @@ class JanusAdminMonitorClient:
             message={"janus": "list_tokens"},
             matcher={"janus": "success", "data": {"tokens": None}},
         )
+
+        if is_subset(response, {"janus": "error"}):
+            raise Exception(response["error"])
+
         return response["data"]["tokens"]
 
     async def add_token(self, token: str = uuid.uuid4().hex, plugins: list = []) -> str:
