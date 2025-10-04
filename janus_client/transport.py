@@ -337,8 +337,8 @@ class JanusTransport(ABC):
         JanusSession to create the transport automatically.
 
         Args:
-            base_url: The base URL of the Janus server. The protocol (ws://, wss://,
-                http://, https://) determines which transport implementation is used.
+            base_url: The base URL of the Janus server. The protocol determines
+                which transport implementation is used.
             api_secret: Optional API secret for shared static secret authentication.
             token: Optional token for shared token-based authentication.
             config: Additional configuration parameters to pass to the transport
