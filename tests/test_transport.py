@@ -18,7 +18,7 @@ class BaseTestClass:
 
         async def asyncSetUp(self) -> None:
             self.transport = JanusTransport.create_transport(
-                base_url=self.server_url, api_secret="janusrocks"
+                base_url=self.server_url, api_secret=os.getenv("JANUS_API_SECRET", "")
             )
             await self.transport.connect()
 
@@ -75,7 +75,7 @@ class BaseTestClass:
 
             session = JanusSession(
                 base_url=self.server_url,
-                api_secret="janusrockxxxxx",
+                api_secret="asdewqzxc",
             )
             with self.assertRaisesRegex(Exception, "Create session fail: {'code': 403"):
                 await session.create()
@@ -83,7 +83,7 @@ class BaseTestClass:
 
             session = JanusSession(
                 base_url=self.server_url,
-                api_secret="janusrocks",
+                api_secret=os.getenv("JANUS_API_SECRET", ""),
             )
             await session.create()
             await session.destroy()
@@ -96,9 +96,5 @@ class TestTransportHttp(BaseTestClass.TestClass):
     )
 
 
-# class TestTransportWebsocket(BaseTestClass.TestClass):
-#     server_url = "ws://janusmy.josephgetmyip.com/janusbasews/janus"
-
-
-class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-    server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+class TestTransportWebsocket(BaseTestClass.TestClass):
+    server_url = os.getenv("JANUS_WS_URL", "")
