@@ -36,15 +36,6 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["janus_client"]
 
-[project.optional-dependencies]
-dev = [
-    "coverage>=7.2.7",
-    "mkdocs-material>=9.6.20",
-    "mkdocstrings>=0.23.0",
-    "mkdocstrings-python>=1.7.5",
-    "griffe>=0.38.0",
-]
-
 [tool.hatch.envs.default]
 dependencies = [
     "coverage>=7.2.7",
@@ -52,6 +43,7 @@ dependencies = [
     "mkdocstrings>=0.23.0",
     "mkdocstrings-python>=1.7.5",
     "griffe>=0.38.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [tool.hatch.envs.default.scripts]
@@ -60,3 +52,8 @@ docs-serve = "mkdocs serve"
 test = "python -m pytest"
 test-cov = "coverage run -m pytest"
 test-cov-report = "coverage report"
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+    "python-dotenv",
+]

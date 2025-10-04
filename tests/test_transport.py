@@ -1,6 +1,8 @@
 import unittest
 import logging
 import asyncio
+import os
+from urllib.parse import urljoin
 
 from janus_client import JanusTransport, JanusSession
 from tests.util import async_test
@@ -87,12 +89,11 @@ class BaseTestClass:
             await session.destroy()
 
 
-# class TestTransportHttp(BaseTestClass.TestClass):
-#     server_url = "http://janusmy.josephgetmyip.com/janusbase/janus"
-
-
-class TestTransportHttps(BaseTestClass.TestClass):
-    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+class TestTransportHttp(BaseTestClass.TestClass):
+    server_url = urljoin(
+        os.getenv("JANUS_HTTP_URL", ""),
+        os.getenv("JANUS_HTTP_BASE_PATH", ""),
+    )
 
 
 # class TestTransportWebsocket(BaseTestClass.TestClass):
