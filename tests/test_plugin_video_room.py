@@ -2,6 +2,7 @@ import unittest
 import logging
 import asyncio
 import os
+from urllib.parse import urljoin
 
 from aiortc.contrib.media import MediaRecorder
 
@@ -401,9 +402,12 @@ class BaseTestClass:
             await self.asyncTearDown()
 
 
-class TestTransportHttps(BaseTestClass.TestClass):
-    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+class TestTransportHttp(BaseTestClass.TestClass):
+    server_url = urljoin(
+        os.getenv("JANUS_HTTP_URL", ""),
+        os.getenv("JANUS_HTTP_BASE_PATH", ""),
+    )
 
 
-class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-    server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+class TestTransportWebsocket(BaseTestClass.TestClass):
+    server_url = os.getenv("JANUS_WS_URL", "")

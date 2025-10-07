@@ -2,6 +2,7 @@ import unittest
 import logging
 import asyncio
 import os
+from urllib.parse import urljoin
 
 from janus_client import (
     JanusTransport,
@@ -22,7 +23,7 @@ class BaseTestClass:
 
         async def asyncSetUp(self) -> None:
             self.transport = JanusTransport.create_transport(
-                base_url=self.server_url, api_secret="janusrocks"
+                base_url=self.server_url, api_secret=os.getenv("JANUS_API_SECRET", "")
             )
             await self.transport.connect()
 
@@ -53,6 +54,8 @@ class BaseTestClass:
         @async_test
         async def test_plugin_echotest_create(self):
             await self.asyncSetUp()
+            logger.info("Start")
+            print("ewq")
 
             session = JanusSession(transport=self.transport)
 
@@ -92,9 +95,12 @@ class BaseTestClass:
             await self.asyncTearDown()
 
 
-class TestTransportHttps(BaseTestClass.TestClass):
-    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+class TestTransportHttp(BaseTestClass.TestClass):
+    server_url = urljoin(
+        os.getenv("JANUS_HTTP_URL", ""),
+        os.getenv("JANUS_HTTP_BASE_PATH", ""),
+    )
 
 
-class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-    server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+class TestTransportWebsocket(BaseTestClass.TestClass):
+    server_url = os.getenv("JANUS_WS_URL", "")

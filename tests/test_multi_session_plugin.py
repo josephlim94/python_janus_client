@@ -1,6 +1,8 @@
 import unittest
 import logging
 import asyncio
+import os
+from urllib.parse import urljoin
 
 from janus_client import JanusTransport, JanusSession, JanusVideoRoomPlugin
 from tests.util import async_test
@@ -9,7 +11,7 @@ format = "%(asctime)s: %(message)s"
 logging.basicConfig(format=format, level=logging.INFO, datefmt="%H:%M:%S")
 logger = logging.getLogger()
 
-ut_api_secret = "janusrocks"
+ut_api_secret = os.getenv("JANUS_API_SECRET", "")
 
 
 class BaseTestClass:
@@ -370,9 +372,12 @@ class BaseTestClass:
             await self.asyncTearDown()
 
 
-class TestTransportHttps(BaseTestClass.TestClass):
-    server_url = "https://janusmy.josephgetmyip.com/janusbase/janus"
+class TestTransportHttp(BaseTestClass.TestClass):
+    server_url = urljoin(
+        os.getenv("JANUS_HTTP_URL", ""),
+        os.getenv("JANUS_HTTP_BASE_PATH", ""),
+    )
 
 
-class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-    server_url = "wss://janusmy.josephgetmyip.com/janusbasews/janus"
+class TestTransportWebsocket(BaseTestClass.TestClass):
+    server_url = os.getenv("JANUS_WS_URL", "")

@@ -1,6 +1,8 @@
 import unittest
 import logging
 import asyncio
+import os
+from urllib.parse import urljoin
 
 from janus_client import JanusAdminMonitorClient
 from tests.util import async_test
@@ -357,11 +359,14 @@ class BaseTestClass:
             await self.asyncTearDown()
 
 
-class TestTransportHttps(BaseTestClass.TestClass):
-    server_url = "https://janusmy.josephgetmyip.com/janusadminbase/admin"
-    admin_secret = "janusoverlord"
+class TestTransportHttp(BaseTestClass.TestClass):
+    server_url = urljoin(
+        os.getenv("JANUS_HTTP_ADMIN_URL", ""),
+        os.getenv("JANUS_HTTP_ADMIN_PATH", ""),
+    )
+    admin_secret = os.getenv("JANUS_ADMIN_SECRET", "")
 
 
-class TestTransportWebsocketSecure(BaseTestClass.TestClass):
-    server_url = "wss://janusmy.josephgetmyip.com/janusadminbasews/admin"
-    admin_secret = "janusoverlord"
+class TestTransportWebsocket(BaseTestClass.TestClass):
+    server_url = os.getenv("JANUS_WS_ADMIN_URL", "")
+    admin_secret = os.getenv("JANUS_ADMIN_SECRET", "")
