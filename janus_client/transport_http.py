@@ -149,13 +149,15 @@ class JanusTransportHTTP(JanusTransport):
 
         logger.info(f"Destroy session_receive_response task ({session_id})")
         receiver_task = self.__receive_response_task_map[session_id]
-        # Don't use task.cancel() to avoid
-        # Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000027A269465F0>
-        receiver_task.destroyed_event.set()
+        receiver_task.task.cancel()
+        # I think the following problem was fixed when aiohttp version was updated
+        # # Don't use task.cancel() to avoid
+        # # Exception ignored in: <function _ProactorBasePipeTransport.__del__ at 0x0000027A269465F0>
+        # receiver_task.destroyed_event.set()
 
-        # Destroying sessions could cost some time because it needs to
-        # wait for the long-poll request to complete
-        await asyncio.wait([receiver_task.task])
+        # # Destroying sessions could cost some time because it needs to
+        # # wait for the long-poll request to complete
+        # await asyncio.wait([receiver_task.task])
 
 
 def protocol_matcher(base_url: str):

@@ -1,6 +1,11 @@
 import asyncio
 import logging
 import os
+from urllib.parse import urljoin
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # from janus_client.transport import JanusTransportHTTP
 from janus_client import JanusSession, JanusEchoTestPlugin
@@ -14,8 +19,14 @@ async def main():
     # transport = JanusTransportHTTP(
     #     uri="https://janusmy.josephgetmyip.com/janusbase/janus"
     # )
-    session = JanusSession(base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus")
-    # session = JanusSession(base_url="https://janusmy.josephgetmyip.com/janusbase/janus")
+    # session = JanusSession(base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus")
+    session = JanusSession(
+        base_url=urljoin(
+            os.getenv("JANUS_HTTP_URL", ""),
+            os.getenv("JANUS_HTTP_BASE_PATH", ""),
+        ),
+        api_secret=os.getenv("JANUS_API_SECRET", ""),
+    )
 
     plugin_handle = JanusEchoTestPlugin()
 
