@@ -207,11 +207,7 @@ class BaseTestClass:
         @async_test
         async def test_textroom_event_handlers(self):
             """Test TextRoom event handlers."""
-            await self.asyncSetUp()
-            logger.info("Testing event handlers")
-
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
+            await self.attach_plugin()
 
             # Track received events
             received_messages = []
@@ -225,25 +221,24 @@ class BaseTestClass:
                 received_joins.append(data)
                 logger.info(f"User joined: {data.get('username', '')}")
 
-            plugin.on_event(TextRoomEventType.MESSAGE, on_message)
-            plugin.on_event(TextRoomEventType.JOIN, on_join)
+            self.plugin.on_event(TextRoomEventType.MESSAGE, on_message)
+            self.plugin.on_event(TextRoomEventType.JOIN, on_join)
 
-            await plugin.attach(session=session)
-            await plugin.setup(timeout=30.0)
+            await self.plugin.setup(timeout=30.0)
 
             # Create and join a room
-            room_id = await plugin.create_room(
+            room_id = await self.plugin.create_room(
                 description="Test Event Room",
                 is_private=False,
             )
 
-            await plugin.join_room(
+            await self.plugin.join_room(
                 room=room_id,
                 username="test_user",
             )
 
             # Send a message
-            await plugin.send_message(
+            await self.plugin.send_message(
                 room=room_id,
                 text="Test message",
                 ack=True,
@@ -252,12 +247,15 @@ class BaseTestClass:
             # Give some time for events to be processed
             await asyncio.sleep(1.0)
 
+            # Verify event did run
+            self.assertTrue(received_messages)
+            self.assertTrue(received_joins)
+
             # Clean up
-            await plugin.leave_room(room=room_id)
-            await plugin.destroy_room(room=room_id)
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.plugin.leave_room(room=room_id)
+            await self.plugin.destroy_room(room=room_id)
+
+            await self.detach_plugin()
 
         @async_test
         async def test_textroom_private_message(self):
