@@ -85,7 +85,7 @@ class JanusTextRoomPlugin(JanusPlugin):
     def __init__(self) -> None:
         super().__init__()
         self._data_channel: Optional[RTCDataChannel] = None
-        self._setup_complete = asyncio.Event()
+        self._webrtcup_event = asyncio.Event()
         self._event_handlers: Dict[TextRoomEventType, List[Callable]] = {
             event_type: [] for event_type in TextRoomEventType
         }
@@ -105,21 +105,22 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         if janus_code == "webrtcup":
             logger.info("WebRTC connection established")
+            self._webrtcup_event.set()
 
         elif janus_code == "hangup":
             logger.info("WebRTC connection closed")
             if self._pc:
                 await self._pc.close()
 
-        elif janus_code == "event":
-            logger.info("Received setup complete event")
-            plugin_data = response["plugindata"].get("data", {})
-            textroom_type = plugin_data.get("textroom")
+        # elif janus_code == "event":
+        #     logger.info("Received setup complete event")
+        #     plugin_data = response["plugindata"].get("data", {})
+        #     textroom_type = plugin_data.get("textroom")
 
-            if textroom_type == "event":
-                result = plugin_data.get("result")
-                if result == "ok":
-                    self._setup_complete.set()
+        # if textroom_type == "event":
+        #     result = plugin_data.get("result")
+        #     if result == "ok":
+        #         self._setup_complete.set()
 
     def on_event(
         self, event_type: TextRoomEventType, handler: Callable[[Dict[str, Any]], None]
@@ -255,6 +256,67 @@ class JanusTextRoomPlugin(JanusPlugin):
             self._pending_transactions.pop(transaction, None)
             self._transaction_responses.pop(transaction, None)
 
+    def check_error_in_response(self, response: dict) -> None:
+        if is_subset(response, {"janus": "error", "error": {}}):
+            error: Dict = response["error"]
+            raise TextRoomError(
+                error.get("code", 0), error.get("reason", "Unknown error")
+            )
+
+        if is_subset(
+            response,
+            {
+                "janus": "success",
+                "plugindata": {"plugin": self.name, "data": {"error"}},
+            },
+        ):
+            error_code: int = response["plugindata"]["data"]["error_code"]
+            error_message: str = response["plugindata"]["data"]["error"]
+            raise TextRoomError(error_code, error_message)
+
+    async def send_wrapper(self, message: dict, matcher: dict, timeout: float) -> dict:
+        def function_matcher(response: dict):
+            return (
+                is_subset(
+                    response,
+                    {
+                        "janus": "success",
+                        "plugindata": {
+                            "plugin": self.name,
+                            "data": matcher,
+                        },
+                    },
+                )
+                or is_subset(
+                    response,
+                    {
+                        "janus": "success",
+                        "plugindata": {
+                            "plugin": self.name,
+                            "data": {
+                                "textroom": "event",
+                            },
+                        },
+                    },
+                )
+                or is_subset(response, {"janus": "error", "error": {}})
+            )
+
+        message_transaction = await self.send(
+            message={
+                "janus": "message",
+                "body": message,
+            },
+        )
+        message_response = await message_transaction.get(
+            matcher=function_matcher, timeout=timeout
+        )
+        await message_transaction.done()
+
+        self.check_error_in_response(response=message_response)
+
+        return message_response
+
     async def setup(self, timeout: float = 30.0) -> None:
         """Initialize the WebRTC connection for the TextRoom plugin.
 
@@ -267,32 +329,51 @@ class JanusTextRoomPlugin(JanusPlugin):
             TimeoutError: If setup doesn't complete within timeout.
             TextRoomError: If setup fails.
         """
-        message_transaction = await self.send(
-            {"janus": "message", "body": {"request": "setup"}}
-        )
 
-        response = await message_transaction.get(
-            matcher=lambda r: is_subset(
-                r,
-                {
-                    "janus": "event",
-                    "plugindata": {
-                        "plugin": self.name,
-                        "data": {"textroom": "event"},
+        def response_matcher(response: dict):
+            return (
+                is_subset(
+                    response,
+                    {"janus": "ack"},
+                )
+                or is_subset(
+                    response,
+                    {
+                        "janus": "event",
+                        "plugindata": {
+                            "plugin": self.name,
+                            "data": {
+                                "textroom": "event",
+                                "result": "ok",
+                            },
+                        },
                     },
-                },
+                )
+                or is_subset(response, {"janus": "error", "error": {}})
+                or is_subset(
+                    response, {"janus": "success", "plugindata": {"plugin": self.name}}
+                )
             )
-            or is_subset(r, {"janus": "error"}),
-            timeout=timeout,
+
+        message_transaction = await self.send(
+            message={
+                "janus": "message",
+                "body": {"request": "setup"},
+            },
         )
+        response = await message_transaction.get(
+            matcher=response_matcher, timeout=timeout
+        )
+        self.check_error_in_response(response=response)
+
+        # If it got "ack" first, the second message is the "event" with jsep
+        if is_subset(response, {"janus": "ack"}):
+            response = await message_transaction.get(
+                matcher=response_matcher, timeout=timeout
+            )
+            self.check_error_in_response(response=response)
 
         await message_transaction.done()
-
-        if is_subset(response, {"janus": "error"}):
-            error: Dict = response["error"]
-            raise TextRoomError(
-                error.get("code", 0), error.get("reason", "Unknown error")
-            )
 
         if "jsep" not in response:
             raise TextRoomError(0, "No JSEP offer received from setup")
@@ -312,14 +393,6 @@ class JanusTextRoomPlugin(JanusPlugin):
                 sdp=response["jsep"]["sdp"], type=response["jsep"]["type"]
             )
         )
-
-        self._data_channel = self._pc.createDataChannel("JanusDataChannel")
-
-        @self._data_channel.on("datachannel")
-        def on_datachannel_2(channel: RTCDataChannel):
-            logger.info(f"DataChannel2 '{channel.label}' created by remote party")
-            self._data_channel = channel
-            self._setup_datachannel_handlers(channel)
 
         await self._pc.setLocalDescription(await self._pc.createAnswer())
 
@@ -346,13 +419,11 @@ class JanusTextRoomPlugin(JanusPlugin):
         )
         await ack_transaction.done()
 
-        # Wait for something to be done??
-        # await asyncio.sleep(10)
-
-        # logger.info("Send ack done")
-
         # # Wait for setup to complete
         # await asyncio.wait_for(self._setup_complete.wait(), timeout=timeout)
+
+        # Wait for webrtc to be connected
+        await asyncio.wait_for(self._webrtcup_event.wait(), timeout=timeout)
 
     async def list_rooms(
         self, admin_key: Optional[str] = None, timeout: float = 15.0
@@ -496,30 +567,11 @@ class JanusTextRoomPlugin(JanusPlugin):
         if permanent:
             body["permanent"] = permanent
 
-        message_transaction = await self.send({"janus": "message", "body": body})
-
-        response = await message_transaction.get(
-            matcher=lambda r: is_subset(
-                r,
-                {
-                    "janus": "success",
-                    "plugindata": {
-                        "plugin": self.name,
-                        "data": {"textroom": "created"},
-                    },
-                },
-            )
-            or is_subset(r, {"janus": "error"}),
+        response = await self.send_wrapper(
+            message={"janus": "message", "body": body},
+            matcher={"textroom": "created"},
             timeout=timeout,
         )
-
-        await message_transaction.done()
-
-        if is_subset(response, {"janus": "error"}):
-            error = response.get("error", {})
-            raise TextRoomError(
-                error.get("code", 0), error.get("reason", "Unknown error")
-            )
 
         return response["plugindata"]["data"]["room"]
 
@@ -549,30 +601,11 @@ class JanusTextRoomPlugin(JanusPlugin):
         if permanent:
             body["permanent"] = permanent
 
-        message_transaction = await self.send({"janus": "message", "body": body})
-
-        response = await message_transaction.get(
-            matcher=lambda r: is_subset(
-                r,
-                {
-                    "janus": "success",
-                    "plugindata": {
-                        "plugin": self.name,
-                        "data": {"textroom": "destroyed"},
-                    },
-                },
-            )
-            or is_subset(r, {"janus": "error"}),
+        await self.send_wrapper(
+            message={"janus": "message", "body": body},
+            matcher={"textroom": "destroyed"},
             timeout=timeout,
         )
-
-        await message_transaction.done()
-
-        if is_subset(response, {"janus": "error"}):
-            error = response.get("error", {})
-            raise TextRoomError(
-                error.get("code", 0), error.get("reason", "Unknown error")
-            )
 
     async def join_room(
         self,
@@ -602,8 +635,6 @@ class JanusTextRoomPlugin(JanusPlugin):
             TimeoutError: If request times out.
             TextRoomError: If join fails.
         """
-        if not self._data_channel:
-            raise TextRoomError(0, "DataChannel not established. Call setup() first.")
 
         body: Dict[str, Any] = {
             "textroom": "join",
@@ -619,8 +650,12 @@ class JanusTextRoomPlugin(JanusPlugin):
         if token:
             body["token"] = token
 
-        response = await self._send_datachannel_request(body, timeout)
-        return response.get("participants", [])
+        response = await self.send_wrapper(
+            message={"janus": "message", "body": body},
+            matcher={"textroom": "success"},
+            timeout=timeout,
+        )
+        return response["participants"]
 
     async def leave_room(self, room: int, timeout: float = 15.0) -> None:
         """Leave a TextRoom.
