@@ -9,7 +9,7 @@ This is a Python async client library for the Janus WebRTC gateway. The project 
 - Admin/Monitor API support
 - Media streaming capabilities with PyAV
 
-**Key Technologies:** Python 3.8-3.11, asyncio, aiortc, websockets, aiohttp, Poetry
+**Key Technologies:** Python 3.8-3.11, asyncio, aiortc, websockets, aiohttp, Hatch
 
 ## Python Development Standards
 
@@ -91,9 +91,9 @@ janus_client/
 - **Conditional Imports:** Use try/except for optional dependencies
 
 ### Dependency Management
-- **Poetry:** Use `poetry add` for new dependencies
+- **Hatch:** Edit pyproject.toml and run `hatch env create` for new dependencies
 - **Version Constraints:** Use compatible version ranges (^1.0.0)
-- **Dev Dependencies:** Separate development dependencies
+- **Dev Dependencies:** Separate development dependencies in tool.hatch.envs sections
 - **Optional Dependencies:** Use extras for optional features
 
 ## Testing Standards
@@ -175,11 +175,11 @@ async def join_room(self, room_id: int, username: str, pin: Optional[str] = None
 
 ## Development Workflow
 
-### Poetry Usage
-- **Install:** `poetry install` for development setup
-- **Dependencies:** `poetry add <package>` for new dependencies
-- **Virtual Environment:** `poetry shell` to activate environment
-- **Scripts:** Define common tasks in `pyproject.toml`
+### Hatch Usage
+- **Install:** `hatch env create` for development setup
+- **Dependencies:** Edit pyproject.toml and run `hatch env create` for new dependencies
+- **Virtual Environment:** `hatch shell` to activate environment
+- **Scripts:** Define common tasks in `pyproject.toml` under `[tool.hatch.envs]`
 
 ### Git Practices
 - **Commits:** Use conventional commit messages
@@ -188,14 +188,14 @@ async def join_room(self, room_id: int, username: str, pin: Optional[str] = None
 - **Versioning:** Follow semantic versioning (MAJOR.MINOR.PATCH)
 
 ### Code Quality
-- **Linting:** Run `flake8` before committing
-- **Testing:** Run full test suite with `pytest`
-- **Coverage:** Check coverage with `coverage run -m pytest`
-- **Type Checking:** Use `mypy` for static type checking
+- **Linting:** Run `hatch run lint:check` before committing
+- **Testing:** Run full test suite with `hatch run test`
+- **Coverage:** Check coverage with `hatch run cov`
+- **Type Checking:** Run `hatch run lint:typing` for static type checking
 
 ### Documentation Building
 - **MkDocs Strict Mode:** Always use `--strict` flag when building documentation to catch warnings as errors
-- **Build Command:** Use `poetry run python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict`
+- **Build Command:** Use `hatch run python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict`
 - **Warning Suppression:** The command above suppresses known deprecation warnings from mkdocs-autorefs plugin
 - **Local Testing:** Test documentation builds locally before committing changes
 - **CI/CD:** The GitHub workflow automatically uses strict mode to ensure clean documentation builds
