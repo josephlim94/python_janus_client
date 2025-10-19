@@ -174,29 +174,24 @@ class BaseTestClass:
         @async_test
         async def test_textroom_send_message(self):
             """Test sending messages in a TextRoom."""
-            await self.asyncSetUp()
-            logger.info("Testing send message")
+            await self.attach_plugin()
 
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
-
-            await plugin.attach(session=session)
-            await plugin.setup(timeout=30.0)
+            await self.plugin.setup(timeout=30.0)
 
             # Create and join a room
-            room_id = await plugin.create_room(
+            room_id = await self.plugin.create_room(
                 description="Test Message Room",
                 is_private=False,
             )
 
-            await plugin.join_room(
+            await self.plugin.join_room(
                 room=room_id,
                 username="test_sender",
             )
             logger.info(f"Joined room {room_id}")
 
             # Send a message
-            await plugin.send_message(
+            await self.plugin.send_message(
                 room=room_id,
                 text="Hello, TextRoom!",
                 ack=True,
@@ -204,11 +199,10 @@ class BaseTestClass:
             logger.info("Message sent successfully")
 
             # Clean up
-            await plugin.leave_room(room=room_id)
-            await plugin.destroy_room(room=room_id)
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.plugin.leave_room(room=room_id)
+            await self.plugin.destroy_room(room=room_id)
+
+            await self.detach_plugin()
 
         @async_test
         async def test_textroom_event_handlers(self):
