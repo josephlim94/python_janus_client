@@ -276,6 +276,16 @@ class BaseTestClass:
             await plugin2.attach(session=session2)
             await plugin2.setup(timeout=30.0)
 
+            # Track messages received by user2
+            received_messages = []
+
+            def on_message(data):
+                received_messages.append(data)
+                logger.info(f"User2 received message: {data}")
+
+            # Register message handler for user2
+            plugin2.on_event(TextRoomEventType.MESSAGE, on_message)
+
             # Create a room
             room_id = await plugin1.create_room(
                 description="Test Private Message Room",
@@ -296,7 +306,26 @@ class BaseTestClass:
             )
             logger.info("Private message sent")
 
+            # Wait for message to be received
             await asyncio.sleep(1.0)
+
+            # Verify message was received by user2
+            self.assertEqual(
+                len(received_messages), 1, "User2 should receive exactly one message"
+            )
+
+            message = received_messages[0]
+            self.assertEqual(
+                message.get("text"), "Private message", "Message text should match"
+            )
+            self.assertEqual(
+                message.get("from"), "user1", "Message should be from user1"
+            )
+            self.assertTrue(
+                message.get("whisper", False),
+                "Message should be marked as whisper (private)",
+            )
+            logger.info("Verified that user2 received the private message")
 
             # Clean up
             await plugin1.leave_room(room=room_id)
