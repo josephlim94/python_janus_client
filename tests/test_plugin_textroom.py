@@ -383,51 +383,75 @@ class BaseTestClass:
         @async_test
         async def test_textroom_message_history(self):
             """Test message history functionality."""
-            await self.asyncSetUp()
-            logger.info("Testing message history")
+            await self.attach_plugin()
 
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
-
-            await plugin.attach(session=session)
-            await plugin.setup(timeout=30.0)
+            await self.plugin.setup(timeout=30.0)
 
             # Create room with history
-            room_id = await plugin.create_room(
+            room_id = await self.plugin.create_room(
                 description="History Room",
                 history=10,
                 is_private=False,
             )
 
             # Join and send messages
-            await plugin.join_room(room=room_id, username="user1")
+            await self.plugin.join_room(room=room_id, username="user1")
 
             for i in range(3):
-                await plugin.send_message(
+                await self.plugin.send_message(
                     room=room_id,
                     text=f"Message {i+1}",
                     ack=True,
                 )
 
             logger.info("Sent 3 messages")
-            await plugin.leave_room(room=room_id)
+            await self.plugin.leave_room(room=room_id)
+
+            # Track received history messages
+            received_history = []
+
+            def on_message(data):
+                received_history.append(data)
+                logger.info(f"Received history message: {data.get('text', '')}")
+
+            # Register message handler before rejoining
+            self.plugin.on_event(TextRoomEventType.MESSAGE, on_message)
 
             # Rejoin and check if history is received
-            await plugin.join_room(
+            await self.plugin.join_room(
                 room=room_id,
                 username="user1",
                 history=True,
             )
             logger.info("Rejoined room with history")
 
-            await asyncio.sleep(1.0)
+            # Wait for history messages to be delivered
+            await asyncio.sleep(2.0)
+
+            # Verify that we received the 3 messages from history
+            self.assertEqual(
+                len(received_history), 3, "Should receive 3 messages from history"
+            )
+
+            # Verify message content and order
+            for i, msg in enumerate(received_history):
+                expected_text = f"Message {i+1}"
+                self.assertEqual(
+                    msg.get("text"),
+                    expected_text,
+                    f"Message {i+1} text should match",
+                )
+                self.assertEqual(
+                    msg.get("from"), "user1", f"Message {i+1} should be from user1"
+                )
+
+            logger.info("Verified message history received correctly")
 
             # Clean up
-            await plugin.leave_room(room=room_id)
-            await plugin.destroy_room(room=room_id)
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.plugin.leave_room(room=room_id)
+            await self.plugin.destroy_room(room=room_id)
+
+            await self.detach_plugin()
 
 
 class TestTransportHttp(BaseTestClass.TestClass):
