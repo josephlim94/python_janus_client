@@ -51,6 +51,8 @@ class JanusTextRoomPlugin(JanusPlugin):
 
     This plugin provides text-based communication through WebRTC DataChannels.
     It supports multiple rooms, public and private messaging, and room management.
+    From my observation, the datachannel is only created after a room is joined, so
+    the first join request cannot be sent through datachannel.
 
     Example:
         ```python
@@ -86,6 +88,7 @@ class JanusTextRoomPlugin(JanusPlugin):
         super().__init__()
         self._data_channel: Optional[RTCDataChannel] = None
         self._webrtcup_event = asyncio.Event()
+        self._data_channel_created_event = asyncio.Event()
         self._event_handlers: Dict[TextRoomEventType, List[Callable]] = {
             event_type: [] for event_type in TextRoomEventType
         }
@@ -168,7 +171,7 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         @channel.on("message")
         async def on_message(message: str):
-            logger.debug(f"DataChannel message: {message}")
+            logger.info(f"DataChannel message: {message}")
             await self._handle_datachannel_message(message)
 
     async def _handle_datachannel_message(self, message: str) -> None:
@@ -177,9 +180,9 @@ class JanusTextRoomPlugin(JanusPlugin):
         Args:
             message: The message received on the datachannel.
         """
-        data = json.loads(message)
+        data: dict = json.loads(message)
         textroom_type = data["textroom"]
-        transaction = data["transaction"]
+        transaction = data.get("transaction")
 
         # Check if this is a response to a pending transaction
         if transaction and transaction in self._pending_transactions:
@@ -398,6 +401,7 @@ class JanusTextRoomPlugin(JanusPlugin):
         def on_datachannel(channel: RTCDataChannel):
             logger.info(f"DataChannel '{channel.label}' created by remote party")
             self._data_channel = channel
+            self._data_channel_created_event.set()
             self._setup_datachannel_handlers(channel)
 
         await self._pc.setRemoteDescription(
@@ -457,30 +461,9 @@ class JanusTextRoomPlugin(JanusPlugin):
         if admin_key:
             body["admin_key"] = admin_key
 
-        message_transaction = await self.send({"janus": "message", "body": body})
-
-        response = await message_transaction.get(
-            matcher=lambda r: is_subset(
-                r,
-                {
-                    "janus": "success",
-                    "plugindata": {
-                        "plugin": self.name,
-                        "data": {"textroom": "success"},
-                    },
-                },
-            )
-            or is_subset(r, {"janus": "error"}),
-            timeout=timeout,
+        response = await self.send_wrapper(
+            message=body, matcher={"textroom": "success"}, timeout=timeout
         )
-
-        await message_transaction.done()
-
-        if is_subset(response, {"janus": "error"}):
-            error = response.get("error", {})
-            raise TextRoomError(
-                error.get("code", 0), error.get("reason", "Unknown error")
-            )
 
         return response["plugindata"]["data"].get("list", [])
 
@@ -649,6 +632,7 @@ class JanusTextRoomPlugin(JanusPlugin):
         """
 
         body: Dict[str, Any] = {
+            "request": "list",  # Bug in Janus, must have "request" field when not sent over datachannel
             "textroom": "join",
             "room": room,
             "username": username,
@@ -667,7 +651,12 @@ class JanusTextRoomPlugin(JanusPlugin):
             matcher={"textroom": "success"},
             timeout=timeout,
         )
-        return response["participants"]
+
+        # I believe datachannel is always created after join room
+        # Wait for it
+        await asyncio.wait_for(self._data_channel_created_event.wait(), timeout=timeout)
+
+        return response["plugindata"]["data"]["participants"]
 
     async def leave_room(self, room: int, timeout: float = 15.0) -> None:
         """Leave a TextRoom.

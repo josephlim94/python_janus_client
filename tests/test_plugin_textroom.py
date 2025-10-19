@@ -34,6 +34,20 @@ class BaseTestClass:
             await self.transport.disconnect()
             await asyncio.sleep(0.250)
 
+        async def attach_plugin(self) -> None:
+            await self.asyncSetUp()
+            logger.info("Testing create and destroy room")
+
+            self.session = JanusSession(transport=self.transport)
+            self.plugin = JanusTextRoomPlugin()
+
+            await self.plugin.attach(session=self.session)
+
+        async def detach_plugin(self) -> None:
+            await self.plugin.destroy()
+            await self.session.destroy()
+            await self.asyncTearDown()
+
         @async_test
         async def test_textroom_plugin_attach(self):
             """Test attaching TextRoom plugin to session."""
@@ -64,7 +78,7 @@ class BaseTestClass:
             await plugin.attach(session=session)
             await plugin.setup(timeout=30.0)
 
-            self.assertIsNotNone(plugin._data_channel)
+            self.assertIsNotNone(plugin._pc)
             logger.info("TextRoom setup completed successfully")
 
             await plugin.destroy()
@@ -74,22 +88,14 @@ class BaseTestClass:
         @async_test
         async def test_textroom_list_rooms(self):
             """Test listing available TextRooms."""
-            await self.asyncSetUp()
-            logger.info("Testing list rooms")
+            await self.attach_plugin()
 
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
-
-            await plugin.attach(session=session)
-
-            rooms = await plugin.list_rooms()
+            rooms = await self.plugin.list_rooms()
 
             self.assertIsInstance(rooms, list)
             logger.info(f"Found {len(rooms)} rooms")
 
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.detach_plugin()
 
         @async_test
         async def test_textroom_create_and_destroy_room(self):
