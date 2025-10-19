@@ -483,29 +483,11 @@ class JanusTextRoomPlugin(JanusPlugin):
             TimeoutError: If request times out.
             TextRoomError: If request fails.
         """
-        message_transaction = await self.send(
-            {"janus": "message", "body": {"request": "listparticipants", "room": room}}
-        )
-
-        response = await message_transaction.get(
-            matcher=lambda r: is_subset(
-                r,
-                {
-                    "janus": "success",
-                    "plugindata": {"plugin": self.name, "data": {"room": room}},
-                },
-            )
-            or is_subset(r, {"janus": "error"}),
+        response = await self.send_wrapper(
+            message={"request": "listparticipants", "room": room},
+            matcher={"room": room},
             timeout=timeout,
         )
-
-        await message_transaction.done()
-
-        if is_subset(response, {"janus": "error"}):
-            error = response.get("error", {})
-            raise TextRoomError(
-                error.get("code", 0), error.get("reason", "Unknown error")
-            )
 
         return response["plugindata"]["data"].get("participants", [])
 

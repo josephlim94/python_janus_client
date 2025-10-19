@@ -100,16 +100,10 @@ class BaseTestClass:
         @async_test
         async def test_textroom_create_and_destroy_room(self):
             """Test creating and destroying a TextRoom."""
-            await self.asyncSetUp()
-            logger.info("Testing create and destroy room")
-
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
-
-            await plugin.attach(session=session)
+            await self.attach_plugin()
 
             # Create a room
-            room_id = await plugin.create_room(
+            room_id = await self.plugin.create_room(
                 description="Test Room",
                 is_private=False,
                 history=10,
@@ -119,44 +113,37 @@ class BaseTestClass:
             logger.info(f"Created room with ID: {room_id}")
 
             # Verify room exists in list
-            rooms = await plugin.list_rooms()
+            rooms = await self.plugin.list_rooms()
             room_ids = [room["room"] for room in rooms]
             self.assertIn(room_id, room_ids)
 
             # Destroy the room
-            await plugin.destroy_room(room=room_id)
+            await self.plugin.destroy_room(room=room_id)
             logger.info(f"Destroyed room {room_id}")
 
             # Verify room no longer exists
-            rooms = await plugin.list_rooms()
+            rooms = await self.plugin.list_rooms()
             room_ids = [room["room"] for room in rooms]
             self.assertNotIn(room_id, room_ids)
 
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.detach_plugin()
 
         @async_test
         async def test_textroom_join_and_leave(self):
             """Test joining and leaving a TextRoom."""
-            await self.asyncSetUp()
-            logger.info("Testing join and leave room")
+            await self.attach_plugin()
 
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
-
-            await plugin.attach(session=session)
-            await plugin.setup(timeout=30.0)
+            await self.plugin.setup(timeout=30.0)
 
             # Create a test room
-            room_id = await plugin.create_room(
+            room_id = await self.plugin.create_room(
                 description="Test Join Room",
                 is_private=False,
             )
             logger.info(f"Created room {room_id}")
 
             # Join the room
-            participants = await plugin.join_room(
+            participants = await self.plugin.join_room(
                 room=room_id,
                 username="test_user",
                 display="Test User",
@@ -166,19 +153,23 @@ class BaseTestClass:
             logger.info(f"Joined room {room_id}, participants: {len(participants)}")
 
             # List participants
-            participants = await plugin.list_participants(room=room_id)
+            participants = await self.plugin.list_participants(room=room_id)
             usernames = [p["username"] for p in participants]
             self.assertIn("test_user", usernames)
 
             # Leave the room
-            await plugin.leave_room(room=room_id)
+            await self.plugin.leave_room(room=room_id)
             logger.info(f"Left room {room_id}")
 
+            # Make sure not part of participants anymore
+            participants = await self.plugin.list_participants(room=room_id)
+            usernames = [p["username"] for p in participants]
+            self.assertNotIn("test_user", usernames)
+
             # Clean up
-            await plugin.destroy_room(room=room_id)
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.plugin.destroy_room(room=room_id)
+
+            await self.detach_plugin()
 
         @async_test
         async def test_textroom_send_message(self):
