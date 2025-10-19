@@ -267,7 +267,7 @@ class JanusTextRoomPlugin(JanusPlugin):
             response,
             {
                 "janus": "success",
-                "plugindata": {"plugin": self.name, "data": {"error"}},
+                "plugindata": {"plugin": self.name, "data": {"error": None}},
             },
         ):
             error_code: int = response["plugindata"]["data"]["error_code"]
@@ -330,14 +330,44 @@ class JanusTextRoomPlugin(JanusPlugin):
             TextRoomError: If setup fails.
         """
 
-        def response_matcher(response: dict):
-            return (
-                is_subset(
-                    response,
-                    {"janus": "ack"},
-                )
-                or is_subset(
-                    response,
+        def response_matcher_base(response: dict):
+            return is_subset(response, {"janus": "error", "error": {}}) or is_subset(
+                response, {"janus": "success", "plugindata": {"plugin": self.name}}
+            )
+
+        message_transaction = await self.send(
+            message={
+                "janus": "message",
+                "body": {"request": "setup"},
+            },
+        )
+        response = await message_transaction.get(
+            matcher=lambda r: is_subset(r, {"janus": "ack"})
+            or is_subset(
+                r,
+                {
+                    "janus": "event",
+                    "plugindata": {
+                        "plugin": self.name,
+                        "data": {
+                            "textroom": "event",
+                            "result": "ok",
+                        },
+                    },
+                },
+            )
+            or response_matcher_base(r),
+            timeout=timeout,
+        )
+        self.check_error_in_response(response=response)
+
+        # If it got "ack" first, the second message is the "event" with jsep
+        logger.info(response)
+        if is_subset(response, {"janus": "ack"}):
+            logger.info("Get another response")
+            response = await message_transaction.get(
+                matcher=lambda r: is_subset(
+                    r,
                     {
                         "janus": "event",
                         "plugindata": {
@@ -349,31 +379,13 @@ class JanusTextRoomPlugin(JanusPlugin):
                         },
                     },
                 )
-                or is_subset(response, {"janus": "error", "error": {}})
-                or is_subset(
-                    response, {"janus": "success", "plugindata": {"plugin": self.name}}
-                )
-            )
-
-        message_transaction = await self.send(
-            message={
-                "janus": "message",
-                "body": {"request": "setup"},
-            },
-        )
-        response = await message_transaction.get(
-            matcher=response_matcher, timeout=timeout
-        )
-        self.check_error_in_response(response=response)
-
-        # If it got "ack" first, the second message is the "event" with jsep
-        if is_subset(response, {"janus": "ack"}):
-            response = await message_transaction.get(
-                matcher=response_matcher, timeout=timeout
+                or response_matcher_base(r),
+                timeout=timeout,
             )
             self.check_error_in_response(response=response)
 
         await message_transaction.done()
+        logger.info(response)
 
         if "jsep" not in response:
             raise TextRoomError(0, "No JSEP offer received from setup")
@@ -568,7 +580,7 @@ class JanusTextRoomPlugin(JanusPlugin):
             body["permanent"] = permanent
 
         response = await self.send_wrapper(
-            message={"janus": "message", "body": body},
+            message=body,
             matcher={"textroom": "created"},
             timeout=timeout,
         )
@@ -602,7 +614,7 @@ class JanusTextRoomPlugin(JanusPlugin):
             body["permanent"] = permanent
 
         await self.send_wrapper(
-            message={"janus": "message", "body": body},
+            message=body,
             matcher={"textroom": "destroyed"},
             timeout=timeout,
         )
@@ -651,7 +663,7 @@ class JanusTextRoomPlugin(JanusPlugin):
             body["token"] = token
 
         response = await self.send_wrapper(
-            message={"janus": "message", "body": body},
+            message=body,
             matcher={"textroom": "success"},
             timeout=timeout,
         )
