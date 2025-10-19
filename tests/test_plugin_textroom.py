@@ -341,17 +341,12 @@ class BaseTestClass:
         @async_test
         async def test_textroom_room_with_pin(self):
             """Test creating and joining a PIN-protected room."""
-            await self.asyncSetUp()
-            logger.info("Testing PIN-protected room")
+            await self.attach_plugin()
 
-            session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
-
-            await plugin.attach(session=session)
-            await plugin.setup(timeout=30.0)
+            await self.plugin.setup(timeout=30.0)
 
             # Create a PIN-protected room
-            room_id = await plugin.create_room(
+            room_id = await self.plugin.create_room(
                 description="PIN Protected Room",
                 pin="1234",
                 is_private=False,
@@ -359,18 +354,18 @@ class BaseTestClass:
             logger.info(f"Created PIN-protected room {room_id}")
 
             # Join with correct PIN
-            await plugin.join_room(
+            await self.plugin.join_room(
                 room=room_id,
                 username="test_user",
                 pin="1234",
             )
             logger.info("Joined with correct PIN")
 
-            await plugin.leave_room(room=room_id)
+            await self.plugin.leave_room(room=room_id)
 
             # Try to join with wrong PIN (should fail)
             try:
-                await plugin.join_room(
+                await self.plugin.join_room(
                     room=room_id,
                     username="test_user2",
                     pin="wrong",
@@ -381,10 +376,9 @@ class BaseTestClass:
                 logger.info("Correctly rejected wrong PIN")
 
             # Clean up
-            await plugin.destroy_room(room=room_id, secret=None)
-            await plugin.destroy()
-            await session.destroy()
-            await self.asyncTearDown()
+            await self.plugin.destroy_room(room=room_id, secret=None)
+
+            await self.detach_plugin()
 
         @async_test
         async def test_textroom_message_history(self):
