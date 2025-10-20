@@ -167,7 +167,7 @@ The project documentation is built with [Material for MkDocs](https://squidfunk.
 Install development dependencies:
 
 ```bash
-poetry install --with dev
+hatch env create
 ```
 
 #### Local Development
@@ -175,7 +175,7 @@ poetry install --with dev
 To serve the documentation locally with live reload:
 
 ```bash
-poetry run mkdocs serve
+hatch run docs-serve
 ```
 
 The documentation will be available at http://127.0.0.1:8000/
@@ -185,17 +185,18 @@ The documentation will be available at http://127.0.0.1:8000/
 To build the documentation for production:
 
 ```bash
-poetry run python -W ignore::DeprecationWarning:mkdocs_autorefs -m mkdocs build --clean --strict
+hatch run docs-build
 ```
 
 The built documentation will be in the `site/` directory.
 
-**Important:** Always use the `--strict` flag when building documentation to catch warnings as errors. This ensures documentation quality and prevents deployment of documentation with issues.
+**Important:** The documentation build uses the `--strict` flag to catch warnings as errors. This ensures documentation quality and prevents deployment of documentation with issues.
 
 For local development without strict mode:
 
 ```bash
-poetry run mkdocs build
+hatch run mkdocs build
+hatch run +py=3.8 mkdocs build  # to build in a specific python environment only, not all
 ```
 
 #### Documentation Structure
