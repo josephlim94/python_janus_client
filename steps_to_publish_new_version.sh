@@ -8,9 +8,9 @@ hatch env run -e py3.8 coverage report -- --format=total  # Update total into RE
 
 # Set new version number in pyproject.toml
 git add pyproject.toml README.md
-git commit -m "Release v${hatch version}"
+git commit -m "Release v$(hatch version)"
 git push
-git tag -a release-${hatch version} -m "Release v${hatch version}"
-git push origin release-${hatch version}
+git tag -a release-$(hatch version) -m "Release v$(hatch version)"
+git push origin release-$(hatch version)
 
 # Really build and release it
