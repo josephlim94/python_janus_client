@@ -40,6 +40,7 @@ This client is using `aiortc` for WebRTC communication and subsequently `PyAV` f
   - EchoTest plugin
   - VideoCall plugin (Please refer to [eg_videocall_in.py](./eg_videocall_in.py) and [eg_videocall_out.py](./eg_videocall_out.py))
   - VideoRoom plugin
+  - TextRoom plugin
 - Simple interface
 - Minimum dependency
 - Extendable Janus transport
