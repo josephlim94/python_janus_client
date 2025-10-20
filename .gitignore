@@ -17,6 +17,7 @@ site/*
 # Code coverage
 .coverage
 *.mp4
+htmlcov
 
 # pyenv
 .python-version

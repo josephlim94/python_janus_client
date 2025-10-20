@@ -1,4 +1,4 @@
-![Python Janus Client](https://github.com/josephlim94/python_janus_client/blob/a09000e0c49d44918082dfa13dd27e6f309338fc/python_janus_client_logo.svg "Python Janus Client")
+![Python Janus Client](https://raw.githubusercontent.com/josephlim94/python_janus_client/refs/heads/master/python_janus_client_logo.svg "Python Janus Client")
 
 
 [Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
@@ -6,7 +6,7 @@
 ![PyPI - License](https://img.shields.io/pypi/l/janus-client)
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/janus-client)
-![Code Coverage](https://img.shields.io/badge/coverage-84%25-brightgreen)
+![Code Coverage](https://img.shields.io/badge/coverage-82%25-brightgreen)
 
 ---
 
@@ -199,14 +199,34 @@ hatch run mkdocs build
 hatch run +py=3.8 mkdocs build  # to build in a specific python environment only, not all
 ```
 
-#### Documentation Structure
+## Dev
 
-- `docs/index.md` - Main documentation page
-- `docs/session.md` - Session API documentation
-- `docs/plugins.md` - Plugin API documentation
-- `docs/transport.md` - Transport API documentation
-- `mkdocs.yml` - MkDocs configuration file
+### Run unit tests
 
+Use following command to run unit tests and see all logs:
+
+```bash
+hatch test  # Run all tests on all environments
+hatch test -- -s --log-cli-level=INFO --full-trace -- tests  # Run all tests with all logs on a default environment
+hatch test .\tests\test_plugin.py::TestTransportHttp::test_plugin_echotest_create -- -s --log-cli-level=INFO --full-trace  # Run a specific test with all logs on a default environment
+hatch test -i py=3.8 .\tests\test_plugin.py::TestTransportHttp::test_plugin_echotest_create -- -s --log-cli-level=INFO --full-trace  # Run a specific test with all logs on a specific environment
+```
+
+Generate code coverage:
+
+```bash
+# Not running it through all python environments because the webrtc connection might fail to setup.
+# That is a server configuration issue which naturally comes with integration tests like these.
+hatch test -i py=3.8 -c
+hatch env run -e py3.8 coverage html
+```
+
+### Build and publish
+
+```bash
+hatch -e py3.8 build --clean
+hatch publish
+```
 ## Experiments
 
 FFmpeg support for VideoRoom plugin has now been moved to `experiments` folder, together with GStreamer support.
