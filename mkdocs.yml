@@ -93,6 +93,7 @@ nav:
   - Session: session.md
   - Plugins: plugins.md
   - Transport: transport.md
+  - API Reference: reference.md
 
 extra:
   social:

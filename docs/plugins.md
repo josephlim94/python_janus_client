@@ -4,31 +4,20 @@ Janus plugins provide specific functionality for different use cases. This libra
 
 Plugins are the core components that implement specific WebRTC functionality. Each plugin corresponds to a server-side Janus plugin and provides a Python interface for interacting with it.
 
-## Base Plugin Class
+For detailed API documentation, see the [API Reference](reference.md#plugin-classes).
 
-All plugins inherit from the base `JanusPlugin` class, which provides common functionality for plugin lifecycle management, message handling, and WebRTC signaling.
+## Overview
 
-::: janus_client.plugin_base.JanusPlugin
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
+All plugins inherit from the base `JanusPlugin` class, which provides common functionality for plugin lifecycle management, message handling, and WebRTC signaling. The library includes support for:
+
+- **EchoTest Plugin** - Testing WebRTC connectivity
+- **VideoCall Plugin** - One-to-one video calls
+- **VideoRoom Plugin** - Multi-party video conferencing
+- **TextRoom Plugin** - Text-based communication via DataChannels
 
 ## EchoTest Plugin
 
 The EchoTest plugin is useful for testing WebRTC connectivity. It echoes back any media sent to it, making it perfect for testing your setup.
-
-::: janus_client.plugin_echotest.JanusEchoTestPlugin
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
 
 ### EchoTest Usage Example
 
@@ -60,15 +49,6 @@ if __name__ == "__main__":
 ## VideoCall Plugin
 
 The VideoCall plugin enables one-to-one video calls between users. It handles user registration, call initiation, and call management.
-
-::: janus_client.plugin_video_call.JanusVideoCallPlugin
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
 
 ### VideoCall Usage Example
 
@@ -106,31 +86,6 @@ if __name__ == "__main__":
 ## VideoRoom Plugin
 
 The VideoRoom plugin enables multi-party video conferencing. It supports room management, publishing, and subscribing to multiple video feeds.
-
-::: janus_client.plugin_video_room.JanusVideoRoomPlugin
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
-
-### VideoRoom State Class
-
-::: janus_client.plugin_video_room.JanusVideoRoomPlugin.State
-    options:
-      show_root_heading: true
-      show_source: false
-      docstring_section_style: table
-
-### AllowedAction Enum
-
-::: janus_client.plugin_video_room.AllowedAction
-    options:
-      show_root_heading: true
-      show_source: false
-      docstring_section_style: table
 
 ### VideoRoom Usage Example
 
@@ -171,31 +126,6 @@ if __name__ == "__main__":
 ## TextRoom Plugin
 
 The TextRoom plugin enables text-based communication through WebRTC DataChannels. It supports multiple rooms, public and private messaging, room management, and message history.
-
-::: janus_client.plugin_textroom.JanusTextRoomPlugin
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
-
-### TextRoomError Exception
-
-::: janus_client.plugin_textroom.TextRoomError
-    options:
-      show_root_heading: true
-      show_source: false
-      docstring_section_style: table
-
-### TextRoomEventType Enum
-
-::: janus_client.plugin_textroom.TextRoomEventType
-    options:
-      show_root_heading: true
-      show_source: false
-      docstring_section_style: table
 
 ### TextRoom Usage Examples
 

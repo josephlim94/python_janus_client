@@ -4,24 +4,16 @@ Create a session object that can be shared between plugin handles.
 
 The session is the main entry point for communicating with a Janus WebRTC Gateway server. It manages the connection, handles message routing, and provides lifecycle management for plugins.
 
-## JanusSession
+For detailed API documentation, see the [API Reference](reference.md#session-classes).
 
-::: janus_client.session.JanusSession
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
+## Overview
 
-## PluginAttachFail Exception
+A `JanusSession` represents a connection to a Janus WebRTC Gateway server. It:
 
-::: janus_client.session.PluginAttachFail
-    options:
-      show_root_heading: true
-      show_source: false
-      docstring_section_style: table
+- Manages the underlying transport (HTTP or WebSocket)
+- Routes messages between plugins and the server
+- Handles session lifecycle (creation, keepalive, destruction)
+- Provides automatic cleanup through async context managers
 
 ## Usage Examples
 

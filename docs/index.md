@@ -13,6 +13,7 @@ Easily send and share WebRTC media through [Janus](https://github.com/meetecho/j
     - EchoTest Plugin
     - VideoCall Plugin
     - VideoRoom Plugin
+    - TextRoom Plugin
 - Extendable Transport class and Plugin class
 
 ## Library Installation

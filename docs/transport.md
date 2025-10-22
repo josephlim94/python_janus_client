@@ -2,29 +2,15 @@
 
 Transport classes handle the actual communication with the Janus server. The transport method is automatically detected using regex patterns on the base_url parameter passed to the Session object.
 
-## Base Transport Class
+For detailed API documentation, see the [API Reference](reference.md#transport-classes).
 
-::: janus_client.transport.JanusTransport
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
+## Overview
+
+The transport layer provides the communication mechanism between your application and the Janus WebRTC Gateway server. The library automatically selects the appropriate transport based on the URL scheme you provide.
 
 ## HTTP Transport
 
 The HTTP transport implementation provides communication with Janus server over HTTP/HTTPS using long polling for receiving messages.
-
-::: janus_client.transport_http.JanusTransportHTTP
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
 
 ### HTTP Transport Features
 
@@ -60,15 +46,6 @@ if __name__ == "__main__":
 ## WebSocket Transport
 
 The WebSocket transport implementation provides real-time, full-duplex communication with the Janus server.
-
-::: janus_client.transport_websocket.JanusTransportWebsocket
-    options:
-      show_root_heading: true
-      show_source: false
-      members_order: source
-      docstring_section_style: table
-      separate_signature: true
-      show_signature_annotations: true
 
 ### WebSocket Transport Features
 
