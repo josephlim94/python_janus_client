@@ -158,27 +158,24 @@ Server ping:
 
 ## Documentation
 
-The project documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) and deployed to GitHub Pages.
+Link here: https://josephlim94.github.io/python_janus_client/
+
+## Dev
 
 ### Documentation Development
 
+The project documentation is built with [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) and deployed to GitHub Pages.
+
 #### Setup
 
-Install development dependencies:
-
 ```bash
+# Install development dependencies
 hatch env create
-```
 
-#### Local Development
-
-To serve the documentation locally with live reload:
-
-```bash
+# To serve the documentation locally with live reload
+# Should be available at http://127.0.0.1:8000/
 hatch run docs-serve
 ```
-
-The documentation will be available at http://127.0.0.1:8000/
 
 #### Building Documentation
 
@@ -198,8 +195,6 @@ For local development without strict mode:
 hatch run mkdocs build
 hatch run +py=3.8 mkdocs build  # to build in a specific python environment only, not all
 ```
-
-## Dev
 
 ### Run unit tests
 
