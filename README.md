@@ -1,7 +1,9 @@
-![Python Janus Client](https://raw.githubusercontent.com/josephlim94/python_janus_client/refs/heads/master/python_janus_client_logo.svg "Python Janus Client")
+<p align="center">
+<img src="https://raw.githubusercontent.com/josephlim94/python_janus_client/refs/heads/master/python_janus_client_logo.svg" alt="Python Janus Client" width="66.66%"/>
+</p>
 
 
-[Janus](https://github.com/meetecho/janus-gateway) WebRTC gateway Python async client.
+[Janus WebRTC Server](https://github.com/meetecho/janus-gateway) Python async client.
 
 ![PyPI - License](https://img.shields.io/pypi/l/janus-client)
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
