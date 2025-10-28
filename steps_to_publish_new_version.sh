@@ -14,3 +14,5 @@ git tag -a release-$(hatch version) -m "Release v$(hatch version)"
 git push origin release-$(hatch version)
 
 # Really build and release it
+hatch -e py3.8 build --clean
+hatch publish
