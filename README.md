@@ -83,6 +83,7 @@ Notice that we don't need to call connect or disconnect explicitly. It's managed
 import asyncio
 from janus_client import JanusSession, JanusVideoCallPlugin
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
+from aiortc import RTCConfiguration, RTCIceServer
 
 async def main():
     # Create session
@@ -90,8 +91,11 @@ async def main():
         base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
     )
 
-    # Create plugin
-    plugin_handle = JanusVideoCallPlugin()
+    # Create plugin (optionally with WebRTC configuration)
+    config = RTCConfiguration(iceServers=[
+        RTCIceServer(urls='stun:stun.l.google.com:19302')
+    ])
+    plugin_handle = JanusVideoCallPlugin(pc_config=config)
 
     # Attach to Janus session
     await plugin_handle.attach(session=session)
