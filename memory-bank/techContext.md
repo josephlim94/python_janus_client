@@ -209,63 +209,7 @@ async def join_room(self, room_id: int, username: str) -> bool:
 
 ## Testing Strategy
 
-### Test Organization
-```
-tests/
-├── __init__.py
-├── conftest.py              # Pytest configuration and fixtures
-├── util.py                  # Test utilities
-├── test_plugin.py           # Plugin base tests
-├── test_plugin_echotest.py  # EchoTest plugin tests
-├── test_plugin_video_call.py
-├── test_plugin_video_room.py
-├── test_plugin_textroom.py
-├── test_transport.py        # Transport layer tests
-├── test_admin.py            # Admin API tests
-└── test_*.py               # Other test modules
-```
-
-### Test Execution
-```bash
-# Run all tests
-hatch test
-
-# Run specific test file
-hatch test tests/test_plugin_textroom.py
-
-# Run specific test
-hatch test tests/test_plugin_textroom.py::TestTransportHttp::test_textroom_join
-
-# Run with output and logging
-hatch test -- -s --log-cli-level=INFO
-
-# Run with coverage
-hatch test -i py=3.8 -c
-hatch env run -e py3.8 coverage html
-```
-
-### Coverage Target
-- **Minimum:** 80%
-- **Current:** 82%
-- **Measurement:** Using coverage.py
-- **Configuration:** .coveragerc
-
-### Test Patterns
-```python
-import pytest
-from janus_client import JanusSession, JanusEchoTestPlugin
-
-@pytest.mark.asyncio
-async def test_plugin_attach():
-    """Test plugin attachment to session."""
-    session = JanusSession(base_url="wss://example.com/janus")
-    plugin = JanusEchoTestPlugin()
-    
-    async with session:
-        await plugin.attach(session)
-        assert plugin.id is not None
-        await plugin.destroy()
-```
+See .clinerules/testing-guidelines.md for comprehensive testing information.
 
 ## Documentation System
 
@@ -353,14 +297,12 @@ hatch publish -r test
 
 ## Environment Variables
 
-### Testing
-- **JANUS_URL:** Janus server URL for integration tests
-- **JANUS_API_KEY:** API key for authenticated tests
-- **JANUS_TOKEN:** Token for token-based auth tests
-
 ### Development
 - **PYTHONPATH:** Set to project root for imports
 - **LOG_LEVEL:** Control logging verbosity
+
+### Testing
+See .clinerules/testing-guidelines.md for testing environment variables.
 
 ## CI/CD Considerations
 

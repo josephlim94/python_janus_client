@@ -310,7 +310,7 @@
 ## Metrics & Health
 
 ### Test Coverage
-- **Current:** 82%
+- **Current:** 82% (see .clinerules/testing-guidelines.md for details)
 - **Target:** >80%
 - **Status:** ✅ Meeting target
 - **Trend:** Stable

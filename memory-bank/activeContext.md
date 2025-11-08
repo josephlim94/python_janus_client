@@ -167,12 +167,6 @@ plugin = JanusVideoCallPlugin(pc_config=config)
 - **Type hints:** Required for all public APIs
 - **Error handling:** Specific exceptions with clear messages
 
-### Testing Approach
-- **Integration tests:** Test against real Janus server when possible
-- **Mocking:** Mock transport and WebRTC for unit tests
-- **Coverage:** Maintain >80% coverage
-- **Async tests:** Use pytest-asyncio markers
-- **Fixtures:** Reusable test fixtures in conftest.py
 
 ### Documentation Style
 - **Google-style docstrings:** Consistent format
@@ -183,41 +177,11 @@ plugin = JanusVideoCallPlugin(pc_config=config)
 
 ### Development Workflow
 1. Make changes in feature branch
-2. Run tests locally: `hatch test -i py=3.8`
-3. Check coverage: `hatch test -i py=3.8 -c`
-4. Build docs: `hatch run docs-build`
-5. Commit with clear message
-6. Create PR with description
+2. Run tests locally (see .clinerules/testing-guidelines.md)
+3. Build docs: `hatch run docs-build`
+4. Commit with clear message
+5. Create PR with description
 
-### Unit Test Execution
-**Full Test Suite:**
-```bash
-hatch test  # Run all tests across all Python environments
-```
-
-**Specific Test Files:**
-```bash
-# Run all plugin base tests (includes EchoTest)
-hatch test .\tests\test_plugin.py -- -s --log-cli-level=INFO --full-trace
-
-# Run specific test method
-hatch test .\tests\test_plugin.py::TestTransportHttp::test_plugin_echotest_create -- -s --log-cli-level=INFO --full-trace
-hatch test .\tests\test_plugin.py::TestTransportWebsocket::test_plugin_echotest_create -- -s --log-cli-level=INFO --full-trace
-```
-
-**Test Environment Options:**
-```bash
-hatch test -i py=3.8  # Run on specific Python version
-hatch test -c         # Run with coverage
-hatch test -- -v      # Verbose output
-```
-
-**Test Results Interpretation:**
-- All plugin base tests should pass (4/4 tests)
-- EchoTest tests verify full WebRTC handshake
-- Look for "Track audio received" and "Track video received" in logs
-- ICE connection establishment should show "ICE completed"
-- Tests typically take 20-25 seconds each for WebRTC setup
 
 ## Project Insights & Learnings
 
