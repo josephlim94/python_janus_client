@@ -15,7 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 class JanusPlugin(ABC):
-    """Base class for implementing Janus plugins."""
+    """Base class for implementing Janus plugins.
+    
+    Important: Each plugin instance can only hold ONE WebRTC peer connection.
+    If you need multiple peer connections, create multiple plugin instances.
+    Access the peer connection via the `pc` property.
+    """
 
     name: str = "janus.plugin.base.dummy"
     """Plugin name that must match the plugin name in Janus server."""
@@ -41,6 +46,56 @@ class JanusPlugin(ABC):
             The plugin handle ID assigned by Janus, or None if not attached.
         """
         return self.__id
+
+    @property
+    def pc(self) -> RTCPeerConnection:
+        """Get the WebRTC peer connection for this plugin.
+        
+        Each plugin instance can only have ONE peer connection. This property
+        provides direct access to the aiortc RTCPeerConnection object, allowing
+        plugins to use the full WebRTC API.
+        
+        Returns:
+            The RTCPeerConnection instance for this plugin.
+            
+        Example:
+            ```python
+            # Add tracks to the peer connection
+            plugin.pc.addTrack(audio_track)
+            plugin.pc.addTrack(video_track)
+            
+            # Create an offer
+            await plugin.pc.setLocalDescription(await plugin.pc.createOffer())
+            
+            # Access connection state
+            if plugin.pc.connectionState == "connected":
+                print("WebRTC connected!")
+            ```
+        """
+        return self._pc
+
+    async def reset_connection(self) -> None:
+        """Reset the peer connection.
+        
+        Closes the existing peer connection and creates a new one.
+        
+        Warning:
+            This should only be used when you need to completely restart the
+            WebRTC connection. In most cases, you should create a new plugin
+            instance instead of resetting the connection on an existing instance.
+            
+        Example:
+            ```python
+            # Close existing connection and create a new one
+            await plugin.reset_connection()
+            
+            # The pc property now returns the new connection
+            new_pc = plugin.pc
+            ```
+        """
+        if self._pc.signalingState != "closed":
+            await self._pc.close()
+        self._pc = RTCPeerConnection()
 
     async def attach(self, session: JanusSession) -> None:
         """Attach this plugin to a Janus session.
@@ -135,13 +190,12 @@ class JanusPlugin(ABC):
         Raises:
             Exception: If the peer connection is in closed state.
         """
-        if self._pc:
-            if self._pc.signalingState == "closed":
-                raise Exception("Received JSEP when PeerConnection is closed")
+        if self.pc.signalingState == "closed":
+            raise Exception("Received JSEP when PeerConnection is closed")
 
-            await self._pc.setRemoteDescription(
-                RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
-            )
+        await self.pc.setRemoteDescription(
+            RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
+        )
 
     async def trickle(
         self, sdpMLineIndex: int, candidate: Optional[str] = None

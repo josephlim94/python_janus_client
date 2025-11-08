@@ -18,6 +18,37 @@
 
 ## Recent Work
 
+### WebRTC Capabilities Enhancement
+**Status:** Completed (v0.8.2+)  
+**Started:** 2025-11-08  
+**Goal:** Fully expose WebRTC capabilities from plugin base while enforcing single peer connection per plugin
+
+**Key Features:**
+- Direct access to `RTCPeerConnection` via `pc` property
+- Single peer connection constraint enforced per plugin instance
+- Full aiortc API exposure without wrapper methods
+- Proper connection lifecycle management with `reset_connection()`
+- Comprehensive documentation of limitations
+
+**Files Modified:**
+- `janus_client/plugin_base.py` - Enhanced with `pc` property and `reset_connection()`
+- `janus_client/plugin_echotest.py` - Updated to use base class PC exclusively
+- Removed duplicate `on_receive_jsep()` implementation from EchoTest
+
+**Key Decisions:**
+- Expose `RTCPeerConnection` directly rather than wrapping API methods
+- Initialize PC in constructor for predictable behavior
+- Use `reset_connection()` for legitimate reconnection scenarios
+- Document single PC limitation clearly in class docstrings
+
+**Test Results:**
+- ✅ All 4 plugin base unit tests passed (47.06s total)
+- ✅ HTTP transport EchoTest: Full WebRTC handshake successful
+- ✅ WebSocket transport EchoTest: Full WebRTC handshake successful
+- ✅ Plugin creation failure test: Proper error handling verified
+- ✅ Media streaming: Audio and video tracks received successfully
+- ✅ ICE negotiation: Connection establishment working correctly
+
 ### TextRoom Plugin Development
 **Status:** Completed (v0.8.1)  
 **Key Features:**
@@ -112,6 +143,36 @@
 4. Build docs: `hatch run docs-build`
 5. Commit with clear message
 6. Create PR with description
+
+### Unit Test Execution
+**Full Test Suite:**
+```bash
+hatch test  # Run all tests across all Python environments
+```
+
+**Specific Test Files:**
+```bash
+# Run all plugin base tests (includes EchoTest)
+hatch test .\tests\test_plugin.py -- -s --log-cli-level=INFO --full-trace
+
+# Run specific test method
+hatch test .\tests\test_plugin.py::TestTransportHttp::test_plugin_echotest_create -- -s --log-cli-level=INFO --full-trace
+hatch test .\tests\test_plugin.py::TestTransportWebsocket::test_plugin_echotest_create -- -s --log-cli-level=INFO --full-trace
+```
+
+**Test Environment Options:**
+```bash
+hatch test -i py=3.8  # Run on specific Python version
+hatch test -c         # Run with coverage
+hatch test -- -v      # Verbose output
+```
+
+**Test Results Interpretation:**
+- All plugin base tests should pass (4/4 tests)
+- EchoTest tests verify full WebRTC handshake
+- Look for "Track audio received" and "Track video received" in logs
+- ICE connection establishment should show "ICE completed"
+- Tests typically take 20-25 seconds each for WebRTC setup
 
 ## Project Insights & Learnings
 
