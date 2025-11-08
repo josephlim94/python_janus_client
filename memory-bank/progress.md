@@ -37,7 +37,7 @@
   - Track handling
 
 #### VideoCall Plugin
-- **Status:** Fully functional
+- **Status:** Fully functional (Updated v0.8.3)
 - **Features:**
   - User registration
   - Peer-to-peer calls
@@ -45,6 +45,8 @@
   - Media streaming (audio/video)
   - Call control (hangup, set media)
   - User listing
+  - **NEW:** PC configuration support via RTCConfiguration
+  - **NEW:** Uses base class peer connection (no duplicate PC creation)
 
 #### VideoRoom Plugin
 - **Status:** Fully functional
@@ -59,7 +61,7 @@
   - Moderation features
 
 #### TextRoom Plugin
-- **Status:** Fully functional (v0.8.1)
+- **Status:** Fully functional (Updated v0.8.3)
 - **Features:**
   - WebRTC data channel communication
   - Room management (create, destroy, list)
@@ -68,6 +70,8 @@
   - Event-driven callbacks
   - Message history retrieval
   - Error handling with custom exceptions
+  - **NEW:** PC configuration support via RTCConfiguration
+  - **NEW:** Uses base class peer connection (no duplicate PC creation)
 
 ### ✅ Admin/Monitor API
 - **Status:** Fully functional
@@ -337,7 +341,24 @@
 
 ## Release History
 
-### v0.8.1 (Current)
+### v0.8.3 (Current)
+- **Plugin API Standardization**
+  - Updated TextRoom plugin to use base class peer connection
+  - Updated VideoCall plugin to use base class peer connection
+  - Removed `ice_servers` parameter support (breaking change)
+  - Added comprehensive PC configuration support via RTCConfiguration
+  - Updated README with correct API usage examples
+- **Enhanced Type Safety**
+  - Added proper Optional type annotations
+  - Improved null checks and type guards
+- **Testing**
+  - Added comprehensive PC configuration test suite (8 test cases)
+  - All plugins now tested with PC configuration
+- **Documentation**
+  - Updated all plugin docstrings with WebRTC configuration examples
+  - Added documentation philosophy to clinerules
+
+### v0.8.1
 - Added TextRoom plugin
 - Improved documentation
 - Bug fixes
@@ -356,7 +377,7 @@
 
 ## Roadmap
 
-### Next Release (v0.8.2)
+### Next Release (v0.8.4)
 **Target:** Q4 2025  
 **Focus:** Bug fixes and improvements
 - Fix WebSocket cleanup

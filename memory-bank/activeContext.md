@@ -18,6 +18,51 @@
 
 ## Recent Work
 
+### Plugin API Standardization
+**Status:** Completed (v0.8.3+)  
+**Started:** 2025-11-08  
+**Goal:** Update all plugins to use the latest base plugin API with PC configuration support
+
+**Key Changes:**
+- **Base Plugin API:** Only accepts `pc_config` (RTCConfiguration), removed `ice_servers` parameter
+- **TextRoom Plugin:** Updated to use base class peer connection instead of creating its own
+- **VideoCall Plugin:** Updated to use base class peer connection instead of creating its own
+- **EchoTest Plugin:** Already updated in previous work
+- **Documentation:** Updated README to show correct RTCConfiguration usage
+
+**Files Modified:**
+- `janus_client/plugin_textroom.py` - Updated constructor and PC references
+- `janus_client/plugin_video_call.py` - Updated constructor and PC references  
+- `README.md` - Updated examples to show RTCConfiguration usage
+- `tests/test_plugin_pc_config.py` - Comprehensive test suite for PC configuration
+
+**Key Technical Changes:**
+- **TextRoom:** Removed `self.__pc` creation in setup(), now uses `self.pc` from base class
+- **VideoCall:** Removed `self.__pc` usage in call(), accept(), hangup() methods
+- **Type Safety:** Added proper Optional type annotations
+- **Error Handling:** Improved null checks and type guards
+- **Connection Management:** Use base class `reset_connection()` for cleanup
+
+**API Migration:**
+```python
+# OLD API (no longer supported)
+plugin = JanusVideoCallPlugin(ice_servers=['stun:stun.l.google.com:19302'])
+
+# NEW API (current)
+from aiortc import RTCConfiguration, RTCIceServer
+config = RTCConfiguration(iceServers=[
+    RTCIceServer(urls='stun:stun.l.google.com:19302')
+])
+plugin = JanusVideoCallPlugin(pc_config=config)
+```
+
+**Test Results:**
+- ✅ TextRoom plugin tests pass with new API
+- ✅ VideoCall plugin tests pass with new API
+- ✅ PC configuration works correctly for all plugins
+- ✅ Backward compatibility maintained (no PC config still works)
+- ✅ Comprehensive PC configuration test suite (8 test cases)
+
 ### WebRTC Capabilities Enhancement
 **Status:** Completed (v0.8.2+)  
 **Started:** 2025-11-08  
