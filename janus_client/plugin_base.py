@@ -31,12 +31,12 @@ class JanusPlugin(ABC):
     __session: JanusSession
     """Session instance this plugin is attached to."""
 
-    _pc: RTCPeerConnection
+    __pc: RTCPeerConnection
     """WebRTC PeerConnection for this plugin handle."""
 
     def __init__(self) -> None:
         self.__id = None
-        self._pc = RTCPeerConnection()
+        self.__pc = RTCPeerConnection()
 
     @property
     def id(self) -> Optional[int]:
@@ -51,7 +51,7 @@ class JanusPlugin(ABC):
     def pc(self) -> RTCPeerConnection:
         """Get the WebRTC peer connection for this plugin.
         """
-        return self._pc
+        return self.__pc
 
     async def reset_connection(self) -> None:
         """Reset the peer connection.
@@ -72,9 +72,9 @@ class JanusPlugin(ABC):
             new_pc = plugin.pc
             ```
         """
-        if self._pc.signalingState != "closed":
-            await self._pc.close()
-        self._pc = RTCPeerConnection()
+        if self.__pc.signalingState != "closed":
+            await self.__pc.close()
+        self.__pc = RTCPeerConnection()
 
     async def attach(self, session: JanusSession) -> None:
         """Attach this plugin to a Janus session.
