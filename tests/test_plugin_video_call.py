@@ -11,6 +11,7 @@ from janus_client import (
     JanusSession,
     JanusVideoCallPlugin,
 )
+from janus_client.plugin_video_call import VideoCallEventType
 from tests.util import async_test
 
 format = "%(asctime)s: %(message)s"
@@ -58,7 +59,7 @@ class BaseTestClass:
 
             await plugin_handle.attach(session=session)
 
-            list_username = await plugin_handle.list()
+            list_username = await plugin_handle.list_users()
             self.assertTrue(type(list_username) is list)
 
             await plugin_handle.destroy()
@@ -78,8 +79,8 @@ class BaseTestClass:
             await plugin_handle.attach(session=session)
 
             list_username_all = await asyncio.gather(
-                plugin_handle.list(),
-                plugin_handle.list(),
+                plugin_handle.list_users(),
+                plugin_handle.list_users(),
             )
 
             for result in list_username_all:
@@ -106,7 +107,7 @@ class BaseTestClass:
             register_result = await plugin_handle.register(username=username)
             self.assertTrue(register_result)
 
-            list_username = await plugin_handle.list()
+            list_username = await plugin_handle.list_users()
             self.assertTrue(username in list_username)
 
             await plugin_handle.destroy()
@@ -127,8 +128,10 @@ class BaseTestClass:
             await plugin_handle_in.attach(session=session)
             await plugin_handle_out.attach(session=session)
 
-            username_in = "test_user_in"
-            username_out = "test_user_out"
+            import time
+            timestamp = str(int(time.time()))
+            username_in = f"test_user_in_{timestamp}"
+            username_out = f"test_user_out_{timestamp}"
             output_filename_in = "./videocall_record_in.mp4"
             output_filename_out = "./videocall_record_out.mp4"
 
@@ -137,27 +140,15 @@ class BaseTestClass:
             if os.path.exists(output_filename_out):
                 os.remove(output_filename_out)
 
-            async def on_incoming_call(plugin: JanusVideoCallPlugin, jsep: dict):
-                # player = MediaPlayer("./Into.the.Wild.2007.mp4")
+            async def on_incoming_call(data: dict):
+                # Handle incoming call with new API
                 player = MediaPlayer(
                     "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                 )
                 recorder = MediaRecorder(output_filename_in)
-                pc = await plugin.create_pc(
-                    player=player,
-                    recorder=recorder,
-                    jsep=jsep,
-                )
+                await plugin_handle_in.accept(player=player, recorder=recorder)
 
-                await pc.setLocalDescription(await pc.createAnswer())
-                jsep = {
-                    "sdp": pc.localDescription.sdp,
-                    "trickle": False,
-                    "type": pc.localDescription.type,
-                }
-                await plugin.accept(jsep=jsep, pc=pc, player=player, recorder=recorder)
-
-            plugin_handle_in.on_incoming_call = on_incoming_call
+            plugin_handle_in.on_event(VideoCallEventType.INCOMINGCALL, on_incoming_call)
 
             register_result = await plugin_handle_in.register(username=username_in)
             self.assertTrue(register_result)
