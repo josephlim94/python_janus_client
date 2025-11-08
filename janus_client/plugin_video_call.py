@@ -14,9 +14,8 @@ import asyncio
 from typing import Dict, List, Optional, Any, Callable, Awaitable
 from enum import Enum
 
-from aiortc import RTCSessionDescription
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
-from aiortc import MediaStreamTrack
+from aiortc import MediaStreamTrack, RTCSessionDescription
 
 from .plugin_base import JanusPlugin
 from .message_transaction import is_subset
@@ -110,9 +109,9 @@ class JanusVideoCallPlugin(JanusPlugin):
         self._recorder: Optional[MediaRecorder] = None
         self._in_call = False
         self._webrtcup_event = asyncio.Event()
-        self._event_handlers: Dict[VideoCallEventType, List[Callable]] = {
-            event_type: [] for event_type in VideoCallEventType
-        }
+        self._event_handlers: Dict[
+            VideoCallEventType, List[Callable[[Any], Awaitable]]
+        ] = {event_type: [] for event_type in VideoCallEventType}
 
     @property
     def username(self) -> Optional[str]:
@@ -125,7 +124,9 @@ class JanusVideoCallPlugin(JanusPlugin):
         return self._in_call
 
     def on_event(
-        self, event_type: VideoCallEventType, handler: Callable[[Dict[str, Any]], Any]
+        self,
+        event_type: VideoCallEventType,
+        handler: Callable[[Dict[str, Any]], Awaitable],
     ) -> None:
         """Register an event handler for VideoCall events.
 
@@ -159,7 +160,7 @@ class JanusVideoCallPlugin(JanusPlugin):
         Args:
             response: The response message from Janus.
         """
-        if "jsep" in response:
+        if "jsep" in response and response["jsep"]["type"] == "answer":
             await self.on_receive_jsep(jsep=response["jsep"])
 
         janus_code = response.get("janus")
@@ -282,19 +283,16 @@ class JanusVideoCallPlugin(JanusPlugin):
         """
 
         def response_matcher(response: Dict[str, Any]) -> bool:
-            return (
-                is_subset(
-                    response,
-                    {
-                        "janus": "event",
-                        "plugindata": {
-                            "plugin": self.name,
-                            "data": {"videocall": "event"},
-                        },
+            return is_subset(
+                response,
+                {
+                    "janus": "event",
+                    "plugindata": {
+                        "plugin": self.name,
+                        "data": {"videocall": "event"},
                     },
-                )
-                or is_subset(response, {"janus": "error", "error": {}})
-            )
+                },
+            ) or is_subset(response, {"janus": "error", "error": {}})
 
         message = {"janus": "message", "body": body}
         if jsep:
@@ -322,9 +320,7 @@ class JanusVideoCallPlugin(JanusPlugin):
             VideoCallError: If the request fails.
             TimeoutError: If the request times out.
         """
-        response = await self._send_request(
-            body={"request": "list"}, timeout=timeout
-        )
+        response = await self._send_request(body={"request": "list"}, timeout=timeout)
 
         plugin_data = response["plugindata"]["data"]
         return plugin_data.get("result", {}).get("list", [])
@@ -380,7 +376,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
             @self.pc.on("track")
             async def on_track(track: MediaStreamTrack):
-                logger.info(f"Received {track.kind} track")
+                logger.info(f"{self.username}: Received {track.kind} track")
                 recorder.addTrack(track)
 
         self._player = player
@@ -429,16 +425,24 @@ class JanusVideoCallPlugin(JanusPlugin):
             timeout=timeout,
         )
 
-        plugin_data = response["plugindata"]["data"]
-        result = plugin_data.get("result", {})
+        matcher_success = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videocall": "event",
+                    "result": {
+                        "event": "calling",
+                    },
+                },
+            },
+        }
 
-        if result.get("event") == "calling":
-            return True
-
-        return False
+        return is_subset(response, matcher_success)
 
     async def accept(
         self,
+        jsep: dict[str, str],
         player: Optional[MediaPlayer] = None,
         recorder: Optional[MediaRecorder] = None,
         trickle: bool = False,
@@ -468,21 +472,39 @@ class JanusVideoCallPlugin(JanusPlugin):
         # Set up media
         self._setup_media_tracks(player, recorder)
 
-        # Create answer
-        await self.pc.setLocalDescription(await self.pc.createAnswer())
-        jsep = await self.create_jsep(self.pc, trickle=trickle)
-
-        response = await self._send_request(
-            body={"request": "accept"}, jsep=jsep, timeout=timeout
+        await self.pc.setRemoteDescription(
+            RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
         )
 
-        plugin_data = response["plugindata"]["data"]
-        result = plugin_data.get("result", {})
+        sdp_answer = await self.pc.createAnswer()
 
-        if result.get("event") == "accepted":
-            return True
+        await self.pc.setLocalDescription(sdp_answer)
 
-        return False
+        jsep_answer = {
+            "sdp": sdp_answer.sdp,
+            # Not sure if should follow received trickle in JSEP or not
+            "trickle": trickle,
+            "type": sdp_answer.type,
+        }
+
+        response = await self._send_request(
+            body={"request": "accept"}, jsep=jsep_answer, timeout=timeout
+        )
+
+        matcher_success = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videocall": "event",
+                    "result": {
+                        "event": "accepted",
+                    },
+                },
+            },
+        }
+
+        return is_subset(response, matcher_success)
 
     async def set_media(
         self,
@@ -557,18 +579,26 @@ class JanusVideoCallPlugin(JanusPlugin):
             VideoCallError: If the request fails.
             TimeoutError: If the request times out.
         """
-        response = await self._send_request(
-            body={"request": "hangup"}, timeout=timeout
-        )
+        response = await self._send_request(body={"request": "hangup"}, timeout=timeout)
 
         # Clean up resources
         self._in_call = False
-        await self._cleanup_media()
+        # await self._cleanup_media()
 
-        plugin_data = response["plugindata"]["data"]
-        result = plugin_data.get("result", {})
+        matcher_success = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videocall": "event",
+                    "result": {
+                        "event": "hangup",
+                    },
+                },
+            },
+        }
 
-        return result.get("event") == "hangup"
+        return is_subset(response, matcher_success)
 
     async def _cleanup_media(self) -> None:
         """Clean up media resources."""
@@ -599,69 +629,3 @@ class JanusVideoCallPlugin(JanusPlugin):
 
         # Call parent destroy
         await super().destroy()
-
-    # Legacy API compatibility methods
-    async def list(self) -> List[str]:
-        """List all registered users (legacy method).
-
-        Returns:
-            List of registered usernames.
-
-        Raises:
-            VideoCallError: If the request fails.
-        """
-        return await self.list_users()
-
-    async def on_incoming_call(self, jsep: Dict[str, Any]) -> None:
-        """Handle incoming call (legacy method for backward compatibility).
-
-        This method is called automatically when an incoming call is received.
-        Override this method to handle incoming calls, or use the event system
-        with on_event(VideoCallEventType.INCOMINGCALL, handler).
-
-        Args:
-            jsep: The JSEP offer from the caller.
-        """
-        pass
-
-    # Legacy methods that are now deprecated but kept for compatibility
-    async def create_pc(
-        self,
-        player: MediaPlayer,
-        recorder: Optional[MediaRecorder] = None,
-        jsep: Optional[Dict[str, Any]] = None,
-    ) -> None:
-        """Create peer connection (deprecated legacy method).
-
-        This method is deprecated. Use the call() or accept() methods instead,
-        which handle peer connection setup automatically.
-
-        Args:
-            player: Media player for outgoing media.
-            recorder: Media recorder for incoming media.
-            jsep: Optional JSEP data.
-        """
-        logger.warning(
-            "create_pc() is deprecated. Use call() or accept() methods instead."
-        )
-        self._setup_media_tracks(player, recorder)
-        if jsep:
-            await self.on_receive_jsep(jsep)
-
-    async def set(
-        self,
-        audio: bool,
-        video: bool,
-        jsep: Optional[Dict[str, Any]] = None,
-    ) -> bool:
-        """Set media options (legacy method).
-
-        Args:
-            audio: Enable/disable audio.
-            video: Enable/disable video.
-            jsep: Optional JSEP for renegotiation.
-
-        Returns:
-            True if successful.
-        """
-        return await self.set_media(audio=audio, video=video, jsep=jsep)

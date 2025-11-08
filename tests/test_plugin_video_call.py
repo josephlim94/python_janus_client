@@ -3,6 +3,8 @@ import logging
 import asyncio
 import os
 from urllib.parse import urljoin
+import time
+from typing import cast
 
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
@@ -128,7 +130,6 @@ class BaseTestClass:
             await plugin_handle_in.attach(session=session)
             await plugin_handle_out.attach(session=session)
 
-            import time
             timestamp = str(int(time.time()))
             username_in = f"test_user_in_{timestamp}"
             username_out = f"test_user_out_{timestamp}"
@@ -140,13 +141,22 @@ class BaseTestClass:
             if os.path.exists(output_filename_out):
                 os.remove(output_filename_out)
 
+            self.accept_call_task = None
+            receive_call_event = asyncio.Event()
+
             async def on_incoming_call(data: dict):
                 # Handle incoming call with new API
                 player = MediaPlayer(
                     "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                 )
                 recorder = MediaRecorder(output_filename_in)
-                await plugin_handle_in.accept(player=player, recorder=recorder)
+                self.accept_call_task = asyncio.create_task(
+                    plugin_handle_in.accept(
+                        jsep=data["jsep"], player=player, recorder=recorder
+                    )
+                )
+                receive_call_event.set()
+                # await plugin_handle_in.accept(player=player, recorder=recorder)
 
             plugin_handle_in.on_event(VideoCallEventType.INCOMINGCALL, on_incoming_call)
 
@@ -175,6 +185,11 @@ class BaseTestClass:
                 username=username_in, player=player, recorder=recorder
             )
             self.assertTrue(call_result)
+
+            await asyncio.wait_for(receive_call_event.wait(), timeout=15)
+            self.assertIsNotNone(self.accept_call_task)
+            accept_call_result = await cast(asyncio.Task, self.accept_call_task)
+            self.assertTrue(accept_call_result)
 
             await asyncio.sleep(15)
 
