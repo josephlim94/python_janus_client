@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 class JanusPlugin(ABC):
     """Base class for implementing Janus plugins.
-    
+
     Important: Each plugin instance can only hold ONE WebRTC peer connection.
     If you need multiple peer connections, create multiple plugin instances.
     Access the peer connection via the `pc` property.
@@ -50,45 +50,24 @@ class JanusPlugin(ABC):
     @property
     def pc(self) -> RTCPeerConnection:
         """Get the WebRTC peer connection for this plugin.
-        
-        Each plugin instance can only have ONE peer connection. This property
-        provides direct access to the aiortc RTCPeerConnection object, allowing
-        plugins to use the full WebRTC API.
-        
-        Returns:
-            The RTCPeerConnection instance for this plugin.
-            
-        Example:
-            ```python
-            # Add tracks to the peer connection
-            plugin.pc.addTrack(audio_track)
-            plugin.pc.addTrack(video_track)
-            
-            # Create an offer
-            await plugin.pc.setLocalDescription(await plugin.pc.createOffer())
-            
-            # Access connection state
-            if plugin.pc.connectionState == "connected":
-                print("WebRTC connected!")
-            ```
         """
         return self._pc
 
     async def reset_connection(self) -> None:
         """Reset the peer connection.
-        
+
         Closes the existing peer connection and creates a new one.
-        
+
         Warning:
             This should only be used when you need to completely restart the
             WebRTC connection. In most cases, you should create a new plugin
             instance instead of resetting the connection on an existing instance.
-            
+
         Example:
             ```python
             # Close existing connection and create a new one
             await plugin.reset_connection()
-            
+
             # The pc property now returns the new connection
             new_pc = plugin.pc
             ```

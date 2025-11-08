@@ -1,8 +1,9 @@
 import asyncio
 import logging
+from typing import Any
 
 from .plugin_base import JanusPlugin
-from aiortc import RTCSessionDescription, VideoStreamTrack
+from aiortc import VideoStreamTrack
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
 
 logger = logging.getLogger(__name__)
@@ -10,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class JanusEchoTestPlugin(JanusPlugin):
     """Janus EchoTest plugin implementation.
-    
+
     This plugin uses the single WebRTC peer connection provided by the base class.
     Access the peer connection via self.pc property.
     """
@@ -67,11 +68,10 @@ class JanusEchoTestPlugin(JanusPlugin):
         await self.__webrtcup_event.wait()
         self.__webrtcup_event.clear()
 
-
     async def start(self, play_from: str, record_to: str = ""):
         # Reset the peer connection to start fresh
         await self.reset_connection()
-        
+
         player = MediaPlayer(play_from)
 
         # configure media
@@ -97,7 +97,7 @@ class JanusEchoTestPlugin(JanusPlugin):
         # send offer
         await self.pc.setLocalDescription(await self.pc.createOffer())
 
-        message = {"janus": "message"}
+        message: dict[str, Any] = {"janus": "message"}
         body = {
             "audio": bool(player.audio),
             # "audiocodec" : "<optional codec name; only used when creating a PeerConnection>",
