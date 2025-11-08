@@ -100,7 +100,7 @@ class JanusTransportHTTP(JanusTransport):
             logger.error(err)
 
     async def session_receive_response(
-        self, session_id: str, destroyed_event: asyncio.Event
+        self, session_id: int, destroyed_event: asyncio.Event
     ) -> None:
         url_params = {}
         if self.__api_secret:
@@ -130,7 +130,7 @@ class JanusTransportHTTP(JanusTransport):
 
                     await self.receive(response=response_dict)
 
-    async def dispatch_session_created(self, session_id: str) -> None:
+    async def dispatch_session_created(self, session_id: int) -> None:
         logger.info(f"Create session_receive_response task ({session_id})")
         destroyed_event = asyncio.Event()
         task = asyncio.create_task(
