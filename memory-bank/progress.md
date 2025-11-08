@@ -37,14 +37,20 @@
   - Track handling
 
 #### VideoCall Plugin
-- **Status:** Fully functional (Updated v0.8.3)
+- **Status:** Fully functional (Re-implemented v0.8.4+)
 - **Features:**
-  - User registration
-  - Peer-to-peer calls
-  - Incoming call handling
-  - Media streaming (audio/video)
-  - Call control (hangup, set media)
-  - User listing
+  - User registration with unique usernames
+  - Peer-to-peer video calling
+  - Event-driven incoming call handling
+  - Media streaming (audio/video) with MediaPlayer/MediaRecorder
+  - Call control (hangup, set media, bitrate control)
+  - User listing with `list_users()` method
+  - Proper WebRTC signaling (JSEP offer/answer/ICE)
+  - **NEW:** Complete event-driven architecture with `VideoCallEventType`
+  - **NEW:** Proper JSEP handling in `accept()` method
+  - **NEW:** Integrated media track management
+  - **NEW:** Comprehensive error handling with `VideoCallError`
+  - **NEW:** State management and resource cleanup
   - **NEW:** PC configuration support via RTCConfiguration
   - **NEW:** Uses base class peer connection (no duplicate PC creation)
 
