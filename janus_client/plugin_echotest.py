@@ -10,18 +10,14 @@ logger = logging.getLogger(__name__)
 
 
 class JanusEchoTestPlugin(JanusPlugin):
-    """Janus EchoTest plugin implementation.
-
-    This plugin uses the single WebRTC peer connection provided by the base class.
-    Access the peer connection via self.pc property.
-    """
+    """Janus EchoTest plugin implementation."""
 
     name = "janus.plugin.echotest"
     __recorder: MediaRecorder
     __webrtcup_event: asyncio.Event
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
 
         self.__webrtcup_event = asyncio.Event()
 

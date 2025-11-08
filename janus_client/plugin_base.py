@@ -5,6 +5,7 @@ from typing import Optional
 from aiortc import (
     RTCPeerConnection,
     RTCSessionDescription,
+    RTCConfiguration,
 )
 
 from .session import JanusSession
@@ -34,9 +35,42 @@ class JanusPlugin(ABC):
     __pc: RTCPeerConnection
     """WebRTC PeerConnection for this plugin handle."""
 
-    def __init__(self) -> None:
+    __pc_config: Optional[RTCConfiguration]
+    """Stored configuration for recreating peer connections."""
+
+    def __init__(
+        self,
+        pc_config: Optional[RTCConfiguration] = None,
+    ) -> None:
+        """Initialize the plugin with optional peer connection configuration.
+
+        Args:
+            pc_config: Complete RTCConfiguration object for the peer connection.
+                If provided, ice_servers parameter is ignored.
+
+        Examples:
+            ```python
+            config = RTCConfiguration(
+                iceServers=[
+                    RTCIceServer(urls='stun:stun.l.google.com:19302'),
+                    RTCIceServer(
+                        urls='turn:turn.example.com:3478',
+                        username='user',
+                        credential='pass'
+                    )
+                ]
+            )
+            plugin = MyPlugin(pc_config=config)
+            ```
+        """
         self.__id = None
-        self.__pc = RTCPeerConnection()
+
+        # Store configuration for reset_connection
+        self.__pc_config = pc_config
+        if pc_config is not None:
+            self.__pc = RTCPeerConnection(configuration=pc_config)
+        else:
+            self.__pc = RTCPeerConnection()
 
     @property
     def id(self) -> Optional[int]:
@@ -49,14 +83,19 @@ class JanusPlugin(ABC):
 
     @property
     def pc(self) -> RTCPeerConnection:
-        """Get the WebRTC peer connection for this plugin.
-        """
+        """Get the WebRTC peer connection for this plugin."""
         return self.__pc
+
+    @property
+    def pc_config(self) -> Optional[RTCConfiguration]:
+        """Get the peer connection configuration used by this plugin."""
+        return self.__pc_config
 
     async def reset_connection(self) -> None:
         """Reset the peer connection.
 
-        Closes the existing peer connection and creates a new one.
+        Closes the existing peer connection and creates a new one with the same
+        configuration that was provided during plugin initialization.
 
         Warning:
             This should only be used when you need to completely restart the
@@ -74,7 +113,7 @@ class JanusPlugin(ABC):
         """
         if self.__pc.signalingState != "closed":
             await self.__pc.close()
-        self.__pc = RTCPeerConnection()
+        self.__pc = RTCPeerConnection(configuration=self.__pc_config)
 
     async def attach(self, session: JanusSession) -> None:
         """Attach this plugin to a Janus session.
