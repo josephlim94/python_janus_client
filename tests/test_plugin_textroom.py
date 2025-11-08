@@ -78,7 +78,7 @@ class BaseTestClass:
             await plugin.attach(session=session)
             await plugin.setup(timeout=30.0)
 
-            self.assertIsNotNone(plugin._pc)
+            self.assertIsNotNone(plugin.pc.localDescription)
             logger.info("TextRoom setup completed successfully")
 
             await plugin.destroy()

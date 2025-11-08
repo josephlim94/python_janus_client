@@ -16,7 +16,7 @@ import uuid
 from typing import Dict, List, Optional, Any, Callable
 from enum import Enum
 
-from aiortc import RTCPeerConnection, RTCSessionDescription
+from aiortc import RTCSessionDescription
 from aiortc.rtcdatachannel import RTCDataChannel
 
 from .plugin_base import JanusPlugin
@@ -84,8 +84,30 @@ class JanusTextRoomPlugin(JanusPlugin):
 
     name = "janus.plugin.textroom"
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, **kwargs) -> None:
+        """Initialize the TextRoom plugin.
+
+        Args:
+            **kwargs: Keyword arguments passed to JanusPlugin constructor.
+                Supports pc_config parameter for WebRTC configuration.
+
+        Examples:
+            Basic usage:
+            ```python
+            plugin = JanusTextRoomPlugin()
+            ```
+
+            With WebRTC configuration:
+            ```python
+            from aiortc import RTCConfiguration, RTCIceServer
+
+            config = RTCConfiguration(iceServers=[
+                RTCIceServer(urls='stun:stun.l.google.com:19302')
+            ])
+            plugin = JanusTextRoomPlugin(pc_config=config)
+            ```
+        """
+        super().__init__(**kwargs)
         self._data_channel: Optional[RTCDataChannel] = None
         self._webrtcup_event = asyncio.Event()
         self._data_channel_created_event = asyncio.Event()
@@ -112,8 +134,8 @@ class JanusTextRoomPlugin(JanusPlugin):
 
         elif janus_code == "hangup":
             logger.info("WebRTC connection closed")
-            if self._pc:
-                await self._pc.close()
+            if self.pc.signalingState != "closed":
+                await self.pc.close()
 
         # elif janus_code == "event":
         #     logger.info("Received setup complete event")
@@ -393,31 +415,28 @@ class JanusTextRoomPlugin(JanusPlugin):
         if "jsep" not in response:
             raise TextRoomError(0, "No JSEP offer received from setup")
 
-        # Create new peer connection for this setup
-        self._pc = RTCPeerConnection()
-
         # Set up peer connection handlers
-        @self._pc.on("datachannel")
+        @self.pc.on("datachannel")
         def on_datachannel(channel: RTCDataChannel):
             logger.info(f"DataChannel '{channel.label}' created by remote party")
             self._data_channel = channel
             self._data_channel_created_event.set()
             self._setup_datachannel_handlers(channel)
 
-        await self._pc.setRemoteDescription(
+        await self.pc.setRemoteDescription(
             RTCSessionDescription(
                 sdp=response["jsep"]["sdp"], type=response["jsep"]["type"]
             )
         )
 
-        await self._pc.setLocalDescription(await self._pc.createAnswer())
+        await self.pc.setLocalDescription(await self.pc.createAnswer())
 
         # Send answer
         ack_transaction = await self.send(
             {
                 "janus": "message",
                 "body": {"request": "ack"},
-                "jsep": await self.create_jsep(self._pc),
+                "jsep": await self.create_jsep(self.pc),
             }
         )
         await ack_transaction.get(
