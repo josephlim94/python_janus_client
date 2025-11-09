@@ -451,7 +451,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
     async def accept(
         self,
-        jsep: dict[str, str],
+        jsep: Dict[str, str],
         player: Optional[MediaPlayer] = None,
         recorder: Optional[MediaRecorder] = None,
         trickle: bool = False,

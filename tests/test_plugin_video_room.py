@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 import json
 
 from aiortc.contrib.media import MediaPlayer
+from aiortc import RTCConfiguration, RTCIceServer
 
 from janus_client import (
     JanusTransport,
@@ -25,6 +26,11 @@ logger = logging.getLogger()
 class BaseTestClass:
     class TestClass(unittest.TestCase):
         server_url: str
+        config = RTCConfiguration(
+            iceServers=[
+                RTCIceServer(urls="stun:stun.l.google.com:19302"),
+            ]
+        )
         public_test_videos: dict
 
         @classmethod
@@ -52,7 +58,7 @@ class BaseTestClass:
             logger.info("Attaching VideoRoom plugin")
 
             self.session = JanusSession(transport=self.transport)
-            self.plugin = JanusVideoRoomPlugin()
+            self.plugin = JanusVideoRoomPlugin(pc_config=self.config)
 
             await self.plugin.attach(session=self.session)
 

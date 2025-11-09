@@ -3,6 +3,9 @@ import logging
 import asyncio
 import os
 from urllib.parse import urljoin
+import json
+
+from aiortc import RTCConfiguration, RTCIceServer
 
 from janus_client import (
     JanusTransport,
@@ -20,6 +23,22 @@ logger = logging.getLogger()
 class BaseTestClass:
     class TestClass(unittest.TestCase):
         server_url: str
+        config = RTCConfiguration(
+            iceServers=[
+                RTCIceServer(urls="stun:stun.l.google.com:19302"),
+            ]
+        )
+        public_test_videos: dict
+
+        @classmethod
+        def setUpClass(cls):
+            with open("./tests/public_test_videos.json", "r", encoding="utf-8") as file:
+                cls.public_test_videos = json.load(file)
+
+        def getVideoUrlByIndex(self, index: int):
+            return self.public_test_videos["categories"][0]["videos"][index]["sources"][
+                0
+            ]
 
         async def asyncSetUp(self) -> None:
             self.transport = JanusTransport.create_transport(
@@ -59,7 +78,7 @@ class BaseTestClass:
 
             session = JanusSession(transport=self.transport)
 
-            plugin_handle = JanusEchoTestPlugin()
+            plugin_handle = JanusEchoTestPlugin(pc_config=self.config)
 
             await plugin_handle.attach(session=session)
 
@@ -72,7 +91,7 @@ class BaseTestClass:
             #     play_from="./Into.the.Wild.2007.mp4", record_to=output_filename
             # )
             await plugin_handle.start(
-                play_from="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                play_from=self.getVideoUrlByIndex(0),
                 record_to=output_filename,
             )
 

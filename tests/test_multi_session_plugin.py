@@ -48,7 +48,7 @@ class BaseTestClass:
 
             await plugin.attach(session=session)
 
-            await plugin.join(room_id, 111, "aaa")
+            await plugin.join_as_publisher(room_id=room_id)
 
             await plugin.leave()
 
@@ -76,7 +76,7 @@ class BaseTestClass:
 
             await plugin.attach(session=session)
 
-            await plugin.join(room_id, 111, "aaa")
+            await plugin.join_as_publisher(room_id=room_id)
 
             await plugin.leave()
 
@@ -194,9 +194,15 @@ class BaseTestClass:
             )
 
             await asyncio.gather(
-                plugin_1.join(room_id, 111, "aaa"),
-                plugin_2.join(room_id, 222, "bbb"),
-                plugin_3.join(room_id, 333, "ccc"),
+                plugin_1.join_as_publisher(
+                    room_id=room_id, publisher_id=111, display="aaa"
+                ),
+                plugin_2.join_as_publisher(
+                    room_id=room_id, publisher_id=222, display="bbb"
+                ),
+                plugin_3.join_as_publisher(
+                    room_id=room_id, publisher_id=333, display="ccc"
+                ),
             )
 
             await asyncio.gather(
@@ -238,9 +244,15 @@ class BaseTestClass:
                 )
 
                 await asyncio.gather(
-                    plugin_1.join(room_id, publisher_id, "aaa"),
-                    plugin_2.join(room_id, publisher_id + 1, "bbb"),
-                    plugin_3.join(room_id, publisher_id + 2, "ccc"),
+                    plugin_1.join_as_publisher(
+                        room_id=room_id, publisher_id=publisher_id, display="aaa"
+                    ),
+                    plugin_2.join_as_publisher(
+                        room_id=room_id, publisher_id=publisher_id + 1, display="bbb"
+                    ),
+                    plugin_3.join_as_publisher(
+                        room_id=room_id, publisher_id=publisher_id + 2, display="ccc"
+                    ),
                 )
 
                 await asyncio.gather(
@@ -316,9 +328,15 @@ class BaseTestClass:
                 )
 
                 await asyncio.gather(
-                    plugin_1.join(room_id, publisher_id, "aaa"),
-                    plugin_2.join(room_id, publisher_id + 1, "bbb"),
-                    plugin_3.join(room_id, publisher_id + 2, "ccc"),
+                    plugin_1.join_as_publisher(
+                        room_id=room_id, publisher_id=publisher_id, display="aaa"
+                    ),
+                    plugin_2.join_as_publisher(
+                        room_id=room_id, publisher_id=publisher_id + 1, display="bbb"
+                    ),
+                    plugin_3.join_as_publisher(
+                        room_id=room_id, publisher_id=publisher_id + 2, display="ccc"
+                    ),
                 )
 
                 await asyncio.gather(

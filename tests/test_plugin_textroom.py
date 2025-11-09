@@ -6,6 +6,8 @@ import asyncio
 import os
 from urllib.parse import urljoin
 
+from aiortc import RTCConfiguration, RTCIceServer
+
 from janus_client import (
     JanusTransport,
     JanusSession,
@@ -23,6 +25,11 @@ logger = logging.getLogger()
 class BaseTestClass:
     class TestClass(unittest.TestCase):
         server_url: str
+        config = RTCConfiguration(
+            iceServers=[
+                RTCIceServer(urls="stun:stun.l.google.com:19302"),
+            ]
+        )
 
         async def asyncSetUp(self) -> None:
             self.transport = JanusTransport.create_transport(
@@ -39,7 +46,7 @@ class BaseTestClass:
             logger.info("Testing create and destroy room")
 
             self.session = JanusSession(transport=self.transport)
-            self.plugin = JanusTextRoomPlugin()
+            self.plugin = JanusTextRoomPlugin(pc_config=self.config)
 
             await self.plugin.attach(session=self.session)
 
@@ -55,7 +62,7 @@ class BaseTestClass:
             logger.info("Testing TextRoom plugin attach")
 
             session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
+            plugin = JanusTextRoomPlugin(pc_config=self.config)
 
             await plugin.attach(session=session)
 
@@ -73,7 +80,7 @@ class BaseTestClass:
             logger.info("Testing TextRoom setup")
 
             session = JanusSession(transport=self.transport)
-            plugin = JanusTextRoomPlugin()
+            plugin = JanusTextRoomPlugin(pc_config=self.config)
 
             await plugin.attach(session=session)
             await plugin.setup(timeout=30.0)
@@ -265,10 +272,10 @@ class BaseTestClass:
 
             # Create two sessions
             session1 = JanusSession(transport=self.transport)
-            plugin1 = JanusTextRoomPlugin()
+            plugin1 = JanusTextRoomPlugin(pc_config=self.config)
 
             session2 = JanusSession(transport=self.transport)
-            plugin2 = JanusTextRoomPlugin()
+            plugin2 = JanusTextRoomPlugin(pc_config=self.config)
 
             await plugin1.attach(session=session1)
             await plugin1.setup(timeout=30.0)
