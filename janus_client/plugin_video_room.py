@@ -112,7 +112,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
     name = "janus.plugin.videoroom"
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Initialize the VideoRoom plugin.
 
         Args:
@@ -373,7 +373,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
         permanent: bool = False,
         admin_key: Optional[str] = None,
         timeout: float = 15.0,
-        **kwargs,
+        **kwargs: Any,
     ) -> int:
         """Create a new VideoRoom.
 
@@ -526,8 +526,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
         body = {"request": "exists", "room": room_id}
         response = await self._send_request(body, timeout=timeout)
         return response["plugindata"]["data"].get("exists", False)
-
-    # Publisher Methods
 
     async def join_as_publisher(
         self,

@@ -80,7 +80,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
     name = "janus.plugin.videocall"
 
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, **kwargs: Any) -> None:
         """Initialize the VideoCall plugin.
 
         Args:
