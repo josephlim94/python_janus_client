@@ -13,6 +13,124 @@ This is a Python async client library for the Janus WebRTC gateway. The project 
 
 ## Python Development Standards
 
+### Dictionary Access Patterns - Fail Fast Philosophy
+
+**Critical:** This project follows a "fail fast" philosophy for dictionary access to catch bugs early and make code intent clear.
+
+#### Use Direct Access (`dict["key"]`) When:
+1. **Required protocol fields** - Keys that must exist per Janus API contract
+2. **Critical data** - Missing data indicates a serious bug
+3. **Well-defined responses** - Janus protocol responses with known structure
+4. **Internal data structures** - Data we control and expect to be present
+
+#### Use .get() Method When:
+1. **Optional fields** - Keys that may or may not be present by design
+2. **Sensible defaults** - When missing key has a reasonable fallback value
+3. **Error details** - When checking for error conditions that may not exist
+4. **User-provided data** - External input that may be incomplete
+
+#### Examples from Codebase:
+
+**✅ Good: Direct access for required protocol fields**
+```python
+# From plugin_video_call.py - Required protocol structure
+janus_code = response["janus"]
+plugin_data = response["plugindata"]["data"]
+result = plugin_data["result"]
+event_type = result["event"]
+
+# From plugin_textroom.py - Expected message structure
+data: dict = json.loads(message)
+textroom_type = data["textroom"]
+```
+
+**✅ Good: .get() for optional fields with defaults**
+```python
+# Optional transaction ID
+transaction = data.get("transaction")
+
+# Optional lists that might be empty
+participants = response["plugindata"]["data"].get("participants", [])
+room_list = response["plugindata"]["data"].get("list", [])
+
+# Optional error details
+error_code = error.get("code", 0)
+error_message = error.get("reason", "Unknown error")
+```
+
+**✅ Good: Mixed pattern for error handling**
+```python
+# Error container must exist (direct access)
+error: Dict = response["error"]
+
+# Error details might be missing (.get() with defaults)
+raise VideoCallError(
+    error.get("code", 0),
+    error.get("reason", "Unknown error")
+)
+```
+
+**❌ Bad: Using .get() for required protocol fields**
+```python
+# Don't do this - masks protocol violations
+janus_code = response.get("janus", "unknown")
+plugin_data = response.get("plugindata", {}).get("data", {})
+```
+
+**❌ Bad: Direct access for optional user data**
+```python
+# Don't do this - will crash on missing optional data
+username = user_config["username"]  # Should use .get() with validation
+```
+
+#### Pattern Guidelines by Context:
+
+**Protocol Response Handling:**
+```python
+# Required fields - direct access
+janus_code = response["janus"]
+plugin_data = response["plugindata"]["data"]
+
+# Optional fields - .get() with defaults
+receiving = response.get("receiving", False)
+```
+
+**Event Data Processing:**
+```python
+# Event structure is guaranteed - direct access
+result = plugin_data["result"]
+event_type = result["event"]
+
+# Event-specific data may vary - .get()
+username = result.get("username")
+```
+
+**Error Handling:**
+```python
+# Error container must exist - direct access
+error: Dict = response["error"]
+
+# Error details might be missing - .get()
+error_code = error.get("code", 0)
+error_message = error.get("reason", "Unknown error")
+```
+
+**Configuration and Optional Parameters:**
+```python
+# All optional - use .get() or explicit None checks
+if audio is not None:
+    body["audio"] = audio
+if video is not None:
+    body["video"] = video
+```
+
+#### Benefits of This Approach:
+- **Immediate failure** when test data or protocol responses are malformed
+- **Clear error messages** pointing to exact missing keys
+- **Self-documenting code** - access method indicates whether key is required
+- **Easier debugging** of protocol issues
+- **Validates assumptions** about data structure
+
 ### Code Style & Formatting
 - **Line Length:** 88 characters (matching project's Flake8 configuration)
 - **Import Organization:** 
