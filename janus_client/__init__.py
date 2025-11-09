@@ -6,7 +6,7 @@ from .plugin_base import JanusPlugin
 from .plugin_echotest import JanusEchoTestPlugin
 from .plugin_textroom import JanusTextRoomPlugin, TextRoomError, TextRoomEventType
 from .plugin_video_call import JanusVideoCallPlugin, VideoCallError, VideoCallEventType
-from .plugin_video_room import JanusVideoRoomPlugin
+from .plugin_video_room import JanusVideoRoomPlugin, VideoRoomError, VideoRoomEventType, ParticipantType
 
 from .transport import JanusTransport
 from .transport_http import JanusTransportHTTP
