@@ -5,8 +5,10 @@ import os
 from urllib.parse import urljoin
 import time
 from typing import cast
+import json
 
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
+from aiortc import RTCConfiguration, RTCIceServer
 
 from janus_client import (
     JanusTransport,
@@ -24,6 +26,17 @@ logger = logging.getLogger()
 class BaseTestClass:
     class TestClass(unittest.TestCase):
         server_url: str
+        public_test_videos: dict
+
+        @classmethod
+        def setUpClass(cls):
+            with open("./tests/public_test_videos.json", "r", encoding="utf-8") as file:
+                cls.public_test_videos = json.load(file)
+
+        def getVideoUrlByIndex(self, index: int):
+            return self.public_test_videos["categories"][0]["videos"][index]["sources"][
+                0
+            ]
 
         async def asyncSetUp(self) -> None:
             self.transport = JanusTransport.create_transport(
@@ -124,97 +137,104 @@ class BaseTestClass:
 
             session = JanusSession(transport=self.transport)
 
-            plugin_handle_in = JanusVideoCallPlugin()
-            plugin_handle_out = JanusVideoCallPlugin()
+            config = RTCConfiguration(
+                iceServers=[
+                    RTCIceServer(urls="stun:stun.l.google.com:19302"),
+                ]
+            )
+            plugin_handle_in = JanusVideoCallPlugin(pc_config=config)
+            plugin_handle_out = JanusVideoCallPlugin(pc_config=config)
 
-            await plugin_handle_in.attach(session=session)
-            await plugin_handle_out.attach(session=session)
+            try:
+                await plugin_handle_in.attach(session=session)
+                await plugin_handle_out.attach(session=session)
 
-            timestamp = str(int(time.time()))
-            username_in = f"test_user_in_{timestamp}"
-            username_out = f"test_user_out_{timestamp}"
-            output_filename_in = "./videocall_record_in.mp4"
-            output_filename_out = "./videocall_record_out.mp4"
+                timestamp = str(int(time.time()))
+                username_in = f"test_user_in_{timestamp}"
+                username_out = f"test_user_out_{timestamp}"
+                output_filename_in = "./videocall_record_in.mp4"
+                output_filename_out = "./videocall_record_out.mp4"
 
-            if os.path.exists(output_filename_in):
-                os.remove(output_filename_in)
-            if os.path.exists(output_filename_out):
-                os.remove(output_filename_out)
+                if os.path.exists(output_filename_in):
+                    os.remove(output_filename_in)
+                if os.path.exists(output_filename_out):
+                    os.remove(output_filename_out)
 
-            self.accept_call_task = None
-            receive_call_event = asyncio.Event()
+                self.accept_call_task = None
+                receive_call_event = asyncio.Event()
 
-            async def on_incoming_call(data: dict):
-                # Handle incoming call with new API
-                player = MediaPlayer(
-                    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                )
-                recorder = MediaRecorder(output_filename_in)
-                self.accept_call_task = asyncio.create_task(
-                    plugin_handle_in.accept(
-                        jsep=data["jsep"], player=player, recorder=recorder
+                async def on_incoming_call(data: dict):
+                    # Handle incoming call with new API
+                    player = MediaPlayer(self.getVideoUrlByIndex(0))
+                    recorder = MediaRecorder(output_filename_in)
+                    self.accept_call_task = asyncio.create_task(
+                        plugin_handle_in.accept(
+                            jsep=data["jsep"], player=player, recorder=recorder
+                        )
                     )
-                )
-                receive_call_event.set()
-                # await plugin_handle_in.accept(player=player, recorder=recorder)
+                    receive_call_event.set()
+                    # await plugin_handle_in.accept(player=player, recorder=recorder)
 
-            plugin_handle_in.on_event(VideoCallEventType.INCOMINGCALL, on_incoming_call)
-
-            register_result = await plugin_handle_in.register(username=username_in)
-            self.assertTrue(register_result)
-            register_result = await plugin_handle_out.register(username=username_out)
-            self.assertTrue(register_result)
-
-            # player = MediaPlayer(
-            #     "desktop",
-            #     format="gdigrab",
-            #     options={
-            #         "video_size": "640x480",
-            #         "framerate": "30",
-            #         "offset_x": "20",
-            #         "offset_y": "30",
-            #     },
-            # )
-            player = MediaPlayer(
-                "http://download.tsi.telecom-paristech.fr/gpac/dataset/dash/uhd/mux_sources/hevcds_720p30_2M.mp4"
-            )
-            # player = MediaPlayer("../Into.the.Wild.2007.mp4")
-            recorder = MediaRecorder(output_filename_out)
-
-            call_result = await plugin_handle_out.call(
-                username=username_in, player=player, recorder=recorder
-            )
-            self.assertTrue(call_result)
-
-            await asyncio.wait_for(receive_call_event.wait(), timeout=15)
-            self.assertIsNotNone(self.accept_call_task)
-            accept_call_result = await cast(asyncio.Task, self.accept_call_task)
-            self.assertTrue(accept_call_result)
-
-            await asyncio.sleep(15)
-
-            hangup_result = await plugin_handle_out.hangup()
-            self.assertTrue(hangup_result)
-            hangup_result = await plugin_handle_in.hangup()
-            self.assertTrue(hangup_result)
-
-            if not os.path.exists(output_filename_in):
-                self.fail(
-                    f"Incoming call record file ({output_filename_in}) is not created."
+                plugin_handle_in.on_event(
+                    VideoCallEventType.INCOMINGCALL, on_incoming_call
                 )
 
-            if not os.path.exists(output_filename_out):
-                self.fail(
-                    f"Outgoing call record file ({output_filename_out}) is not created."
+                register_result = await plugin_handle_in.register(username=username_in)
+                self.assertTrue(register_result)
+                register_result = await plugin_handle_out.register(
+                    username=username_out
+                )
+                self.assertTrue(register_result)
+
+                # player = MediaPlayer(
+                #     "desktop",
+                #     format="gdigrab",
+                #     options={
+                #         "video_size": "640x480",
+                #         "framerate": "30",
+                #         "offset_x": "20",
+                #         "offset_y": "30",
+                #     },
+                # )
+                player = MediaPlayer(self.getVideoUrlByIndex(4))
+                # player = MediaPlayer("../Into.the.Wild.2007.mp4")
+                recorder = MediaRecorder(output_filename_out)
+
+                call_result = await plugin_handle_out.call(
+                    username=username_in, player=player, recorder=recorder
+                )
+                self.assertTrue(call_result)
+
+                await asyncio.wait_for(receive_call_event.wait(), timeout=15)
+                self.assertIsNotNone(self.accept_call_task)
+                accept_call_result = await cast(asyncio.Task, self.accept_call_task)
+                self.assertTrue(accept_call_result)
+
+                await asyncio.sleep(15)
+
+                hangup_result = await plugin_handle_out.hangup()
+                self.assertTrue(hangup_result)
+                hangup_result = await plugin_handle_in.hangup()
+                self.assertTrue(hangup_result)
+
+                if not os.path.exists(output_filename_in):
+                    self.fail(
+                        f"Incoming call record file ({output_filename_in}) is not created."
+                    )
+
+                if not os.path.exists(output_filename_out):
+                    self.fail(
+                        f"Outgoing call record file ({output_filename_out}) is not created."
+                    )
+
+            finally:
+                await asyncio.gather(
+                    plugin_handle_in.destroy(), plugin_handle_out.destroy()
                 )
 
-            await asyncio.gather(
-                plugin_handle_in.destroy(), plugin_handle_out.destroy()
-            )
+                await session.destroy()
 
-            await session.destroy()
-
-            await self.asyncTearDown()
+                await self.asyncTearDown()
 
 
 class TestTransportHttp(BaseTestClass.TestClass):
