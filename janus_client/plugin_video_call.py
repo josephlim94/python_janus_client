@@ -163,7 +163,7 @@ class JanusVideoCallPlugin(JanusPlugin):
         if "jsep" in response and response["jsep"]["type"] == "answer":
             await self.on_receive_jsep(jsep=response["jsep"])
 
-        janus_code = response.get("janus")
+        janus_code = response["janus"]
 
         if janus_code == "webrtcup":
             logger.info("WebRTC connection established")
@@ -176,7 +176,7 @@ class JanusVideoCallPlugin(JanusPlugin):
                 await self.pc.close()
 
         elif janus_code == "media":
-            if response.get("receiving") and self._recorder:
+            if "receiving" in response and response["receiving"] and self._recorder:
                 # Start recording when media is received
                 await self._recorder.start()
 
@@ -192,12 +192,12 @@ class JanusVideoCallPlugin(JanusPlugin):
         if "plugindata" not in response:
             return
 
-        plugin_data = response["plugindata"].get("data", {})
-        if plugin_data.get("videocall") != "event":
+        plugin_data = response["plugindata"]["data"]
+        if plugin_data["videocall"] != "event":
             return
 
-        result = plugin_data.get("result", {})
-        event_type = result.get("event")
+        result = plugin_data["result"]
+        event_type = result["event"]
 
         if event_type == "registered":
             await self._trigger_event(VideoCallEventType.REGISTERED, result)
@@ -322,8 +322,7 @@ class JanusVideoCallPlugin(JanusPlugin):
         """
         response = await self._send_request(body={"request": "list"}, timeout=timeout)
 
-        plugin_data = response["plugindata"]["data"]
-        return plugin_data.get("result", {}).get("list", [])
+        return response["plugindata"]["data"]["result"]["list"]
 
     async def register(self, username: str, timeout: float = 15.0) -> bool:
         """Register a username for receiving calls.
@@ -346,10 +345,20 @@ class JanusVideoCallPlugin(JanusPlugin):
             body={"request": "register", "username": username}, timeout=timeout
         )
 
-        plugin_data = response["plugindata"]["data"]
-        result = plugin_data.get("result", {})
+        matcher_success = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videocall": "event",
+                    "result": {
+                        "event": "registered",
+                    },
+                },
+            },
+        }
 
-        if result.get("event") == "registered":
+        if is_subset(response, matcher_success):
             self._username = username
             return True
 
@@ -476,16 +485,17 @@ class JanusVideoCallPlugin(JanusPlugin):
             RTCSessionDescription(sdp=jsep["sdp"], type=jsep["type"])
         )
 
-        sdp_answer = await self.pc.createAnswer()
+        # sdp_answer = await self.pc.createAnswer()
 
-        await self.pc.setLocalDescription(sdp_answer)
+        await self.pc.setLocalDescription(await self.pc.createAnswer())
 
-        jsep_answer = {
-            "sdp": sdp_answer.sdp,
-            # Not sure if should follow received trickle in JSEP or not
-            "trickle": trickle,
-            "type": sdp_answer.type,
-        }
+        jsep_answer = await self.create_jsep(self.pc, trickle=trickle)
+        # jsep_answer = {
+        #     "sdp": sdp_answer.sdp,
+        #     # Not sure if should follow received trickle in JSEP or not
+        #     "trickle": trickle,
+        #     "type": sdp_answer.type,
+        # }
 
         response = await self._send_request(
             body={"request": "accept"}, jsep=jsep_answer, timeout=timeout
@@ -561,10 +571,20 @@ class JanusVideoCallPlugin(JanusPlugin):
 
         response = await self._send_request(body=body, jsep=jsep, timeout=timeout)
 
-        plugin_data = response["plugindata"]["data"]
-        result = plugin_data.get("result", {})
+        matcher_success = {
+            "janus": "event",
+            "plugindata": {
+                "plugin": self.name,
+                "data": {
+                    "videocall": "event",
+                    "result": {
+                        "event": "set",
+                    },
+                },
+            },
+        }
 
-        return result.get("event") == "set"
+        return is_subset(response, matcher_success)
 
     async def hangup(self, timeout: float = 15.0) -> bool:
         """Hang up the current call.
