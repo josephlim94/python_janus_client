@@ -14,8 +14,8 @@ from janus_client import (
     JanusTransport,
     JanusSession,
     JanusVideoCallPlugin,
+    VideoCallEventType,
 )
-from janus_client.plugin_video_call import VideoCallEventType
 from tests.util import async_test
 
 format = "%(asctime)s: %(message)s"

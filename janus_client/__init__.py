@@ -5,7 +5,7 @@ from .session import JanusSession, PluginAttachFail
 from .plugin_base import JanusPlugin
 from .plugin_echotest import JanusEchoTestPlugin
 from .plugin_textroom import JanusTextRoomPlugin, TextRoomError, TextRoomEventType
-from .plugin_video_call import JanusVideoCallPlugin
+from .plugin_video_call import JanusVideoCallPlugin, VideoCallError, VideoCallEventType
 from .plugin_video_room import JanusVideoRoomPlugin
 
 from .transport import JanusTransport
