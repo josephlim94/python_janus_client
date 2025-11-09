@@ -347,8 +347,17 @@
 
 ## Release History
 
-### v0.8.3 (Current)
-- **Plugin API Standardization**
+### v0.9.0 (Current)
+- **Documentation Updates**
+  - Updated README.md with VideoCall event-driven API examples
+  - Updated docs/index.md with incoming call handling examples
+  - Updated docs/plugins.md with comprehensive VideoCall documentation
+  - Added VideoCallError and VideoCallEventType to API reference
+  - Fixed VideoRoom plugin API reference (removed non-existent State class)
+  - Updated coverage badge to 82%
+  - Added Python 3.13 support notation
+  - Documentation builds successfully (warnings about **kwargs are acceptable per documentation philosophy)
+- **Plugin API Standardization** (from v0.8.3)
   - Updated TextRoom plugin to use base class peer connection
   - Updated VideoCall plugin to use base class peer connection
   - Removed `ice_servers` parameter support (breaking change)
@@ -360,9 +369,6 @@
 - **Testing**
   - Added comprehensive PC configuration test suite (8 test cases)
   - All plugins now tested with PC configuration
-- **Documentation**
-  - Updated all plugin docstrings with WebRTC configuration examples
-  - Added documentation philosophy to clinerules
 
 ### v0.8.1
 - Added TextRoom plugin

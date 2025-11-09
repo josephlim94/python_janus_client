@@ -58,6 +58,22 @@ Complete API reference for all classes, methods, and types in the Python Janus C
       separate_signature: true
       show_signature_annotations: true
 
+#### VideoCallError Exception
+
+::: janus_client.plugin_video_call.VideoCallError
+    options:
+      show_root_heading: true
+      show_source: false
+      docstring_section_style: table
+
+#### VideoCallEventType Enum
+
+::: janus_client.plugin_video_call.VideoCallEventType
+    options:
+      show_root_heading: true
+      show_source: false
+      docstring_section_style: table
+
 ### VideoRoom Plugin
 
 ::: janus_client.plugin_video_room.JanusVideoRoomPlugin
@@ -69,17 +85,25 @@ Complete API reference for all classes, methods, and types in the Python Janus C
       separate_signature: true
       show_signature_annotations: true
 
-#### VideoRoom State Class
+#### VideoRoomError Exception
 
-::: janus_client.plugin_video_room.JanusVideoRoomPlugin.State
+::: janus_client.plugin_video_room.VideoRoomError
     options:
       show_root_heading: true
       show_source: false
       docstring_section_style: table
 
-#### AllowedAction Enum
+#### VideoRoomEventType Enum
 
-::: janus_client.plugin_video_room.AllowedAction
+::: janus_client.plugin_video_room.VideoRoomEventType
+    options:
+      show_root_heading: true
+      show_source: false
+      docstring_section_style: table
+
+#### ParticipantType Enum
+
+::: janus_client.plugin_video_room.ParticipantType
     options:
       show_root_heading: true
       show_source: false

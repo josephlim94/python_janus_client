@@ -50,12 +50,13 @@ This will create a plugin handle and then destroy it.
 
 Notice that we don't need to call connect or disconnect explicitly. It's managed internally.
 
-### Make Video Calls
+### Make Video Calls (Outgoing)
 
 ```python
 import asyncio
 from janus_client import JanusSession, JanusVideoCallPlugin
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
+from aiortc import RTCConfiguration, RTCIceServer
 
 async def main():
     # Create session
@@ -63,8 +64,11 @@ async def main():
         base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
     )
 
-    # Create plugin
-    plugin_handle = JanusVideoCallPlugin()
+    # Create plugin (optionally with WebRTC configuration)
+    config = RTCConfiguration(iceServers=[
+        RTCIceServer(urls='stun:stun.l.google.com:19302')
+    ])
+    plugin_handle = JanusVideoCallPlugin(pc_config=config)
 
     # Attach to Janus session
     await plugin_handle.attach(session=session)
@@ -116,3 +120,62 @@ This example will register to the VideoCall plugin using username `testusernameo
 
 A portion of the screen will be captured and sent in the call media stream.
 The incoming media stream will be saved into `videocall_record_out.mp4` file.
+
+### Receive Video Calls (Incoming)
+
+```python
+import asyncio
+from janus_client import JanusSession, JanusVideoCallPlugin, VideoCallEventType
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
+async def main():
+    # Create session
+    session = JanusSession(
+        base_url="wss://janusmy.josephgetmyip.com/janusbasews/janus",
+    )
+
+    # Create plugin
+    plugin_handle = JanusVideoCallPlugin()
+
+    # Attach to Janus session
+    await plugin_handle.attach(session=session)
+
+    # Register username
+    username = "testusernamein"
+    await plugin_handle.register(username=username)
+
+    # Set up event handler for incoming calls
+    async def on_incoming_call(data):
+        print(f"Incoming call from {data['username']}")
+        
+        # Get JSEP from event data
+        jsep = data['jsep']
+        
+        # Set up media
+        player = MediaPlayer("input.mp4")
+        recorder = MediaRecorder("./videocall_record_in.mp4")
+        
+        # Accept the call with JSEP
+        await plugin_handle.accept(jsep, player, recorder)
+        print("Call accepted")
+
+    # Register the event handler
+    plugin_handle.on_event(VideoCallEventType.INCOMINGCALL, on_incoming_call)
+
+    # Wait for incoming calls
+    print(f"Waiting for calls as '{username}'...")
+    await asyncio.sleep(60)
+
+    # Cleanup
+    await plugin_handle.destroy()
+    await session.destroy()
+
+
+if __name__ == "__main__":
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        pass
+```
+
+This example demonstrates the event-driven API for handling incoming calls. The plugin uses callbacks to notify you of incoming calls, and you can accept them by calling `accept()` with the JSEP data from the event.

@@ -48,24 +48,50 @@ if __name__ == "__main__":
 
 ## VideoCall Plugin
 
-The VideoCall plugin enables one-to-one video calls between users. It handles user registration, call initiation, and call management.
+The VideoCall plugin enables one-to-one video calls between users. It handles user registration, call initiation, and call management using an event-driven architecture.
 
-### VideoCall Usage Example
+### VideoCall Features
+
+- **Event-Driven Architecture**: Uses callbacks for handling call events
+- **User Registration**: Register unique usernames for receiving calls
+- **Call Management**: Initiate, accept, and hang up calls
+- **Media Control**: Configure audio/video settings and bitrate
+- **WebRTC Configuration**: Optional custom STUN/TURN server configuration
+
+### VideoCall Usage Examples
+
+#### Making Outgoing Calls
 
 ```python
 import asyncio
-from janus_client import JanusSession, JanusVideoCallPlugin
+from janus_client import JanusSession, JanusVideoCallPlugin, VideoCallEventType
 from aiortc.contrib.media import MediaPlayer, MediaRecorder
+from aiortc import RTCConfiguration, RTCIceServer
 
 async def main():
     session = JanusSession(base_url="wss://example.com/janus")
-    plugin = JanusVideoCallPlugin()
+    
+    # Optional: Configure WebRTC settings
+    config = RTCConfiguration(iceServers=[
+        RTCIceServer(urls='stun:stun.l.google.com:19302')
+    ])
+    plugin = JanusVideoCallPlugin(pc_config=config)
     
     async with session:
         await plugin.attach(session)
         
         # Register with a username
         await plugin.register(username="caller")
+        
+        # Set up event handlers
+        async def on_accepted(data):
+            print(f"Call accepted by {data['username']}")
+        
+        async def on_hangup(data):
+            print(f"Call ended: {data.get('reason', 'Unknown')}")
+        
+        plugin.on_event(VideoCallEventType.ACCEPTED, on_accepted)
+        plugin.on_event(VideoCallEventType.HANGUP, on_hangup)
         
         # Make a call
         player = MediaPlayer("input.mp4")
@@ -81,6 +107,188 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+```
+
+#### Receiving Incoming Calls
+
+```python
+import asyncio
+from janus_client import JanusSession, JanusVideoCallPlugin, VideoCallEventType
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
+async def main():
+    session = JanusSession(base_url="wss://example.com/janus")
+    plugin = JanusVideoCallPlugin()
+    
+    async with session:
+        await plugin.attach(session)
+        
+        # Register username to receive calls
+        await plugin.register(username="callee")
+        
+        # Set up event handler for incoming calls
+        async def on_incoming_call(data):
+            print(f"Incoming call from {data['username']}")
+            
+            # Get JSEP from event data
+            jsep = data['jsep']
+            
+            # Set up media
+            player = MediaPlayer("input.mp4")
+            recorder = MediaRecorder("output.mp4")
+            
+            # Accept the call with JSEP
+            await plugin.accept(jsep, player, recorder)
+            print("Call accepted")
+        
+        async def on_hangup(data):
+            print(f"Call ended: {data.get('reason', 'Unknown')}")
+        
+        # Register event handlers
+        plugin.on_event(VideoCallEventType.INCOMINGCALL, on_incoming_call)
+        plugin.on_event(VideoCallEventType.HANGUP, on_hangup)
+        
+        # Wait for incoming calls
+        print("Waiting for calls...")
+        await asyncio.sleep(300)  # Wait 5 minutes
+        
+        await plugin.destroy()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+#### Listing Available Users
+
+```python
+import asyncio
+from janus_client import JanusSession, JanusVideoCallPlugin
+
+async def main():
+    session = JanusSession(base_url="wss://example.com/janus")
+    plugin = JanusVideoCallPlugin()
+    
+    async with session:
+        await plugin.attach(session)
+        
+        # List all registered users
+        users = await plugin.list_users()
+        print(f"Available users: {users}")
+        
+        await plugin.destroy()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+#### Media Control During Call
+
+```python
+import asyncio
+from janus_client import JanusSession, JanusVideoCallPlugin
+from aiortc.contrib.media import MediaPlayer, MediaRecorder
+
+async def main():
+    session = JanusSession(base_url="wss://example.com/janus")
+    plugin = JanusVideoCallPlugin()
+    
+    async with session:
+        await plugin.attach(session)
+        await plugin.register(username="caller")
+        
+        # Make a call
+        player = MediaPlayer("input.mp4")
+        recorder = MediaRecorder("output.mp4")
+        await plugin.call(username="callee", player=player, recorder=recorder)
+        
+        # Wait a bit
+        await asyncio.sleep(10)
+        
+        # Mute audio
+        await plugin.set_media(audio=False)
+        
+        # Wait a bit more
+        await asyncio.sleep(5)
+        
+        # Unmute audio and set bitrate limit
+        await plugin.set_media(audio=True, bitrate=256000)
+        
+        # Continue call
+        await asyncio.sleep(15)
+        
+        await plugin.hangup()
+        await plugin.destroy()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+### VideoCall Event Types
+
+The plugin supports the following event types via `VideoCallEventType` enum:
+
+- **REGISTERED**: User successfully registered
+- **CALLING**: Call is being initiated
+- **INCOMINGCALL**: Incoming call received (includes JSEP data)
+- **ACCEPTED**: Call was accepted by remote peer
+- **UPDATE**: Call parameters updated (may include JSEP for renegotiation)
+- **HANGUP**: Call ended
+- **SET**: Media settings changed
+
+### VideoCall Best Practices
+
+#### Event Handler Registration
+
+```python
+# Register handlers before making or receiving calls
+plugin.on_event(VideoCallEventType.INCOMINGCALL, on_incoming_call)
+plugin.on_event(VideoCallEventType.ACCEPTED, on_accepted)
+plugin.on_event(VideoCallEventType.HANGUP, on_hangup)
+
+# Then proceed with registration and calls
+await plugin.register(username="myuser")
+```
+
+#### Error Handling
+
+```python
+from janus_client import VideoCallError
+
+try:
+    await plugin.register(username="alice")
+    await plugin.call(username="bob", player=player, recorder=recorder)
+except VideoCallError as e:
+    print(f"Call failed: {e.error_message} (code: {e.error_code})")
+```
+
+#### Resource Cleanup
+
+```python
+try:
+    # Use the plugin
+    await plugin.register(username="alice")
+    await plugin.call(username="bob", player=player, recorder=recorder)
+    await asyncio.sleep(30)
+finally:
+    # Always cleanup
+    try:
+        if plugin.in_call:
+            await plugin.hangup()
+    except:
+        pass
+    await plugin.destroy()
+```
+
+#### Handling Call State
+
+```python
+# Check if currently in a call
+if plugin.in_call:
+    print("Currently in a call")
+
+# Get registered username
+if plugin.username:
+    print(f"Registered as: {plugin.username}")
 ```
 
 ## VideoRoom Plugin

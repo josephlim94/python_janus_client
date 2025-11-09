@@ -2,21 +2,59 @@
 
 ## Current Focus
 
-### Primary Task: Memory Bank Initialization
-**Status:** In Progress  
-**Started:** 2025-10-22  
-**Goal:** Create comprehensive Cline Memory Bank for project continuity
+### Primary Task: Documentation Updates
+**Status:** Completed  
+**Started:** 2025-11-09  
+**Completed:** 2025-11-09  
+**Goal:** Update all documentation to reflect v0.9.0 changes and VideoCall event-driven API
 
 **Completed:**
-- ✅ Created memory-bank directory structure
-- ✅ Wrote projectbrief.md (foundation document)
-- ✅ Wrote productContext.md (why and how)
-- ✅ Wrote systemPatterns.md (architecture)
-- ✅ Wrote techContext.md (technical setup)
-- 🔄 Writing activeContext.md (current state)
-- ⏳ Need to write progress.md (project status)
+- ✅ Updated README.md with VideoCall event-driven API examples
+- ✅ Updated docs/index.md with incoming call handling
+- ✅ Updated docs/plugins.md with comprehensive VideoCall documentation
+- ✅ Fixed docs/reference.md API reference errors
+- ✅ Added VideoCallError and VideoCallEventType to API reference
+- ✅ Updated coverage badge to 82%
+- ✅ Added Python 3.13 support notation
+- ✅ Verified documentation builds successfully
+- ✅ Updated Memory Bank (progress.md and activeContext.md)
 
 ## Recent Work
+
+### Documentation Updates (v0.9.0)
+**Status:** Completed (2025-11-09)  
+**Goal:** Update documentation to reflect current state and VideoCall event-driven API
+
+**Changes Made:**
+- **README.md:**
+  - Updated coverage badge from 75% to 82%
+  - Added Python 3.13 support notation
+  - Split VideoCall example into outgoing and incoming call examples
+  - Added event-driven API example with `VideoCallEventType`
+  - Demonstrated proper JSEP handling in `accept()` method
+
+- **docs/index.md:**
+  - Mirrored README.md changes for consistency
+  - Added comprehensive incoming call handling example
+  - Showed WebRTC configuration with RTCConfiguration
+
+- **docs/plugins.md:**
+  - Expanded VideoCall section with multiple usage examples
+  - Added event types documentation
+  - Added best practices section
+  - Included examples for: outgoing calls, incoming calls, user listing, media control
+  - Added error handling and resource cleanup examples
+
+- **docs/reference.md:**
+  - Fixed VideoRoom plugin reference (removed non-existent State class)
+  - Added VideoCallError exception documentation
+  - Added VideoCallEventType enum documentation
+  - Added VideoRoomError, VideoRoomEventType, ParticipantType documentation
+
+**Build Status:**
+- Documentation builds successfully without strict mode
+- Warnings about `**kwargs` type annotations are acceptable per documentation philosophy
+- All documentation pages render correctly
 
 ### VideoCall Plugin Re-implementation
 **Status:** Completed (v0.8.4+)  
