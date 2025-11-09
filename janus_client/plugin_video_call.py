@@ -603,7 +603,7 @@ class JanusVideoCallPlugin(JanusPlugin):
 
         # Clean up resources
         self._in_call = False
-        # await self._cleanup_media()
+        await self._cleanup_media()
 
         matcher_success = {
             "janus": "event",

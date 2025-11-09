@@ -164,16 +164,15 @@ class BaseTestClass:
                 receive_call_event = asyncio.Event()
 
                 async def on_incoming_call(data: dict):
-                    # Handle incoming call with new API
                     player = MediaPlayer(self.getVideoUrlByIndex(0))
                     recorder = MediaRecorder(output_filename_in)
+
                     self.accept_call_task = asyncio.create_task(
                         plugin_handle_in.accept(
                             jsep=data["jsep"], player=player, recorder=recorder
                         )
                     )
                     receive_call_event.set()
-                    # await plugin_handle_in.accept(player=player, recorder=recorder)
 
                 plugin_handle_in.on_event(
                     VideoCallEventType.INCOMINGCALL, on_incoming_call
@@ -197,7 +196,6 @@ class BaseTestClass:
                 #     },
                 # )
                 player = MediaPlayer(self.getVideoUrlByIndex(4))
-                # player = MediaPlayer("../Into.the.Wild.2007.mp4")
                 recorder = MediaRecorder(output_filename_out)
 
                 call_result = await plugin_handle_out.call(
@@ -228,9 +226,12 @@ class BaseTestClass:
                     )
 
             finally:
-                await asyncio.gather(
-                    plugin_handle_in.destroy(), plugin_handle_out.destroy()
-                )
+                # TODO: Detaching both at the same time might hang. Should find out why.
+                # await asyncio.gather(
+                #     plugin_handle_in.destroy(), plugin_handle_out.destroy()
+                # )
+                await plugin_handle_in.destroy()
+                await plugin_handle_out.destroy()
 
                 await session.destroy()
 

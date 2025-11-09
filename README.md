@@ -204,6 +204,8 @@ hatch run +py=3.8 mkdocs build  # to build in a specific python environment only
 
 ### Run unit tests
 
+Use video url from https://gist.github.com/jsturgis/3b19447b304616f18657
+
 Use following command to run unit tests and see all logs:
 
 ```bash

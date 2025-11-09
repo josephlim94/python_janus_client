@@ -133,7 +133,7 @@ class JanusPlugin(ABC):
     async def destroy(self) -> None:
         """Destroy the plugin handle and clean up resources."""
         message_transaction = await self.send({"janus": "detach"})
-        await message_transaction.get()
+        await message_transaction.get(timeout=15)
         await message_transaction.done()
         self.__session.detach_plugin(self)
 
