@@ -273,7 +273,7 @@ class BaseTestClass:
             )
             self.assertEqual(join_result["room"], room_id)
 
-            # Try to publish without joining
+            # Publish
             player = MediaPlayer(self.getVideoUrlByIndex(0))
             publish_result = await self.plugin.publish(player=player)
             self.assertEqual(publish_result["configured"], "ok")
@@ -287,7 +287,6 @@ class BaseTestClass:
             await self.plugin.leave()
             self.assertIsNone(self.plugin.participant_type)
             self.assertIsNone(self.plugin.room_id)
-            logger.info("Left the room")
 
             # Clean up
             await self.plugin.destroy_room(room_id=room_id)
@@ -314,6 +313,100 @@ class BaseTestClass:
                 )
             )
             logger.info("Correctly rejected publish without join")
+
+            await self.detach_plugin()
+
+        # @async_test
+        # async def test_subscribe_to_publisher(self):
+        #     """Test subscribing to a publisher (basic test without media)."""
+        #     await self.attach_plugin()
+
+        #     output_filename = "./videoroom_record_in.mp4"
+        #     default_demo_room_id = 1234
+
+        #     if os.path.exists(output_filename):
+        #         os.remove(output_filename)
+
+        #     plugin_publisher = JanusVideoRoomPlugin()
+
+        #     await plugin_publisher.attach(session=self.session)
+
+        #     # Join as publisher
+        #     join_result = await plugin_publisher.join_as_publisher(
+        #         room_id=default_demo_room_id,
+        #         display="Test Publisher",
+        #     )
+        #     self.assertEqual(join_result["room"], default_demo_room_id)
+
+        #     # Publish
+        #     player = MediaPlayer(self.getVideoUrlByIndex(0))
+        #     publish_result = await plugin_publisher.publish(player=player)
+        #     self.assertEqual(publish_result["configured"], "ok")
+
+        #     # It is only really published with webrtc is up
+        #     await plugin_publisher.webrtcup_event.wait()
+
+        #     # For this test, we'll simulate subscribing to a non-existent publisher
+        #     # This should fail gracefully
+        #     streams = [
+        #         {"feed": plugin_publisher.publisher_id}
+        #     ]  # Non-existent publisher
+
+        #     recorder = MediaRecorder(output_filename)
+        #     await self.plugin.subscribe_to_publisher(
+        #         room_id=default_demo_room_id,
+        #         streams=streams,
+        #         recorder=recorder,
+        #     )
+
+        #     # It is only really subscribed with webrtc is up
+        #     await self.plugin.webrtcup_event.wait()
+
+        #     await asyncio.sleep(15)
+
+        #     # await self.plugin.unsubscribe(streams=streams)
+        #     await self.plugin.leave()
+
+        #     if not os.path.exists(output_filename):
+        #         self.fail(
+        #             f"Incoming call record file ({output_filename}) is not created."
+        #         )
+
+        #     # Clean up
+        #     await plugin_publisher.unpublish()
+        #     await plugin_publisher.leave()
+        #     await plugin_publisher.destroy()
+
+        #     await self.detach_plugin()
+
+        @async_test
+        async def test_subscribe_to_non_existent_feed(self):
+            """Test subscribing to a non-existent feed."""
+            await self.attach_plugin()
+
+            # Create a room
+            room_id = await self.plugin.create_room(
+                description="Subscribe Test Room",
+                is_private=False,
+            )
+
+            # For this test, we'll simulate subscribing to a non-existent publisher
+            # This should fail gracefully
+            streams = [{"feed": 99999}]  # Non-existent publisher
+
+            with self.assertRaises(VideoRoomError) as context:
+                await self.plugin.subscribe_to_publisher(
+                    room_id=room_id,
+                    streams=streams,
+                    timeout=5.0,
+                )
+
+            self.assertIn("No such feed ", context.exception.error_message)
+
+            # Clean up
+            if self.plugin.participant_type is not None:
+                await self.plugin.leave()
+            await self.plugin.destroy_room(room_id=room_id)
 
             await self.detach_plugin()
 
@@ -403,69 +496,6 @@ class BaseTestClass:
             await self.detach_plugin()
 
         @async_test
-        async def test_subscribe_to_non_existent_feed(self):
-            """Test subscribing to a non-existent feed."""
-            await self.attach_plugin()
-
-            # Create a room
-            room_id = await self.plugin.create_room(
-                description="Subscribe Test Room",
-                is_private=False,
-            )
-
-            # For this test, we'll simulate subscribing to a non-existent publisher
-            # This should fail gracefully
-            streams = [{"feed": 99999}]  # Non-existent publisher
-
-            with self.assertRaises(VideoRoomError) as context:
-                await self.plugin.subscribe_to_publisher(
-                    room_id=room_id,
-                    streams=streams,
-                    timeout=5.0,
-                )
-
-            self.assertIn("No such feed ", context.exception.error_message)
-
-            # Clean up
-            if self.plugin.participant_type is not None:
-                await self.plugin.leave()
-            await self.plugin.destroy_room(room_id=room_id)
-
-            await self.detach_plugin()
-
-        # @async_test
-        # async def test_subscribe_to_publisher(self):
-        #     """Test subscribing to a publisher (basic test without media)."""
-        #     await self.attach_plugin()
-
-        #     # Create a room
-        #     room_id = await self.plugin.create_room(
-        #         description="Subscribe Test Room",
-        #         is_private=False,
-        #     )
-
-        #     # For this test, we'll simulate subscribing to a non-existent publisher
-        #     # This should fail gracefully
-        #     streams = [{"feed": 99999}]  # Non-existent publisher
-
-        #     try:
-        #         await self.plugin.subscribe_to_publisher(
-        #             room_id=room_id,
-        #             streams=streams,
-        #             timeout=5.0,
-        #         )
-        #         self.fail("Subscription should fail")
-        #     except (VideoRoomError, asyncio.TimeoutError) as e:
-        #         logger.info(f"Subscription failed as expected: {e}")
-
-        #     # Clean up
-        #     if self.plugin.participant_type is not None:
-        #         await self.plugin.leave()
-        #     await self.plugin.destroy_room(room_id=room_id)
-
-        #     await self.detach_plugin()
-
-        @async_test
         async def test_kick_participant(self):
             """Test kicking a participant (admin function)."""
             await self.attach_plugin()
@@ -485,7 +515,9 @@ class BaseTestClass:
                     timeout=5.0,
                 )
 
-            self.assertIn("No such user 99999 in room ", context.exception.error_message)
+            self.assertIn(
+                "No such user 99999 in room ", context.exception.error_message
+            )
 
             # Clean up
             await self.plugin.destroy_room(room_id=room_id, secret="admin_secret")
@@ -514,7 +546,9 @@ class BaseTestClass:
                     timeout=5.0,
                 )
 
-            self.assertIn("No such user 99999 in room ", context.exception.error_message)
+            self.assertIn(
+                "No such user 99999 in room ", context.exception.error_message
+            )
 
             # Clean up
             await self.plugin.destroy_room(room_id=room_id, secret="admin_secret")

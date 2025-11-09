@@ -608,7 +608,7 @@ class JanusVideoRoomPlugin(JanusPlugin):
             TimeoutError: If request times out.
         """
         if self._participant_type != ParticipantType.PUBLISHER:
-            raise VideoRoomError(0, "Must join as publisher before publishing")
+            raise VideoRoomError(-1, "Must join as publisher before publishing")
 
         # Set up media tracks
         self._setup_media_tracks(player, None)
@@ -701,8 +701,6 @@ class JanusVideoRoomPlugin(JanusPlugin):
 
         await self._send_request(body, timeout=timeout)
 
-    # Subscriber Methods
-
     async def subscribe_to_publisher(
         self,
         room_id: int,
@@ -734,6 +732,12 @@ class JanusVideoRoomPlugin(JanusPlugin):
             VideoRoomError: If subscription fails.
             TimeoutError: If request times out.
         """
+        if self._participant_type == ParticipantType.PUBLISHER:
+            raise VideoRoomError(
+                -1,
+                f"Can only be either publisher or subscriber. Now {self._participant_type}",
+            )
+
         body: Dict[str, Any] = {
             "request": "join",
             "ptype": "subscriber",
