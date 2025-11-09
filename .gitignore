@@ -24,3 +24,6 @@ htmlcov
 
 # MAC OS X
 .DS_Store
+
+# Config
+ice_server_config.py
