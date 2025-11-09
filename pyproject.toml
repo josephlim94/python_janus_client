@@ -1,6 +1,6 @@
 [project]
 name = "janus-client"
-version = "0.8.3"
+version = "0.9.0"
 description = "Janus WebRTC gateway Python async client."
 authors = [
     {name = "Joseph Lim", email = "josephlim_94@hotmail.co.uk"},
