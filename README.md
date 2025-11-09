@@ -8,7 +8,7 @@
 ![PyPI - License](https://img.shields.io/pypi/l/janus-client)
 ![PyPI - Status](https://img.shields.io/pypi/status/janus-client)
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/janus-client)
-![Code Coverage](https://img.shields.io/badge/coverage-75%-yellow)
+![Code Coverage](https://img.shields.io/badge/coverage-75%25-yellow)
 
 ---
 
